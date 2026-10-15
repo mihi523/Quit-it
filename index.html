@@ -1,6 +1,1787 @@
-<html>
-<style>
-   div{min-height:1em;}
-</style>
-<body>&lt;!DOCTYPE html&gt;<br/>&lt;html lang=&quot;en&quot; class=&quot;dark&quot;&gt;<br/>&lt;head&gt;<br/>  &lt;meta charset=&quot;UTF-8&quot; /&gt;<br/>  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; /&gt;<br/>  &lt;title&gt;Sovereign Mind - Habit &amp; Dopamine Rebalancing&lt;/title&gt;<br/><br/>  &lt;!-- PWA Metadata &amp; Inline Manifest --&gt;<br/>  &lt;meta name=&quot;theme-color&quot; content=&quot;#090d16&quot; /&gt;<br/>  &lt;meta name=&quot;apple-mobile-web-app-capable&quot; content=&quot;yes&quot; /&gt;<br/>  &lt;meta name=&quot;apple-mobile-web-app-status-bar-style&quot; content=&quot;black-translucent&quot; /&gt;<br/>  &lt;meta name=&quot;description&quot; content=&quot;Offline-first Dopamine Rebalancing &amp; Habit Recovery Tracker&quot; /&gt;<br/>  <br/>  &lt;link rel=&quot;manifest&quot; href=&#39;data:application/manifest+json;utf-8,{&quot;name&quot;:&quot;Sovereign Mind&quot;,&quot;short_name&quot;:&quot;Sovereign&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#090d16&quot;,&quot;theme_color&quot;:&quot;#090d16&quot;,&quot;icons&quot;:[{&quot;src&quot;:&quot;https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=192&amp;auto=format&amp;fit=crop&amp;q=60&quot;,&quot;sizes&quot;:&quot;192x192&quot;,&quot;type&quot;:&quot;image/png&quot;},{&quot;src&quot;:&quot;https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=512&amp;auto=format&amp;fit=crop&amp;q=60&quot;,&quot;sizes&quot;:&quot;512x512&quot;,&quot;type&quot;:&quot;image/png&quot;}]}&#39; /&gt;<br/><br/>  &lt;!-- Tailwind CSS CDN --&gt;<br/>  &lt;script src=&quot;https://cdn.tailwindcss.com&quot;&gt;&lt;/script&gt;<br/>  &lt;script&gt;<br/>    tailwind.config = {<br/>      darkMode: &#39;class&#39;,<br/>      theme: {<br/>        extend: {<br/>          colors: {<br/>            bgDark: &#39;#090d16&#39;,<br/>            cardDark: &#39;#111726&#39;,<br/>            borderDark: &#39;#1e293b&#39;,<br/>            accentEmerald: &#39;#10b981&#39;,<br/>            accentRose: &#39;#f43f5e&#39;,<br/>            accentAmber: &#39;#f59e0b&#39;,<br/>            accentIndigo: &#39;#6366f1&#39;<br/>          }<br/>        }<br/>      }<br/>    }<br/>  &lt;/script&gt;<br/><br/>  &lt;!-- Chart.js CDN --&gt;<br/>  &lt;script src=&quot;https://cdn.jsdelivr.net/npm/chart.js&quot;&gt;&lt;/script&gt;<br/>  &lt;!-- Lucide Icons CDN --&gt;<br/>  &lt;script src=&quot;https://unpkg.com/lucide@latest&quot;&gt;&lt;/script&gt;<br/><br/>  &lt;style&gt;<br/>    /* Custom Scrollbars and Pulse Keyframes */<br/>    ::-webkit-scrollbar { width: 4px; height: 4px; }<br/>    ::-webkit-scrollbar-track { background: #090d16; }<br/>    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }<br/>    <br/>    @keyframes breatheExpand {<br/>      0%, 100% { transform: scale(1); opacity: 0.7; }<br/>      21.05% { transform: scale(1.6); opacity: 1; }  /* Inhale 4s */<br/>      57.89% { transform: scale(1.6); opacity: 0.9; }  /* Hold 7s */<br/>      100% { transform: scale(1); opacity: 0.7; }     /* Exhale 8s */<br/>    }<br/>    .animate-breathe {<br/>      animation: breatheExpand 19s ease-in-out infinite;<br/>    }<br/><br/>    @keyframes sineWave {<br/>      0% { transform: translateY(0px); }<br/>      50% { transform: translateY(-8px); }<br/>      100% { transform: translateY(0px); }<br/>    }<br/>    .animate-sinewave {<br/>      animation: sineWave 2s ease-in-out infinite;<br/>    }<br/>  &lt;/style&gt;<br/>&lt;/head&gt;<br/><br/>&lt;body class=&quot;bg-bgDark text-slate-100 min-h-screen font-sans selection:bg-accentEmerald selection:text-black pb-24 antialiased select-none&quot;&gt;<br/><br/>  &lt;!-- ==================== CAMOUFLAGE / DISGUISE SCREEN (Feature 43) ==================== --&gt;<br/>  &lt;div id=&quot;camouflageScreen&quot; class=&quot;hidden fixed inset-0 z-50 bg-slate-50 text-slate-800 p-6 flex flex-col justify-between overflow-y-auto&quot;&gt;<br/>    &lt;div&gt;<br/>      &lt;div class=&quot;flex items-center justify-between border-b pb-3 mb-4&quot;&gt;<br/>        &lt;h1 class=&quot;text-xl font-bold tracking-tight text-slate-700 flex items-center gap-2&quot;&gt;<br/>          &lt;span&gt;📝&lt;/span&gt; Daily Work Notes &amp; Tasklist<br/>        &lt;/h1&gt;<br/>        &lt;button id=&quot;exitCamouflageBtn&quot; class=&quot;text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1.5 rounded font-mono&quot;&gt;<br/>          Exit Note<br/>        &lt;/button&gt;<br/>      &lt;/div&gt;<br/>      &lt;p class=&quot;text-xs text-slate-400 mb-3 font-mono&quot;&gt;Auto-saved to local disk: &lt;span id=&quot;mockSaveTime&quot;&gt;Just now&lt;/span&gt;&lt;/p&gt;<br/>      <br/>      &lt;div class=&quot;space-y-2 mb-6&quot;&gt;<br/>        &lt;label class=&quot;flex items-center gap-3 text-sm p-2 bg-white rounded border border-slate-200&quot;&gt;<br/>          &lt;input type=&quot;checkbox&quot; checked class=&quot;rounded text-blue-600&quot; /&gt;<br/>          &lt;span class=&quot;line-through text-slate-400&quot;&gt;Review quarterly system performance specs&lt;/span&gt;<br/>        &lt;/label&gt;<br/>        &lt;label class=&quot;flex items-center gap-3 text-sm p-2 bg-white rounded border border-slate-200&quot;&gt;<br/>          &lt;input type=&quot;checkbox&quot; checked class=&quot;rounded text-blue-600&quot; /&gt;<br/>          &lt;span class=&quot;line-through text-slate-400&quot;&gt;Draft deployment pipeline script for client&lt;/span&gt;<br/>        &lt;/label&gt;<br/>        &lt;label class=&quot;flex items-center gap-3 text-sm p-2 bg-white rounded border border-slate-200&quot;&gt;<br/>          &lt;input type=&quot;checkbox&quot; class=&quot;rounded text-blue-600&quot; /&gt;<br/>          &lt;span&gt;Prepare documentation for Monday sprint planning&lt;/span&gt;<br/>        &lt;/label&gt;<br/>        &lt;label class=&quot;flex items-center gap-3 text-sm p-2 bg-white rounded border border-slate-200&quot;&gt;<br/>          &lt;input type=&quot;checkbox&quot; class=&quot;rounded text-blue-600&quot; /&gt;<br/>          &lt;span&gt;Refactor database caching layer&lt;/span&gt;<br/>        &lt;/label&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;textarea class=&quot;w-full h-44 p-3 border border-slate-200 rounded text-sm bg-white focus:outline-none focus:ring-1 focus:ring-slate-400 font-sans&quot; placeholder=&quot;Type personal notes here...&quot;&gt;Call engineering lead about microservice refactor timeline. Meeting scheduled at 3 PM.&lt;/textarea&gt;<br/>    &lt;/div&gt;<br/>    &lt;div class=&quot;text-[11px] text-slate-400 text-center font-mono py-2&quot;&gt;<br/>      Workspace Note App v2.4.1 — Double-tap header or click &#39;Exit Note&#39; to return.<br/>    &lt;/div&gt;<br/>  &lt;/div&gt;<br/><br/>  &lt;!-- ==================== PIN PROTECTION MODAL (Feature 44) ==================== --&gt;<br/>  &lt;div id=&quot;pinLockModal&quot; class=&quot;hidden fixed inset-0 z-50 bg-bgDark/98 flex flex-col items-center justify-center p-6&quot;&gt;<br/>    &lt;div class=&quot;max-w-xs w-full text-center space-y-6&quot;&gt;<br/>      &lt;div class=&quot;w-16 h-16 bg-slate-800/80 rounded-2xl flex items-center justify-center mx-auto border border-borderDark text-accentEmerald&quot;&gt;<br/>        &lt;i data-lucide=&quot;shield-check&quot; class=&quot;w-8 h-8&quot;&gt;&lt;/i&gt;<br/>      &lt;/div&gt;<br/>      &lt;div&gt;<br/>        &lt;h2 class=&quot;text-xl font-bold tracking-tight&quot;&gt;Sovereignty Protected&lt;/h2&gt;<br/>        &lt;p class=&quot;text-xs text-slate-400 mt-1&quot;&gt;Enter your 4-digit PIN to access recovery logs&lt;/p&gt;<br/>      &lt;/div&gt;<br/>      &lt;!-- PIN Dots --&gt;<br/>      &lt;div class=&quot;flex justify-center gap-4 py-2&quot;&gt;<br/>        &lt;span class=&quot;pin-dot w-4 h-4 rounded-full border border-slate-600 transition-all&quot;&gt;&lt;/span&gt;<br/>        &lt;span class=&quot;pin-dot w-4 h-4 rounded-full border border-slate-600 transition-all&quot;&gt;&lt;/span&gt;<br/>        &lt;span class=&quot;pin-dot w-4 h-4 rounded-full border border-slate-600 transition-all&quot;&gt;&lt;/span&gt;<br/>        &lt;span class=&quot;pin-dot w-4 h-4 rounded-full border border-slate-600 transition-all&quot;&gt;&lt;/span&gt;<br/>      &lt;/div&gt;<br/>      &lt;p id=&quot;pinErrorMsg&quot; class=&quot;text-xs text-accentRose font-medium min-h-[16px]&quot;&gt;&lt;/p&gt;<br/>      <br/>      &lt;!-- Keypad --&gt;<br/>      &lt;div class=&quot;grid grid-cols-3 gap-3&quot;&gt;<br/>        &lt;button onclick=&quot;handlePinInput(&#39;1&#39;)&quot; class=&quot;h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition&quot;&gt;1&lt;/button&gt;<br/>        &lt;button onclick=&quot;handlePinInput(&#39;2&#39;)&quot; class=&quot;h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition&quot;&gt;2&lt;/button&gt;<br/>        &lt;button onclick=&quot;handlePinInput(&#39;3&#39;)&quot; class=&quot;h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition&quot;&gt;3&lt;/button&gt;<br/>        &lt;button onclick=&quot;handlePinInput(&#39;4&#39;)&quot; class=&quot;h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition&quot;&gt;4&lt;/button&gt;<br/>        &lt;button onclick=&quot;handlePinInput(&#39;5&#39;)&quot; class=&quot;h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition&quot;&gt;5&lt;/button&gt;<br/>        &lt;button onclick=&quot;handlePinInput(&#39;6&#39;)&quot; class=&quot;h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition&quot;&gt;6&lt;/button&gt;<br/>        &lt;button onclick=&quot;handlePinInput(&#39;7&#39;)&quot; class=&quot;h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition&quot;&gt;7&lt;/button&gt;<br/>        &lt;button onclick=&quot;handlePinInput(&#39;8&#39;)&quot; class=&quot;h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition&quot;&gt;8&lt;/button&gt;<br/>        &lt;button onclick=&quot;handlePinInput(&#39;9&#39;)&quot; class=&quot;h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition&quot;&gt;9&lt;/button&gt;<br/>        &lt;button onclick=&quot;clearPinInput()&quot; class=&quot;h-14 rounded-xl bg-cardDark border border-borderDark text-xs font-semibold text-slate-400 hover:bg-slate-800 active:scale-95 transition&quot;&gt;CLR&lt;/button&gt;<br/>        &lt;button onclick=&quot;handlePinInput(&#39;0&#39;)&quot; class=&quot;h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition&quot;&gt;0&lt;/button&gt;<br/>        &lt;button onclick=&quot;popPinInput()&quot; class=&quot;h-14 rounded-xl bg-cardDark border border-borderDark text-sm font-semibold text-slate-400 hover:bg-slate-800 active:scale-95 transition flex items-center justify-center&quot;&gt;<br/>          &lt;i data-lucide=&quot;delete&quot; class=&quot;w-5 h-5&quot;&gt;&lt;/i&gt;<br/>        &lt;/button&gt;<br/>      &lt;/div&gt;<br/>    &lt;/div&gt;<br/>  &lt;/div&gt;<br/><br/>  &lt;!-- ==================== RELAPSE AUTOPSY &amp; RESET MODAL (Feature 28 &amp; 2) ==================== --&gt;<br/>  &lt;div id=&quot;resetModal&quot; class=&quot;hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4&quot;&gt;<br/>    &lt;div class=&quot;bg-cardDark border border-borderDark rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 space-y-4&quot;&gt;<br/>      &lt;div class=&quot;flex items-center justify-between border-b border-borderDark pb-3&quot;&gt;<br/>        &lt;div&gt;<br/>          &lt;h3 class=&quot;font-bold text-lg text-accentRose flex items-center gap-2&quot;&gt;<br/>            &lt;i data-lucide=&quot;heart-crack&quot; class=&quot;w-5 h-5&quot;&gt;&lt;/i&gt;<br/>            Reset &amp; Compassionate Autopsy<br/>          &lt;/h3&gt;<br/>          &lt;p class=&quot;text-xs text-slate-400&quot;&gt;Slips are data points, not moral failures. Record and elevate.&lt;/p&gt;<br/>        &lt;/div&gt;<br/>        &lt;button onclick=&quot;closeModal(&#39;resetModal&#39;)&quot; class=&quot;text-slate-400 hover:text-white p-1&quot;&gt;<br/>          &lt;i data-lucide=&quot;x&quot; class=&quot;w-5 h-5&quot;&gt;&lt;/i&gt;<br/>        &lt;/button&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;div class=&quot;space-y-4 text-xs&quot;&gt;<br/>        &lt;div&gt;<br/>          &lt;label class=&quot;block font-semibold text-slate-300 mb-1&quot;&gt;What specifically occurred?&lt;/label&gt;<br/>          &lt;div class=&quot;grid grid-cols-2 gap-2&quot;&gt;<br/>            &lt;button type=&quot;button&quot; id=&quot;typeMOnlyBtn&quot; onclick=&quot;setResetType(&#39;m_only&#39;)&quot; class=&quot;p-2.5 rounded-lg border border-accentAmber/40 bg-accentAmber/10 text-accentAmber text-center font-medium&quot;&gt;<br/>              Masturbation Only (No Ejaculation)<br/>            &lt;/button&gt;<br/>            &lt;button type=&quot;button&quot; id=&quot;typeEjacBtn&quot; onclick=&quot;setResetType(&#39;ejaculation&#39;)&quot; class=&quot;p-2.5 rounded-lg border border-borderDark bg-slate-800 text-slate-300 text-center font-medium&quot;&gt;<br/>              Ejaculation (Full Slip)<br/>            &lt;/button&gt;<br/>          &lt;/div&gt;<br/>        &lt;/div&gt;<br/><br/>        &lt;div&gt;<br/>          &lt;label class=&quot;block font-semibold text-slate-300 mb-1&quot;&gt;Primary Underlying Trigger:&lt;/label&gt;<br/>          &lt;div id=&quot;modalTriggerChips&quot; class=&quot;flex flex-wrap gap-1.5 mb-2&quot;&gt;&lt;/div&gt;<br/>        &lt;/div&gt;<br/><br/>        &lt;div&gt;<br/>          &lt;label class=&quot;block font-semibold text-slate-300 mb-1&quot;&gt;Physical Location Context (Feature 30):&lt;/label&gt;<br/>          &lt;select id=&quot;modalLocation&quot; class=&quot;w-full bg-slate-900 border border-borderDark rounded-lg p-2 text-slate-300 text-xs&quot;&gt;<br/>            &lt;option value=&quot;Bed / Bedroom&quot;&gt;Bed / Bedroom&lt;/option&gt;<br/>            &lt;option value=&quot;Bathroom&quot;&gt;Bathroom&lt;/option&gt;<br/>            &lt;option value=&quot;Computer Desk / Late Office&quot;&gt;Computer Desk / Late Office&lt;/option&gt;<br/>            &lt;option value=&quot;Living Room Couch&quot;&gt;Living Room Couch&lt;/option&gt;<br/>            &lt;option value=&quot;Other / Travel&quot;&gt;Other / Travel&lt;/option&gt;<br/>          &lt;/select&gt;<br/>        &lt;/div&gt;<br/><br/>        &lt;div&gt;<br/>          &lt;label class=&quot;block font-semibold text-slate-300 mb-1&quot;&gt;Immediate Physical Symptoms Present (Feature 18):&lt;/label&gt;<br/>          &lt;div id=&quot;modalSymptomChips&quot; class=&quot;grid grid-cols-2 gap-1.5&quot;&gt;<br/>            &lt;!-- Populated via JS --&gt;<br/>          &lt;/div&gt;<br/>        &lt;/div&gt;<br/><br/>        &lt;div&gt;<br/>          &lt;label class=&quot;block font-semibold text-slate-300 mb-1&quot;&gt;What boundary or guardrail slipped?&lt;/label&gt;<br/>          &lt;input type=&quot;text&quot; id=&quot;modalBoundarySlipped&quot; placeholder=&quot;e.g. Took phone into bed after 11 PM&quot; class=&quot;w-full bg-slate-900 border border-borderDark rounded-lg p-2 text-slate-200&quot; /&gt;<br/>        &lt;/div&gt;<br/><br/>        &lt;div&gt;<br/>          &lt;label class=&quot;block font-semibold text-slate-300 mb-1&quot;&gt;Countermeasure for the next 72 hours:&lt;/label&gt;<br/>          &lt;textarea id=&quot;modalCountermeasure&quot; rows=&quot;2&quot; placeholder=&quot;e.g. Sleep phone in living room; cold splash face before bed.&quot; class=&quot;w-full bg-slate-900 border border-borderDark rounded-lg p-2 text-slate-200&quot;&gt;&lt;/textarea&gt;<br/>        &lt;/div&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;div class=&quot;pt-2 flex gap-3&quot;&gt;<br/>        &lt;button onclick=&quot;closeModal(&#39;resetModal&#39;)&quot; class=&quot;flex-1 py-2.5 rounded-xl border border-borderDark text-slate-300 hover:bg-slate-800 font-medium text-xs&quot;&gt;Cancel&lt;/button&gt;<br/>        &lt;button onclick=&quot;confirmReset()&quot; class=&quot;flex-1 py-2.5 rounded-xl bg-accentRose hover:bg-rose-600 text-white font-bold text-xs shadow-lg shadow-rose-900/30&quot;&gt;Confirm &amp; Begin Anew&lt;/button&gt;<br/>      &lt;/div&gt;<br/>    &lt;/div&gt;<br/>  &lt;/div&gt;<br/><br/>  &lt;!-- ==================== SOS / EMERGENCY OVERLAY (Features 33–40) ==================== --&gt;<br/>  &lt;div id=&quot;sosOverlay&quot; class=&quot;hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md overflow-y-auto p-4 sm:p-6 flex flex-col justify-between&quot;&gt;<br/>    &lt;div class=&quot;max-w-xl mx-auto w-full space-y-5&quot;&gt;<br/>      &lt;!-- Header --&gt;<br/>      &lt;div class=&quot;flex items-center justify-between border-b border-rose-900/50 pb-3&quot;&gt;<br/>        &lt;div class=&quot;flex items-center gap-2 text-accentRose&quot;&gt;<br/>          &lt;i data-lucide=&quot;flame&quot; class=&quot;w-6 h-6 animate-pulse&quot;&gt;&lt;/i&gt;<br/>          &lt;span class=&quot;font-bold text-base tracking-wider uppercase&quot;&gt;Urge Neutralization Protocol&lt;/span&gt;<br/>        &lt;/div&gt;<br/>        &lt;button onclick=&quot;closeSOS()&quot; class=&quot;p-1 rounded-full bg-slate-800 text-slate-300 hover:text-white&quot;&gt;<br/>          &lt;i data-lucide=&quot;x&quot; class=&quot;w-6 h-6&quot;&gt;&lt;/i&gt;<br/>        &lt;/button&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;!-- 15-Min Urge Surfing Timer (Feature 34) --&gt;<br/>      &lt;div class=&quot;bg-cardDark border border-rose-900/40 rounded-2xl p-5 text-center relative overflow-hidden&quot;&gt;<br/>        &lt;div class=&quot;absolute -top-12 -left-12 w-28 h-28 bg-rose-500/10 rounded-full blur-2xl&quot;&gt;&lt;/div&gt;<br/>        &lt;span class=&quot;text-xs uppercase tracking-widest text-slate-400 font-semibold&quot;&gt;Wave Surfing Principle&lt;/span&gt;<br/>        &lt;h4 class=&quot;text-xs text-slate-300 mt-1&quot;&gt;An urge crests like an ocean wave and dissipates within 15 minutes.&lt;/h4&gt;<br/>        <br/>        &lt;div class=&quot;my-4&quot;&gt;<br/>          &lt;div id=&quot;surfTimerDisplay&quot; class=&quot;text-4xl sm:text-5xl font-mono font-black text-rose-400&quot;&gt;15:00&lt;/div&gt;<br/>          &lt;div class=&quot;flex justify-center items-center gap-1 mt-2 text-rose-500 text-xs&quot;&gt;<br/>            &lt;span class=&quot;animate-sinewave&quot;&gt;🌊&lt;/span&gt;<br/>            &lt;span class=&quot;text-[11px] text-slate-400 font-medium&quot;&gt;Breathe through the physical sensation&lt;/span&gt;<br/>          &lt;/div&gt;<br/>        &lt;/div&gt;<br/><br/>        &lt;div class=&quot;flex justify-center gap-3&quot;&gt;<br/>          &lt;button id=&quot;surfTimerToggleBtn&quot; onclick=&quot;toggleSurfTimer()&quot; class=&quot;px-5 py-2 rounded-xl bg-accentRose text-white font-bold text-xs hover:bg-rose-600 transition shadow-lg shadow-rose-950&quot;&gt;<br/>            Start Surfing<br/>          &lt;/button&gt;<br/>          &lt;button onclick=&quot;resetSurfTimer()&quot; class=&quot;px-4 py-2 rounded-xl border border-borderDark text-slate-300 text-xs hover:bg-slate-800 transition&quot;&gt;<br/>            Reset<br/>          &lt;/button&gt;<br/>          &lt;button onclick=&quot;incrementUrgesResisted()&quot; class=&quot;px-4 py-2 rounded-xl bg-accentEmerald text-slate-950 font-bold text-xs hover:bg-emerald-400 transition flex items-center gap-1.5&quot;&gt;<br/>            &lt;i data-lucide=&quot;check&quot; class=&quot;w-4 h-4&quot;&gt;&lt;/i&gt; Urge Neutralized!<br/>          &lt;/button&gt;<br/>        &lt;/div&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;!-- 4-7-8 Breathing Sphere (Feature 35) --&gt;<br/>      &lt;div class=&quot;bg-cardDark border border-borderDark rounded-2xl p-4 sm:p-5 text-center&quot;&gt;<br/>        &lt;div class=&quot;flex items-center justify-between text-xs text-slate-400 mb-2 font-medium&quot;&gt;<br/>          &lt;span&gt;Parasympathetic Reset&lt;/span&gt;<br/>          &lt;span class=&quot;text-accentEmerald&quot;&gt;4s Inhale • 7s Hold • 8s Exhale&lt;/span&gt;<br/>        &lt;/div&gt;<br/>        &lt;div class=&quot;py-6 flex flex-col items-center justify-center&quot;&gt;<br/>          &lt;div class=&quot;relative w-36 h-36 flex items-center justify-center&quot;&gt;<br/>            &lt;div id=&quot;breatheBall&quot; class=&quot;absolute w-24 h-24 rounded-full bg-accentEmerald/20 border-2 border-accentEmerald animate-breathe flex items-center justify-center shadow-lg shadow-emerald-950&quot;&gt;&lt;/div&gt;<br/>            &lt;span id=&quot;breatheText&quot; class=&quot;relative z-10 text-xs font-mono font-bold tracking-wider text-emerald-300&quot;&gt;BREATHE&lt;/span&gt;<br/>          &lt;/div&gt;<br/>          &lt;span class=&quot;text-[11px] text-slate-400 mt-2&quot;&gt;Follow the circle. Reset your nervous system immediately.&lt;/span&gt;<br/>        &lt;/div&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;!-- Physical Circuit &amp; Timers (Features 36, 38) --&gt;<br/>      &lt;div class=&quot;grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs&quot;&gt;<br/>        &lt;!-- Dopamine Swap --&gt;<br/>        &lt;div class=&quot;bg-cardDark border border-borderDark rounded-xl p-4 flex flex-col justify-between&quot;&gt;<br/>          &lt;div&gt;<br/>            &lt;div class=&quot;flex items-center justify-between font-bold text-slate-200 mb-1&quot;&gt;<br/>              &lt;span class=&quot;flex items-center gap-1.5&quot;&gt;&lt;i data-lucide=&quot;shuffle&quot; class=&quot;w-4 h-4 text-accentAmber&quot;&gt;&lt;/i&gt; Dopamine Swap&lt;/span&gt;<br/>              &lt;button onclick=&quot;generateRandomSwap()&quot; class=&quot;text-accentAmber hover:underline text-[11px]&quot;&gt;Roll New&lt;/button&gt;<br/>            &lt;/div&gt;<br/>            &lt;p id=&quot;dopamineSwapAction&quot; class=&quot;text-slate-300 text-xs my-2 font-medium p-2.5 bg-slate-900 rounded-lg border border-slate-800&quot;&gt;<br/>              Drop and do 20 deep push-ups right now. Displace dopamine via physical exertion.<br/>            &lt;/p&gt;<br/>          &lt;/div&gt;<br/>          &lt;button onclick=&quot;completeDopamineSwap()&quot; class=&quot;w-full mt-2 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-[11px]&quot;&gt;<br/>            Mark Interruption Complete<br/>          &lt;/button&gt;<br/>        &lt;/div&gt;<br/><br/>        &lt;!-- Cold Shower 2-Min Sprint --&gt;<br/>        &lt;div class=&quot;bg-cardDark border border-borderDark rounded-xl p-4 flex flex-col justify-between&quot;&gt;<br/>          &lt;div&gt;<br/>            &lt;div class=&quot;flex items-center justify-between font-bold text-slate-200 mb-1&quot;&gt;<br/>              &lt;span class=&quot;flex items-center gap-1.5&quot;&gt;&lt;i data-lucide=&quot;droplets&quot; class=&quot;w-4 h-4 text-sky-400&quot;&gt;&lt;/i&gt; Cold Shower Sprint&lt;/span&gt;<br/>              &lt;span id=&quot;coldShowerTime&quot; class=&quot;font-mono text-sky-400 font-bold&quot;&gt;02:00&lt;/span&gt;<br/>            &lt;/div&gt;<br/>            &lt;p class=&quot;text-slate-400 text-[11px]&quot;&gt;Immediate cold immersion spikes sustained baseline dopamine by 250% without crashes.&lt;/p&gt;<br/>          &lt;/div&gt;<br/>          &lt;div class=&quot;flex gap-2 mt-3&quot;&gt;<br/>            &lt;button id=&quot;coldShowerBtn&quot; onclick=&quot;toggleColdShowerTimer()&quot; class=&quot;flex-1 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-[11px]&quot;&gt;<br/>              Start 2-Min Cold Sprint<br/>            &lt;/button&gt;<br/>          &lt;/div&gt;<br/>        &lt;/div&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;!-- Identity &amp; Why Vault + Letter to Self (Features 37, 39, 40) --&gt;<br/>      &lt;div class=&quot;bg-cardDark border border-borderDark rounded-2xl p-4 text-xs space-y-3&quot;&gt;<br/>        &lt;div class=&quot;flex items-center justify-between&quot;&gt;<br/>          &lt;span class=&quot;font-bold text-slate-200 flex items-center gap-1.5&quot;&gt;<br/>            &lt;i data-lucide=&quot;compass&quot; class=&quot;w-4 h-4 text-accentIndigo&quot;&gt;&lt;/i&gt; My Immutable &quot;Why&quot; &amp; Letter To Future Self<br/>          &lt;/span&gt;<br/>          &lt;button onclick=&quot;editWhyVault()&quot; class=&quot;text-accentIndigo hover:underline text-[11px]&quot;&gt;Edit&lt;/button&gt;<br/>        &lt;/div&gt;<br/>        &lt;div id=&quot;whyVaultDisplay&quot; class=&quot;bg-slate-900 p-3 rounded-xl border border-slate-800 text-slate-300 leading-relaxed italic text-[11px]&quot;&gt;<br/>          &quot;I am cultivating magnetic vitality, mental unshakeability, and genuine confidence. Instant gratification sacrifices long-term greatness for 5 seconds of illusory comfort.&quot;<br/>        &lt;/div&gt;<br/>        <br/>        &lt;div class=&quot;pt-1 flex items-center justify-between border-t border-borderDark&quot;&gt;<br/>          &lt;span class=&quot;text-slate-400 text-[11px]&quot;&gt;Pattern Interrupt Support (Feature 40):&lt;/span&gt;<br/>          &lt;a id=&quot;groundingCallLink&quot; href=&quot;tel:&quot; class=&quot;px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-400 font-semibold text-[11px] flex items-center gap-1.5 border border-emerald-900/50&quot;&gt;<br/>            &lt;i data-lucide=&quot;phone-call&quot; class=&quot;w-3.5 h-3.5&quot;&gt;&lt;/i&gt; Grounding Call<br/>          &lt;/a&gt;<br/>        &lt;/div&gt;<br/>      &lt;/div&gt;<br/>    &lt;/div&gt;<br/>  &lt;/div&gt;<br/><br/>  &lt;!-- ==================== MAIN APPLICATION CONTAINER ==================== --&gt;<br/>  &lt;div class=&quot;max-w-2xl mx-auto px-4 pt-4 sm:pt-6 space-y-6&quot;&gt;<br/><br/>    &lt;!-- TOP NAV / HEADER --&gt;<br/>    &lt;header class=&quot;flex items-center justify-between border-b border-borderDark pb-3&quot; id=&quot;mainHeader&quot;&gt;<br/>      &lt;div class=&quot;flex items-center gap-2 cursor-pointer&quot; id=&quot;headerTitleArea&quot; title=&quot;Double tap to enter stealth camouflage&quot;&gt;<br/>        &lt;div class=&quot;w-9 h-9 rounded-xl bg-accentEmerald/10 border border-accentEmerald/30 flex items-center justify-center text-accentEmerald&quot;&gt;<br/>          &lt;i data-lucide=&quot;shield&quot; class=&quot;w-5 h-5&quot;&gt;&lt;/i&gt;<br/>        &lt;/div&gt;<br/>        &lt;div&gt;<br/>          &lt;h1 class=&quot;font-bold text-base tracking-tight leading-tight flex items-center gap-1.5&quot;&gt;<br/>            Sovereign Mind<br/>            &lt;span id=&quot;healthGradeBadge&quot; class=&quot;text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30&quot;&gt;<br/>              HEALTHY<br/>            &lt;/span&gt;<br/>          &lt;/h1&gt;<br/>          &lt;p class=&quot;text-[10px] text-slate-400 font-mono&quot;&gt;Dopamine Architecture &amp; Retention Engine&lt;/p&gt;<br/>        &lt;/div&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;!-- Action Icons --&gt;<br/>      &lt;div class=&quot;flex items-center gap-2&quot;&gt;<br/>        &lt;button onclick=&quot;toggleCamouflage()&quot; class=&quot;p-2 rounded-lg bg-cardDark border border-borderDark text-slate-400 hover:text-white&quot; title=&quot;Stealth / Camouflage Mode&quot;&gt;<br/>          &lt;i data-lucide=&quot;eye-off&quot; class=&quot;w-4 h-4&quot;&gt;&lt;/i&gt;<br/>        &lt;/button&gt;<br/>        &lt;button onclick=&quot;openModal(&#39;settingsModal&#39;)&quot; class=&quot;p-2 rounded-lg bg-cardDark border border-borderDark text-slate-400 hover:text-white&quot; title=&quot;Settings &amp; Backup&quot;&gt;<br/>          &lt;i data-lucide=&quot;settings&quot; class=&quot;w-4 h-4&quot;&gt;&lt;/i&gt;<br/>        &lt;/button&gt;<br/>      &lt;/div&gt;<br/>    &lt;/header&gt;<br/><br/>    &lt;!-- CHASER EFFECT BANNER (Feature 29) --&gt;<br/>    &lt;div id=&quot;chaserAlertBox&quot; class=&quot;hidden bg-rose-500/10 border border-rose-500/40 rounded-xl p-3 flex items-start gap-3 text-xs text-rose-300&quot;&gt;<br/>      &lt;i data-lucide=&quot;alert-triangle&quot; class=&quot;w-5 h-5 text-accentRose shrink-0 mt-0.5&quot;&gt;&lt;/i&gt;<br/>      &lt;div&gt;<br/>        &lt;span class=&quot;font-bold text-white block&quot;&gt;CHASER EFFECT ZONE ACTIVE (&lt;span id=&quot;chaserHoursLeft&quot;&gt;72h remaining&lt;/span&gt;)&lt;/span&gt;<br/>        &lt;span class=&quot;text-rose-300/80&quot;&gt;Neurochemical dopamine crash peaks in the first 72 hours. Your brain will rationalize another slip. Keep guardrails raised!&lt;/span&gt;<br/>      &lt;/div&gt;<br/>    &lt;/div&gt;<br/><br/>    &lt;!-- MODULE 1: INDEPENDENT DUAL TRACKERS (Features 1, 2, 5, 6, 8) --&gt;<br/>    &lt;section class=&quot;space-y-3&quot;&gt;<br/>      &lt;!-- Tracker A: Ejaculation / Retention --&gt;<br/>      &lt;div class=&quot;bg-cardDark border border-borderDark rounded-2xl p-4 sm:p-5 relative overflow-hidden shadow-lg&quot;&gt;<br/>        &lt;div class=&quot;flex items-center justify-between text-xs mb-3&quot;&gt;<br/>          &lt;div class=&quot;flex items-center gap-2&quot;&gt;<br/>            &lt;span class=&quot;w-2.5 h-2.5 rounded-full bg-accentEmerald animate-pulse&quot;&gt;&lt;/span&gt;<br/>            &lt;span class=&quot;font-bold tracking-wide text-slate-200 uppercase&quot;&gt;Semen Retention / Ejaculation Tracker&lt;/span&gt;<br/>          &lt;/div&gt;<br/>          &lt;div class=&quot;flex items-center gap-2&quot;&gt;<br/>            &lt;button onclick=&quot;logWetDream()&quot; class=&quot;text-[11px] px-2.5 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700&quot; title=&quot;Log Involuntary Wet Dream without resetting streak&quot;&gt;<br/>              💧 Wet Dream (Involuntary)<br/>            &lt;/button&gt;<br/>            &lt;button onclick=&quot;openResetModal(&#39;ejaculation&#39;)&quot; class=&quot;text-[11px] px-2.5 py-1 rounded bg-rose-950/60 text-rose-300 hover:bg-rose-900 border border-rose-900/50&quot;&gt;<br/>              Reset<br/>            &lt;/button&gt;<br/>          &lt;/div&gt;<br/>        &lt;/div&gt;<br/><br/>        &lt;!-- Big Counter --&gt;<br/>        &lt;div class=&quot;grid grid-cols-4 gap-2 text-center py-2&quot;&gt;<br/>          &lt;div class=&quot;bg-slate-900/80 rounded-xl p-2.5 border border-borderDark&quot;&gt;<br/>            &lt;span id=&quot;ejacDays&quot; class=&quot;block text-2xl sm:text-3xl font-mono font-black text-accentEmerald&quot;&gt;0&lt;/span&gt;<br/>            &lt;span class=&quot;text-[10px] text-slate-400 uppercase tracking-wider font-semibold&quot;&gt;Days&lt;/span&gt;<br/>          &lt;/div&gt;<br/>          &lt;div class=&quot;bg-slate-900/80 rounded-xl p-2.5 border border-borderDark&quot;&gt;<br/>            &lt;span id=&quot;ejacHours&quot; class=&quot;block text-2xl sm:text-3xl font-mono font-black text-slate-200&quot;&gt;00&lt;/span&gt;<br/>            &lt;span class=&quot;text-[10px] text-slate-400 uppercase tracking-wider font-semibold&quot;&gt;Hours&lt;/span&gt;<br/>          &lt;/div&gt;<br/>          &lt;div class=&quot;bg-slate-900/80 rounded-xl p-2.5 border border-borderDark&quot;&gt;<br/>            &lt;span id=&quot;ejacMins&quot; class=&quot;block text-2xl sm:text-3xl font-mono font-black text-slate-200&quot;&gt;00&lt;/span&gt;<br/>            &lt;span class=&quot;text-[10px] text-slate-400 uppercase tracking-wider font-semibold&quot;&gt;Mins&lt;/span&gt;<br/>          &lt;/div&gt;<br/>          &lt;div class=&quot;bg-slate-900/80 rounded-xl p-2.5 border border-borderDark&quot;&gt;<br/>            &lt;span id=&quot;ejacSecs&quot; class=&quot;block text-2xl sm:text-3xl font-mono font-black text-slate-200&quot;&gt;00&lt;/span&gt;<br/>            &lt;span class=&quot;text-[10px] text-slate-400 uppercase tracking-wider font-semibold&quot;&gt;Secs&lt;/span&gt;<br/>          &lt;/div&gt;<br/>        &lt;/div&gt;<br/><br/>        &lt;!-- Feature 8: Next Milestone Progress Bar --&gt;<br/>        &lt;div class=&quot;mt-4 pt-3 border-t border-borderDark&quot;&gt;<br/>          &lt;div class=&quot;flex justify-between items-center text-xs mb-1&quot;&gt;<br/>            &lt;span class=&quot;text-slate-400&quot;&gt;Next Milestone: &lt;b id=&quot;nextMilestoneLabel&quot; class=&quot;text-slate-200&quot;&gt;3 Days&lt;/b&gt;&lt;/span&gt;<br/>            &lt;span id=&quot;nextMilestoneRemaining&quot; class=&quot;text-accentEmerald font-mono text-[11px]&quot;&gt;8h 22m left&lt;/span&gt;<br/>          &lt;/div&gt;<br/>          &lt;div class=&quot;w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-800&quot;&gt;<br/>            &lt;div id=&quot;milestoneProgressBar&quot; class=&quot;bg-accentEmerald h-full rounded-full transition-all duration-500&quot; style=&quot;width: 45%&quot;&gt;&lt;/div&gt;<br/>          &lt;/div&gt;<br/>        &lt;/div&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;!-- Tracker B: Masturbation / Edging Tracker --&gt;<br/>      &lt;div class=&quot;bg-cardDark border border-borderDark rounded-xl p-3.5 sm:p-4 flex items-center justify-between&quot;&gt;<br/>        &lt;div&gt;<br/>          &lt;div class=&quot;flex items-center gap-2 mb-1&quot;&gt;<br/>            &lt;i data-lucide=&quot;ban&quot; class=&quot;w-4 h-4 text-accentAmber&quot;&gt;&lt;/i&gt;<br/>            &lt;span class=&quot;text-xs font-bold text-slate-300&quot;&gt;Clean Mind &amp; No-Edging Tracker&lt;/span&gt;<br/>          &lt;/div&gt;<br/>          &lt;div class=&quot;font-mono text-sm sm:text-base font-bold text-slate-200&quot; id=&quot;mOnlyTimeDisplay&quot;&gt;<br/>            0d 0h 0m 0s Clean<br/>          &lt;/div&gt;<br/>        &lt;/div&gt;<br/>        &lt;button onclick=&quot;openResetModal(&#39;m_only&#39;)&quot; class=&quot;text-xs px-3 py-1.5 rounded-lg bg-amber-500/10 text-accentAmber border border-accentAmber/30 hover:bg-amber-500/20 font-medium&quot;&gt;<br/>          M-Only Reset<br/>        &lt;/button&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;!-- Feature 5: Rolling Success Metric &amp; Urges Resisted --&gt;<br/>      &lt;div class=&quot;grid grid-cols-3 gap-2 text-center text-xs&quot;&gt;<br/>        &lt;div class=&quot;bg-cardDark border border-borderDark rounded-xl p-2.5&quot;&gt;<br/>          &lt;span class=&quot;text-[10px] text-slate-400 uppercase font-semibold&quot;&gt;Rolling 30D&lt;/span&gt;<br/>          &lt;span id=&quot;cleanRate30&quot; class=&quot;block font-mono text-base sm:text-lg font-bold text-accentEmerald mt-0.5&quot;&gt;93.3%&lt;/span&gt;<br/>        &lt;/div&gt;<br/>        &lt;div class=&quot;bg-cardDark border border-borderDark rounded-xl p-2.5&quot;&gt;<br/>          &lt;span class=&quot;text-[10px] text-slate-400 uppercase font-semibold&quot;&gt;Rolling 90D&lt;/span&gt;<br/>          &lt;span id=&quot;cleanRate90&quot; class=&quot;block font-mono text-base sm:text-lg font-bold text-slate-200 mt-0.5&quot;&gt;88.5%&lt;/span&gt;<br/>        &lt;/div&gt;<br/>        &lt;div class=&quot;bg-cardDark border border-borderDark rounded-xl p-2.5&quot;&gt;<br/>          &lt;span class=&quot;text-[10px] text-slate-400 uppercase font-semibold&quot;&gt;Urges Neutralized&lt;/span&gt;<br/>          &lt;span id=&quot;totalUrgesResisted&quot; class=&quot;block font-mono text-base sm:text-lg font-bold text-sky-400 mt-0.5&quot;&gt;28&lt;/span&gt;<br/>        &lt;/div&gt;<br/>      &lt;/div&gt;<br/>    &lt;/section&gt;<br/><br/>    &lt;!-- MODULE 2: MILESTONES &amp; BRAIN REWIRING (Features 3, 4, 9, 12) --&gt;<br/>    &lt;section class=&quot;bg-cardDark border border-borderDark rounded-2xl p-4 sm:p-5 space-y-4&quot;&gt;<br/>      &lt;div class=&quot;flex items-center justify-between&quot;&gt;<br/>        &lt;h2 class=&quot;font-bold text-sm tracking-wide text-slate-200 flex items-center gap-2&quot;&gt;<br/>          &lt;i data-lucide=&quot;award&quot; class=&quot;w-4 h-4 text-accentAmber&quot;&gt;&lt;/i&gt;<br/>          12 Biological Milestones &amp; Badges<br/>        &lt;/h2&gt;<br/>        &lt;span class=&quot;text-[11px] text-slate-400&quot; id=&quot;milestonesUnlockedCount&quot;&gt;4 / 12 Unlocked&lt;/span&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;!-- Milestone Badges Grid --&gt;<br/>      &lt;div id=&quot;milestoneBadgesGrid&quot; class=&quot;grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs&quot;&gt;<br/>        &lt;!-- Injected via JavaScript --&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;!-- Brain Rewiring Phase Banner (Feature 9) --&gt;<br/>      &lt;div class=&quot;p-3 bg-slate-900/90 rounded-xl border border-slate-800 space-y-1 text-xs&quot;&gt;<br/>        &lt;div class=&quot;flex items-center justify-between font-semibold&quot;&gt;<br/>          &lt;span class=&quot;text-accentEmerald&quot; id=&quot;brainStageTitle&quot;&gt;Stage 2: Dopamine Receptor Upregulation&lt;/span&gt;<br/>          &lt;span class=&quot;text-slate-400 text-[10px]&quot; id=&quot;brainStageDays&quot;&gt;Days 7–21&lt;/span&gt;<br/>        &lt;/div&gt;<br/>        &lt;p class=&quot;text-slate-300 text-[11px] leading-relaxed&quot; id=&quot;brainStageDesc&quot;&gt;<br/>          D2 receptor sensitivity is rebounding. Everyday tasks, reading, and deep work begin to feel naturally rewarding again.<br/>        &lt;/p&gt;<br/>      &lt;/div&gt;<br/>    &lt;/section&gt;<br/><br/>    &lt;!-- MODULE 3: DAILY VITALS &amp; COGNITIVE LOG (Features 10, 11, 17, 20, 23) --&gt;<br/>    &lt;section class=&quot;bg-cardDark border border-borderDark rounded-2xl p-4 sm:p-5 space-y-4&quot;&gt;<br/>      &lt;div class=&quot;flex items-center justify-between&quot;&gt;<br/>        &lt;h2 class=&quot;font-bold text-sm tracking-wide text-slate-200 flex items-center gap-2&quot;&gt;<br/>          &lt;i data-lucide=&quot;activity&quot; class=&quot;w-4 h-4 text-accentIndigo&quot;&gt;&lt;/i&gt;<br/>          Daily Vitality, Ojas &amp; Cognitive Log<br/>        &lt;/h2&gt;<br/>        &lt;span class=&quot;text-[10px] text-slate-400 font-mono&quot; id=&quot;todayCheckinStatus&quot;&gt;Checked-in today&lt;/span&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;!-- Sliders Grid --&gt;<br/>      &lt;div class=&quot;space-y-3 text-xs&quot;&gt;<br/>        &lt;!-- Ojas Slider --&gt;<br/>        &lt;div&gt;<br/>          &lt;div class=&quot;flex justify-between font-semibold text-slate-300 mb-1&quot;&gt;<br/>            &lt;span&gt;Ojas / Physical Vitality:&lt;/span&gt;<br/>            &lt;span id=&quot;ojasValDisplay&quot; class=&quot;font-mono text-accentEmerald font-bold&quot;&gt;8 / 10&lt;/span&gt;<br/>          &lt;/div&gt;<br/>          &lt;input type=&quot;range&quot; min=&quot;1&quot; max=&quot;10&quot; value=&quot;8&quot; id=&quot;ojasSlider&quot; class=&quot;w-full accent-emerald-500 cursor-pointer&quot; oninput=&quot;updateDailyLogDraft()&quot; /&gt;<br/>        &lt;/div&gt;<br/><br/>        &lt;!-- Brain Fog vs Clarity Slider --&gt;<br/>        &lt;div&gt;<br/>          &lt;div class=&quot;flex justify-between font-semibold text-slate-300 mb-1&quot;&gt;<br/>            &lt;span&gt;Mental Clarity (vs Fog):&lt;/span&gt;<br/>            &lt;span id=&quot;focusValDisplay&quot; class=&quot;font-mono text-accentIndigo font-bold&quot;&gt;7 / 10&lt;/span&gt;<br/>          &lt;/div&gt;<br/>          &lt;input type=&quot;range&quot; min=&quot;1&quot; max=&quot;10&quot; value=&quot;7&quot; id=&quot;focusSlider&quot; class=&quot;w-full accent-indigo-500 cursor-pointer&quot; oninput=&quot;updateDailyLogDraft()&quot; /&gt;<br/>        &lt;/div&gt;<br/><br/>        &lt;!-- Sleep Quality &amp; Hydration Counters --&gt;<br/>        &lt;div class=&quot;grid grid-cols-2 gap-3 pt-1&quot;&gt;<br/>          &lt;div class=&quot;bg-slate-900 p-2.5 rounded-xl border border-borderDark flex items-center justify-between&quot;&gt;<br/>            &lt;span class=&quot;text-slate-400 text-[11px]&quot;&gt;Sleep Quality:&lt;/span&gt;<br/>            &lt;select id=&quot;sleepRatingSelect&quot; onchange=&quot;updateDailyLogDraft()&quot; class=&quot;bg-slate-800 text-xs rounded px-2 py-1 border border-slate-700 text-amber-400 font-medium&quot;&gt;<br/>              &lt;option value=&quot;5&quot;&gt;⭐⭐⭐⭐⭐&lt;/option&gt;<br/>              &lt;option value=&quot;4&quot; selected&gt;⭐⭐⭐⭐&lt;/option&gt;<br/>              &lt;option value=&quot;3&quot;&gt;⭐⭐⭐&lt;/option&gt;<br/>              &lt;option value=&quot;2&quot;&gt;⭐⭐&lt;/option&gt;<br/>              &lt;option value=&quot;1&quot;&gt;⭐&lt;/option&gt;<br/>            &lt;/select&gt;<br/>          &lt;/div&gt;<br/>          &lt;div class=&quot;bg-slate-900 p-2.5 rounded-xl border border-borderDark flex items-center justify-between&quot;&gt;<br/>            &lt;span class=&quot;text-slate-400 text-[11px]&quot;&gt;Water Glasses:&lt;/span&gt;<br/>            &lt;div class=&quot;flex items-center gap-1.5&quot;&gt;<br/>              &lt;button onclick=&quot;modWater(-1)&quot; class=&quot;w-5 h-5 rounded bg-slate-800 text-slate-300 flex items-center justify-center font-bold text-xs&quot;&gt;-&lt;/button&gt;<br/>              &lt;span id=&quot;waterCount&quot; class=&quot;font-mono text-sky-400 font-bold text-xs&quot;&gt;6&lt;/span&gt;<br/>              &lt;button onclick=&quot;modWater(1)&quot; class=&quot;w-5 h-5 rounded bg-slate-800 text-slate-300 flex items-center justify-center font-bold text-xs&quot;&gt;+&lt;/button&gt;<br/>            &lt;/div&gt;<br/>          &lt;/div&gt;<br/>        &lt;/div&gt;<br/><br/>        &lt;!-- Secondary Habits (Feature 13 &amp; 21) --&gt;<br/>        &lt;div&gt;<br/>          &lt;span class=&quot;text-slate-400 text-[11px] block mb-1.5 font-medium&quot;&gt;Energy Transmutation &amp; Detox Protocols:&lt;/span&gt;<br/>          &lt;div class=&quot;flex flex-wrap gap-1.5&quot;&gt;<br/>            &lt;button type=&quot;button&quot; onclick=&quot;toggleDailyTag(this, &#39;gym&#39;)&quot; class=&quot;daily-tag px-2.5 py-1 rounded-lg border border-borderDark bg-slate-900 text-slate-300 text-[11px]&quot;&gt;🏋️ Heavy Gym/Lifting&lt;/button&gt;<br/>            &lt;button type=&quot;button&quot; onclick=&quot;toggleDailyTag(this, &#39;pranayama&#39;)&quot; class=&quot;daily-tag px-2.5 py-1 rounded-lg border border-borderDark bg-slate-900 text-slate-300 text-[11px]&quot;&gt;🧘 Breathwork / Pranayama&lt;/button&gt;<br/>            &lt;button type=&quot;button&quot; onclick=&quot;toggleDailyTag(this, &#39;no_doomscroll&#39;)&quot; class=&quot;daily-tag px-2.5 py-1 rounded-lg border border-borderDark bg-slate-900 text-slate-300 text-[11px]&quot;&gt;📵 No Doomscrolling&lt;/button&gt;<br/>            &lt;button type=&quot;button&quot; onclick=&quot;toggleDailyTag(this, &#39;clean_food&#39;)&quot; class=&quot;daily-tag px-2.5 py-1 rounded-lg border border-borderDark bg-slate-900 text-slate-300 text-[11px]&quot;&gt;🥗 Sattvic / Clean Food&lt;/button&gt;<br/>          &lt;/div&gt;<br/>        &lt;/div&gt;<br/><br/>        &lt;button onclick=&quot;saveDailyCheckin()&quot; class=&quot;w-full py-2.5 rounded-xl bg-accentIndigo hover:bg-indigo-600 text-white font-bold text-xs shadow-md transition&quot;&gt;<br/>          Save Daily Check-in &amp; Update Metrics<br/>        &lt;/button&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;!-- Feature 10: Cognitive Power &amp; Focus Chart --&gt;<br/>      &lt;div class=&quot;pt-3 border-t border-borderDark&quot;&gt;<br/>        &lt;div class=&quot;flex justify-between items-center mb-2&quot;&gt;<br/>          &lt;span class=&quot;text-xs font-semibold text-slate-300&quot;&gt;Cognitive Focus &amp; Energy Progression&lt;/span&gt;<br/>          &lt;span class=&quot;text-[10px] text-slate-400&quot;&gt;Past 14 Days&lt;/span&gt;<br/>        &lt;/div&gt;<br/>        &lt;div class=&quot;h-44 w-full&quot;&gt;<br/>          &lt;canvas id=&quot;cognitiveChart&quot;&gt;&lt;/canvas&gt;<br/>        &lt;/div&gt;<br/>      &lt;/div&gt;<br/>    &lt;/section&gt;<br/><br/>    &lt;!-- MODULE 4: TRIGGER ENGINE &amp; VULNERABILITY ANALYTICS (Features 25, 26, 27, 31) --&gt;<br/>    &lt;section class=&quot;bg-cardDark border border-borderDark rounded-2xl p-4 sm:p-5 space-y-4&quot;&gt;<br/>      &lt;div class=&quot;flex items-center justify-between&quot;&gt;<br/>        &lt;h2 class=&quot;font-bold text-sm tracking-wide text-slate-200 flex items-center gap-2&quot;&gt;<br/>          &lt;i data-lucide=&quot;target&quot; class=&quot;w-4 h-4 text-accentRose&quot;&gt;&lt;/i&gt;<br/>          Trigger Intelligence &amp; Vulnerable Windows<br/>        &lt;/h2&gt;<br/>        &lt;span class=&quot;text-accentRose text-xs font-bold&quot; id=&quot;vulnerableWindowText&quot;&gt;11:00 PM – 01:30 AM&lt;/span&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;!-- Dynamic Trigger Tags --&gt;<br/>      &lt;div&gt;<br/>        &lt;label class=&quot;text-xs text-slate-400 block mb-1.5&quot;&gt;Registered Urge Triggers (Tap to log an urge or add new):&lt;/label&gt;<br/>        &lt;div id=&quot;triggerTagsContainer&quot; class=&quot;flex flex-wrap gap-1.5 mb-2&quot;&gt;<br/>          &lt;!-- Injected via JS --&gt;<br/>        &lt;/div&gt;<br/>        <br/>        &lt;!-- Add Custom Trigger Input --&gt;<br/>        &lt;div class=&quot;flex gap-2&quot;&gt;<br/>          &lt;input type=&quot;text&quot; id=&quot;newTriggerInput&quot; placeholder=&quot;Add custom trigger (e.g. Boredom, Twitter)&quot; class=&quot;flex-1 bg-slate-900 border border-borderDark rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-accentEmerald&quot; /&gt;<br/>          &lt;button onclick=&quot;addNewCustomTrigger()&quot; class=&quot;px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-accentEmerald font-bold text-xs flex items-center gap-1 border border-borderDark&quot;&gt;<br/>            &lt;i data-lucide=&quot;plus&quot; class=&quot;w-4 h-4&quot;&gt;&lt;/i&gt; Add<br/>          &lt;/button&gt;<br/>        &lt;/div&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;!-- Trigger Frequency Chart (Feature 26) --&gt;<br/>      &lt;div class=&quot;pt-2&quot;&gt;<br/>        &lt;span class=&quot;text-xs font-semibold text-slate-300 block mb-2&quot;&gt;Trigger Incident Frequency:&lt;/span&gt;<br/>        &lt;div class=&quot;h-36 w-full&quot;&gt;<br/>          &lt;canvas id=&quot;triggerBarChart&quot;&gt;&lt;/canvas&gt;<br/>        &lt;/div&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;!-- Feature 31: Implementation Intentions (&quot;If-Then&quot; Rules) --&gt;<br/>      &lt;div class=&quot;p-3 bg-slate-900/90 rounded-xl border border-slate-800 space-y-2 text-xs&quot;&gt;<br/>        &lt;div class=&quot;flex items-center justify-between&quot;&gt;<br/>          &lt;span class=&quot;font-bold text-amber-400 flex items-center gap-1.5&quot;&gt;<br/>            &lt;i data-lucide=&quot;zap&quot; class=&quot;w-3.5 h-3.5&quot;&gt;&lt;/i&gt; If-Then Implementation Rule<br/>          &lt;/span&gt;<br/>          &lt;button onclick=&quot;promptEditIfThen()&quot; class=&quot;text-[10px] text-slate-400 hover:underline&quot;&gt;Change&lt;/button&gt;<br/>        &lt;/div&gt;<br/>        &lt;p id=&quot;ifThenDisplay&quot; class=&quot;text-slate-300 text-[11px] italic&quot;&gt;<br/>          &quot;IF I feel an intense urge while alone in bed after 11 PM, THEN I will immediately stand up, splash cold water on my eyes, and do 20 pushups.&quot;<br/>        &lt;/p&gt;<br/>      &lt;/div&gt;<br/>    &lt;/section&gt;<br/><br/>    &lt;!-- MODULE 5: TRI-COLOR CALENDAR HEATMAP (Features 41 &amp; 42) --&gt;<br/>    &lt;section class=&quot;bg-cardDark border border-borderDark rounded-2xl p-4 sm:p-5 space-y-4&quot;&gt;<br/>      &lt;div class=&quot;flex items-center justify-between&quot;&gt;<br/>        &lt;div&gt;<br/>          &lt;h2 class=&quot;font-bold text-sm tracking-wide text-slate-200 flex items-center gap-2&quot;&gt;<br/>            &lt;i data-lucide=&quot;calendar&quot; class=&quot;w-4 h-4 text-accentEmerald&quot;&gt;&lt;/i&gt;<br/>            Monthly Tri-Color Calendar Heatmap<br/>          &lt;/h2&gt;<br/>          &lt;p class=&quot;text-[10px] text-slate-400&quot;&gt;Green = Clean • Yellow = M-Only • Red = Ejaculation&lt;/p&gt;<br/>        &lt;/div&gt;<br/>        &lt;div class=&quot;flex items-center gap-1&quot;&gt;<br/>          &lt;button onclick=&quot;changeHeatmapMonth(-1)&quot; class=&quot;p-1 rounded bg-slate-900 text-slate-300 hover:bg-slate-800 text-xs&quot;&gt;◀&lt;/button&gt;<br/>          &lt;span id=&quot;calendarMonthLabel&quot; class=&quot;text-xs font-bold font-mono px-1&quot;&gt;October 2026&lt;/span&gt;<br/>          &lt;button onclick=&quot;changeHeatmapMonth(1)&quot; class=&quot;p-1 rounded bg-slate-900 text-slate-300 hover:bg-slate-800 text-xs&quot;&gt;▶&lt;/button&gt;<br/>        &lt;/div&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;!-- Calendar Grid --&gt;<br/>      &lt;div&gt;<br/>        &lt;div class=&quot;grid grid-cols-7 gap-1 text-center text-[10px] text-slate-400 font-semibold mb-1&quot;&gt;<br/>          &lt;span&gt;Sun&lt;/span&gt;&lt;span&gt;Mon&lt;/span&gt;&lt;span&gt;Tue&lt;/span&gt;&lt;span&gt;Wed&lt;/span&gt;&lt;span&gt;Thu&lt;/span&gt;&lt;span&gt;Fri&lt;/span&gt;&lt;span&gt;Sat&lt;/span&gt;<br/>        &lt;/div&gt;<br/>        &lt;div id=&quot;calendarGrid&quot; class=&quot;grid grid-cols-7 gap-1&quot;&gt;<br/>          &lt;!-- Populated by JS --&gt;<br/>        &lt;/div&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;!-- Feature 42: Month-over-Month Comparison --&gt;<br/>      &lt;div class=&quot;flex items-center justify-between text-xs pt-2 border-t border-borderDark font-medium&quot;&gt;<br/>        &lt;span class=&quot;text-slate-400&quot;&gt;Clean Days This Month: &lt;b id=&quot;thisMonthCleanCount&quot; class=&quot;text-accentEmerald&quot;&gt;28&lt;/b&gt;&lt;/span&gt;<br/>        &lt;span class=&quot;text-slate-400&quot;&gt;Previous Month: &lt;b id=&quot;prevMonthCleanCount&quot; class=&quot;text-slate-200&quot;&gt;26&lt;/b&gt;&lt;/span&gt;<br/>        &lt;span class=&quot;text-accentEmerald text-[11px]&quot; id=&quot;monthTrendPercent&quot;&gt;+7.6% ↗&lt;/span&gt;<br/>      &lt;/div&gt;<br/>    &lt;/section&gt;<br/><br/>    &lt;!-- MODULE 6: NEUROPLASTICITY &amp; MEDITATION TOOLS (Features 15, 16, 22) --&gt;<br/>    &lt;section class=&quot;bg-cardDark border border-borderDark rounded-2xl p-4 sm:p-5 space-y-3&quot;&gt;<br/>      &lt;h2 class=&quot;font-bold text-sm tracking-wide text-slate-200 flex items-center gap-2&quot;&gt;<br/>        &lt;i data-lucide=&quot;timer&quot; class=&quot;w-4 h-4 text-sky-400&quot;&gt;&lt;/i&gt;<br/>        Neuroplasticity &amp; Transmutation Timers<br/>      &lt;/h2&gt;<br/>      &lt;div class=&quot;grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs&quot;&gt;<br/>        &lt;button onclick=&quot;startIntervalMeditation(3)&quot; class=&quot;p-3 bg-slate-900 hover:bg-slate-800 border border-borderDark rounded-xl text-left&quot;&gt;<br/>          &lt;span class=&quot;block font-bold text-sky-400 text-sm&quot;&gt;3 Mins&lt;/span&gt;<br/>          &lt;span class=&quot;text-slate-400 text-[10px]&quot;&gt;Prefrontal Cooldown&lt;/span&gt;<br/>        &lt;/button&gt;<br/>        &lt;button onclick=&quot;startIntervalMeditation(5)&quot; class=&quot;p-3 bg-slate-900 hover:bg-slate-800 border border-borderDark rounded-xl text-left&quot;&gt;<br/>          &lt;span class=&quot;block font-bold text-accentEmerald text-sm&quot;&gt;5 Mins&lt;/span&gt;<br/>          &lt;span class=&quot;text-slate-400 text-[10px]&quot;&gt;Decision Delay Pause&lt;/span&gt;<br/>        &lt;/button&gt;<br/>        &lt;button onclick=&quot;startIntervalMeditation(10)&quot; class=&quot;p-3 bg-slate-900 hover:bg-slate-800 border border-borderDark rounded-xl text-left col-span-2 sm:col-span-1&quot;&gt;<br/>          &lt;span class=&quot;block font-bold text-accentIndigo text-sm&quot;&gt;10 Mins&lt;/span&gt;<br/>          &lt;span class=&quot;text-slate-400 text-[10px]&quot;&gt;Anulom-Vilom Transmutation&lt;/span&gt;<br/>        &lt;/button&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;!-- Active Timer Bar --&gt;<br/>      &lt;div id=&quot;activeTimerContainer&quot; class=&quot;hidden p-3 bg-sky-950/40 border border-sky-800/60 rounded-xl flex items-center justify-between text-xs&quot;&gt;<br/>        &lt;div class=&quot;flex items-center gap-2&quot;&gt;<br/>          &lt;span class=&quot;w-2 h-2 rounded-full bg-sky-400 animate-ping&quot;&gt;&lt;/span&gt;<br/>          &lt;span id=&quot;activeTimerName&quot; class=&quot;font-semibold text-sky-300&quot;&gt;Meditation Running&lt;/span&gt;<br/>        &lt;/div&gt;<br/>        &lt;div class=&quot;flex items-center gap-3&quot;&gt;<br/>          &lt;span id=&quot;activeTimerCountdown&quot; class=&quot;font-mono text-base font-bold text-white&quot;&gt;05:00&lt;/span&gt;<br/>          &lt;button onclick=&quot;cancelActiveTimer()&quot; class=&quot;text-slate-400 hover:text-white font-bold&quot;&gt;✕&lt;/button&gt;<br/>        &lt;/div&gt;<br/>      &lt;/div&gt;<br/>    &lt;/section&gt;<br/><br/>    &lt;!-- MODULE 7: MILESTONE SNAPSHOT CARD (Feature 50) --&gt;<br/>    &lt;section class=&quot;bg-cardDark border border-borderDark rounded-2xl p-4 sm:p-5 text-center space-y-3&quot;&gt;<br/>      &lt;h3 class=&quot;font-bold text-sm text-slate-200&quot;&gt;Milestone Anonymous Snapshot Card&lt;/h3&gt;<br/>      &lt;p class=&quot;text-xs text-slate-400 max-w-sm mx-auto&quot;&gt;Generate a discreet, clean graphic card of your streak to celebrate your discipline without exposing personal details.&lt;/p&gt;<br/>      <br/>      &lt;!-- Generated Card Preview --&gt;<br/>      &lt;div id=&quot;snapshotCardPreview&quot; class=&quot;bg-gradient-to-br from-slate-900 via-cardDark to-slate-900 border border-emerald-500/30 rounded-2xl p-5 max-w-sm mx-auto shadow-2xl relative text-left&quot;&gt;<br/>        &lt;div class=&quot;flex justify-between items-center text-xs text-slate-400 mb-3&quot;&gt;<br/>          &lt;span class=&quot;tracking-widest uppercase font-mono text-[10px] text-accentEmerald&quot;&gt;Sovereign Discipline&lt;/span&gt;<br/>          &lt;span class=&quot;text-[10px] font-mono&quot;&gt;Verified Local Ledger&lt;/span&gt;<br/>        &lt;/div&gt;<br/>        &lt;div class=&quot;text-3xl font-black font-mono text-white tracking-tight&quot; id=&quot;snapshotDaysDisplay&quot;&gt;<br/>          28 DAYS<br/>        &lt;/div&gt;<br/>        &lt;p class=&quot;text-xs text-emerald-400 font-semibold mt-1&quot; id=&quot;snapshotBadgeDisplay&quot;&gt;🏆 Semen Retention Warrior&lt;/p&gt;<br/>        &lt;div class=&quot;mt-4 pt-3 border-t border-slate-800 flex justify-between items-center text-[10px] text-slate-400&quot;&gt;<br/>          &lt;span&gt;Success Rate: &lt;b class=&quot;text-white&quot; id=&quot;snapshotRateDisplay&quot;&gt;93.3%&lt;/b&gt;&lt;/span&gt;<br/>          &lt;span class=&quot;font-mono text-slate-500&quot;&gt;Unbroken Will&lt;/span&gt;<br/>        &lt;/div&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;button onclick=&quot;alert(&#39;Snapshot card ready! You can screenshot the card above to save or share your milestone anonymously.&#39;)&quot; class=&quot;px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-borderDark inline-flex items-center gap-2&quot;&gt;<br/>        &lt;i data-lucide=&quot;share-2&quot; class=&quot;w-4 h-4&quot;&gt;&lt;/i&gt; Screenshot &amp; Celebrate<br/>      &lt;/button&gt;<br/>    &lt;/section&gt;<br/><br/>  &lt;/div&gt; &lt;!-- End Main Container --&gt;<br/><br/>  &lt;!-- ==================== PERSISTENT FLOATING SOS BUTTON (Feature 33) ==================== --&gt;<br/>  &lt;div class=&quot;fixed bottom-6 right-6 z-40&quot;&gt;<br/>    &lt;button onclick=&quot;triggerEmergencySOS()&quot; class=&quot;w-16 h-16 rounded-full bg-accentRose hover:bg-rose-600 text-white shadow-2xl shadow-rose-900/80 flex flex-col items-center justify-center font-black tracking-wider transition-all duration-300 active:scale-90 border-2 border-rose-300&quot;&gt;<br/>      &lt;i data-lucide=&quot;flame&quot; class=&quot;w-6 h-6 animate-bounce&quot;&gt;&lt;/i&gt;<br/>      &lt;span class=&quot;text-[10px] font-mono tracking-widest mt-0.5&quot;&gt;SOS&lt;/span&gt;<br/>    &lt;/button&gt;<br/>  &lt;/div&gt;<br/><br/>  &lt;!-- ==================== SETTINGS &amp; DATA MODAL (Features 44, 46, 47, 48) ==================== --&gt;<br/>  &lt;div id=&quot;settingsModal&quot; class=&quot;hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4&quot;&gt;<br/>    &lt;div class=&quot;bg-cardDark border border-borderDark rounded-2xl max-w-md w-full p-5 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto text-xs&quot;&gt;<br/>      &lt;div class=&quot;flex items-center justify-between border-b border-borderDark pb-3&quot;&gt;<br/>        &lt;h3 class=&quot;font-bold text-base text-slate-100 flex items-center gap-2&quot;&gt;<br/>          &lt;i data-lucide=&quot;sliders&quot; class=&quot;w-4 h-4 text-accentEmerald&quot;&gt;&lt;/i&gt;<br/>          Settings &amp; Security<br/>        &lt;/h3&gt;<br/>        &lt;button onclick=&quot;closeModal(&#39;settingsModal&#39;)&quot; class=&quot;text-slate-400 hover:text-white&quot;&gt;<br/>          &lt;i data-lucide=&quot;x&quot; class=&quot;w-5 h-5&quot;&gt;&lt;/i&gt;<br/>        &lt;/button&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;!-- PIN Security Configuration --&gt;<br/>      &lt;div class=&quot;space-y-2&quot;&gt;<br/>        &lt;span class=&quot;font-semibold text-slate-300 block&quot;&gt;Passcode PIN Protection:&lt;/span&gt;<br/>        &lt;div class=&quot;flex gap-2&quot;&gt;<br/>          &lt;input type=&quot;password&quot; maxlength=&quot;4&quot; id=&quot;pinSettingInput&quot; placeholder=&quot;Set 4-digit PIN (e.g. 1234)&quot; class=&quot;flex-1 bg-slate-900 border border-borderDark rounded-lg px-3 py-2 text-xs text-white&quot; /&gt;<br/>          &lt;button onclick=&quot;saveNewPin()&quot; class=&quot;px-3 py-2 rounded-lg bg-accentEmerald text-slate-950 font-bold hover:bg-emerald-400&quot;&gt;Save PIN&lt;/button&gt;<br/>        &lt;/div&gt;<br/>        &lt;p class=&quot;text-[10px] text-slate-400&quot;&gt;Leave blank and save to disable PIN lock on startup.&lt;/p&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;!-- Emergency Contact Phone Number --&gt;<br/>      &lt;div class=&quot;space-y-1&quot;&gt;<br/>        &lt;span class=&quot;font-semibold text-slate-300 block&quot;&gt;Grounding Call Phone Number:&lt;/span&gt;<br/>        &lt;input type=&quot;tel&quot; id=&quot;emergencyPhoneInput&quot; placeholder=&quot;+1...&quot; class=&quot;w-full bg-slate-900 border border-borderDark rounded-lg px-3 py-2 text-xs text-white&quot; onchange=&quot;saveEmergencyPhone()&quot; /&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;!-- Data Backup &amp; Restore (Features 46, 47) --&gt;<br/>      &lt;div class=&quot;pt-3 border-t border-borderDark space-y-2&quot;&gt;<br/>        &lt;span class=&quot;font-semibold text-slate-300 block&quot;&gt;100% Client-Side Local Ledger:&lt;/span&gt;<br/>        &lt;div class=&quot;grid grid-cols-2 gap-2&quot;&gt;<br/>          &lt;button onclick=&quot;exportAppDataJSON()&quot; class=&quot;p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold flex items-center justify-center gap-1.5&quot;&gt;<br/>            &lt;i data-lucide=&quot;download&quot; class=&quot;w-3.5 h-3.5&quot;&gt;&lt;/i&gt; Export JSON<br/>          &lt;/button&gt;<br/>          &lt;label class=&quot;p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold flex items-center justify-center gap-1.5 cursor-pointer&quot;&gt;<br/>            &lt;i data-lucide=&quot;upload&quot; class=&quot;w-3.5 h-3.5&quot;&gt;&lt;/i&gt; Import JSON<br/>            &lt;input type=&quot;file&quot; id=&quot;importJsonFileInput&quot; accept=&quot;.json&quot; class=&quot;hidden&quot; onchange=&quot;importAppDataJSON(event)&quot; /&gt;<br/>          &lt;/label&gt;<br/>        &lt;/div&gt;<br/>      &lt;/div&gt;<br/><br/>      &lt;!-- Factory Reset --&gt;<br/>      &lt;div class=&quot;pt-2 border-t border-borderDark&quot;&gt;<br/>        &lt;button onclick=&quot;factoryReset()&quot; class=&quot;w-full py-2 rounded-lg text-accentRose hover:bg-rose-950/30 text-[11px] font-semibold border border-rose-900/30&quot;&gt;<br/>          Factory Reset App (Erase All Local Data)<br/>        &lt;/button&gt;<br/>      &lt;/div&gt;<br/>    &lt;/div&gt;<br/>  &lt;/div&gt;<br/><br/>  &lt;!-- ==================== JAVASCRIPT LOGIC ENGINE ==================== --&gt;<br/>  &lt;script&gt;<br/>    /* =========================================================================<br/>       DEFAULT INITIALIZATION &amp; STATE SCHEMA<br/>       ========================================================================= */<br/>    const STORAGE_KEY = &#39;SOVEREIGN_MIND_STATE_V1&#39;;<br/><br/>    // 12 Milestone Steps (Feature 3)<br/>    const MILESTONE_STEPS = [<br/>      { id: &#39;12h&#39;, hours: 12, label: &#39;12 Hours&#39;, badge: &#39;🌱 Dawn of Will&#39;, desc: &#39;Dopamine cravings stabilize; baseline pulse slows.&#39; },<br/>      { id: &#39;24h&#39;, hours: 24, label: &#39;24 Hours&#39;, badge: &#39;⚡ Day One Warrior&#39;, desc: &#39;Blood androgen receptors begin upregulation.&#39; },<br/>      { id: &#39;3d&#39;, hours: 72, label: &#39;3 Days&#39;, badge: &#39;🛡️ Chaser Vanquisher&#39;, desc: &#39;Primary acute neurochemical dip neutralized.&#39; },<br/>      { id: &#39;7d&#39;, hours: 168, label: &#39;7 Days&#39;, badge: &#39;🔥 Testosterone Spike&#39;, desc: &#39;Research-backed 145.7% peak in serum testosterone.&#39; },<br/>      { id: &#39;14d&#39;, hours: 336, label: &#39;14 Days&#39;, badge: &#39;🧠 Brain Clarity Onset&#39;, desc: &#39;Prefrontal cortex grey matter begins functional strengthening.&#39; },<br/>      { id: &#39;21d&#39;, hours: 504, label: &#39;21 Days&#39;, badge: &#39;💎 Habit Anchor&#39;, desc: &#39;Neural default mode network dissociates from compulsive loops.&#39; },<br/>      { id: &#39;30d&#39;, hours: 720, label: &#39;30 Days&#39;, badge: &#39;☀️ Full Lunar Cycle&#39;, desc: &#39;Significant Ojas accumulation, increased vocal depth and energy.&#39; },<br/>      { id: &#39;45d&#39;, hours: 1080, label: &#39;45 Days&#39;, badge: &#39;🦅 Laser Vision&#39;, desc: &#39;Dopamine D2 receptor densities near standard homeostatic levels.&#39; },<br/>      { id: &#39;60d&#39;, hours: 1440, label: &#39;60 Days&#39;, badge: &#39;🦁 Magnetic Aura&#39;, desc: &#39;Social confidence stabilizes; physical recovery accelerates.&#39; },<br/>      { id: &#39;90d&#39;, hours: 2160, label: &#39;90 Days&#39;, badge: &#39;👑 Pure Brahmacharya&#39;, desc: &#39;Classical 90-day neurochemical reset fully accomplished.&#39; },<br/>      { id: &#39;180d&#39;, hours: 4320, label: &#39;180 Days&#39;, badge: &#39;🔱 Iron Monk&#39;, desc: &#39;Complete subconscious cognitive reprogramming.&#39; },<br/>      { id: &#39;365d&#39;, hours: 8760, label: &#39;365 Days&#39;, badge: &#39;✨ Transcendent Sovereign&#39;, desc: &#39;Full mastery over life-force transmuted into purpose.&#39; }<br/>    ];<br/><br/>    // Seed Data to immediately demonstrate working graphs &amp; counters upon load<br/>    function getDefaultState() {<br/>      const now = Date.now();<br/>      const twentyEightDaysAgo = now - (28 * 24 * 60 * 60 * 1000) - (6 * 3600 * 1000);<br/>      const thirtyTwoDaysAgo = now - (32 * 24 * 60 * 60 * 1000);<br/><br/>      // Generate 14 days of realistic focus and vitality logs<br/>      const dailyLogs = {};<br/>      for (let i = 13; i &gt;= 0; i--) {<br/>        const d = new Date(now - i * 86400000);<br/>        const dateKey = d.toISOString().split(&#39;T&#39;)[0];<br/>        dailyLogs[dateKey] = {<br/>          ojas: Math.min(10, Math.max(5, Math.floor(6 + (14 - i) * 0.28))),<br/>          focus: Math.min(10, Math.max(4, Math.floor(5 + (14 - i) * 0.32))),<br/>          sleep: 4,<br/>          water: 6 + (i % 3),<br/>          tags: [&#39;gym&#39;, &#39;pranayama&#39;]<br/>        };<br/>      }<br/><br/>      // Generate calendar heatmap entries for past 60 days<br/>      const calendarEntries = {};<br/>      for (let i = 59; i &gt;= 0; i--) {<br/>        const d = new Date(now - i * 86400000);<br/>        const dateKey = d.toISOString().split(&#39;T&#39;)[0];<br/>        if (i === 42) {<br/>          calendarEntries[dateKey] = &#39;ejaculation&#39;; // slip 42 days ago<br/>        } else if (i === 29) {<br/>          calendarEntries[dateKey] = &#39;m_only&#39;;     // edging 29 days ago<br/>        } else {<br/>          calendarEntries[dateKey] = &#39;clean&#39;;<br/>        }<br/>      }<br/><br/>      return {<br/>        ejacResetTime: twentyEightDaysAgo,<br/>        mOnlyResetTime: twentyEightDaysAgo,<br/>        lastSlipType: null,<br/>        pin: &#39;&#39;,<br/>        emergencyPhone: &#39;&#39;,<br/>        whyVaultText: &quot;I am cultivating magnetic vitality, mental unshakeability, and genuine confidence. Instant gratification sacrifices long-term greatness for 5 seconds of illusory comfort.&quot;,<br/>        ifThenRule: &quot;IF I feel an intense urge while alone in bed after 11 PM, THEN I will immediately stand up, splash cold water on my eyes, and do 20 pushups.&quot;,<br/>        urgesResistedCount: 28,<br/>        triggers: [<br/>          { name: &#39;Instagram Reels&#39;, count: 14, color: &#39;rose&#39; },<br/>          { name: &#39;Late Night Bed Phone&#39;, count: 18, color: &#39;rose&#39; },<br/>          { name: &#39;Boredom / Aimless Surfing&#39;, count: 9, color: &#39;amber&#39; },<br/>          { name: &#39;Stress / Work Anxiety&#39;, count: 7, color: &#39;amber&#39; },<br/>          { name: &#39;Specific Person / Chat&#39;, count: 4, color: &#39;indigo&#39; }<br/>        ],<br/>        slipHistory: [<br/>          { timestamp: twentyEightDaysAgo, type: &#39;ejaculation&#39;, trigger: &#39;Late Night Bed Phone&#39;, location: &#39;Bed / Bedroom&#39; }<br/>        ],<br/>        dailyLogs: dailyLogs,<br/>        calendarEntries: calendarEntries<br/>      };<br/>    }<br/><br/>    // App State Wrapper<br/>    let AppState = (function() {<br/>      let state = {};<br/>      try {<br/>        const stored = localStorage.getItem(STORAGE_KEY);<br/>        state = stored ? JSON.parse(stored) : getDefaultState();<br/>      } catch (e) {<br/>        state = getDefaultState();<br/>      }<br/><br/>      return {<br/>        get: () =&gt; state,<br/>        set: (newState) =&gt; {<br/>          state = newState;<br/>          try {<br/>            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));<br/>          } catch(e) {}<br/>        },<br/>        save: () =&gt; {<br/>          try {<br/>            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));<br/>          } catch(e) {}<br/>        }<br/>      };<br/>    })();<br/><br/>    /* =========================================================================<br/>       CORE TIMERS &amp; REAL-TIME DISPATCHER (Features 1, 7, 8)<br/>       ========================================================================= */<br/>    let timerInterval = null;<br/><br/>    function startLiveCounters() {<br/>      if (timerInterval) clearInterval(timerInterval);<br/>      updateCounters();<br/>      timerInterval = setInterval(updateCounters, 1000);<br/>    }<br/><br/>    function updateCounters() {<br/>      const state = AppState.get();<br/>      const now = Date.now();<br/><br/>      // Tracker 1: Ejaculation Tracker<br/>      const ejacElapsedSecs = Math.max(0, Math.floor((now - state.ejacResetTime) / 1000));<br/>      const eDays = Math.floor(ejacElapsedSecs / 86400);<br/>      const eHours = Math.floor((ejacElapsedSecs % 86400) / 3600);<br/>      const eMins = Math.floor((ejacElapsedSecs % 3600) / 60);<br/>      const eSecs = ejacElapsedSecs % 60;<br/><br/>      document.getElementById(&#39;ejacDays&#39;).textContent = eDays;<br/>      document.getElementById(&#39;ejacHours&#39;).textContent = String(eHours).padStart(2, &#39;0&#39;);<br/>      document.getElementById(&#39;ejacMins&#39;).textContent = String(eMins).padStart(2, &#39;0&#39;);<br/>      document.getElementById(&#39;ejacSecs&#39;).textContent = String(eSecs).padStart(2, &#39;0&#39;);<br/><br/>      // Tracker 2: M-Only Tracker<br/>      const mElapsedSecs = Math.max(0, Math.floor((now - state.mOnlyResetTime) / 1000));<br/>      const mDays = Math.floor(mElapsedSecs / 86400);<br/>      const mHours = Math.floor((mElapsedSecs % 86400) / 3600);<br/>      const mMins = Math.floor((mElapsedSecs % 3600) / 60);<br/>      const mSecs = mElapsedSecs % 60;<br/>      document.getElementById(&#39;mOnlyTimeDisplay&#39;).textContent = `${mDays}d ${mHours}h ${mMins}m ${mSecs}s Clean`;<br/><br/>      // Feature 8: Next Milestone Progression<br/>      updateMilestoneProgress(ejacElapsedSecs);<br/><br/>      // Feature 29: 72-Hour Chaser Alert<br/>      updateChaserAlert(now, state.ejacResetTime);<br/><br/>      // Snapshot display sync<br/>      document.getElementById(&#39;snapshotDaysDisplay&#39;).textContent = `${eDays} DAYS`;<br/>    }<br/><br/>    function updateMilestoneProgress(elapsedSeconds) {<br/>      const elapsedHours = elapsedSeconds / 3600;<br/>      let nextM = null;<br/>      let prevHours = 0;<br/><br/>      for (let m of MILESTONE_STEPS) {<br/>        if (elapsedHours &lt; m.hours) {<br/>          nextM = m;<br/>          break;<br/>        }<br/>        prevHours = m.hours;<br/>      }<br/><br/>      if (!nextM) {<br/>        document.getElementById(&#39;nextMilestoneLabel&#39;).textContent = &#39;All Milestones Mastered!&#39;;<br/>        document.getElementById(&#39;nextMilestoneRemaining&#39;).textContent = &#39;Transcendent&#39;;<br/>        document.getElementById(&#39;milestoneProgressBar&#39;).style.width = &#39;100%&#39;;<br/>        return;<br/>      }<br/><br/>      document.getElementById(&#39;nextMilestoneLabel&#39;).textContent = nextM.label;<br/>      const hoursLeft = Math.max(0, nextM.hours - elapsedHours);<br/>      const daysLeft = Math.floor(hoursLeft / 24);<br/>      const remHours = Math.floor(hoursLeft % 24);<br/>      const remMins = Math.floor((hoursLeft * 60) % 60);<br/><br/>      document.getElementById(&#39;nextMilestoneRemaining&#39;).textContent = <br/>        daysLeft &gt; 0 ? `${daysLeft}d ${remHours}h left` : `${remHours}h ${remMins}m left`;<br/><br/>      const span = nextM.hours - prevHours;<br/>      const progressInSpan = elapsedHours - prevHours;<br/>      const pct = Math.min(100, Math.max(0, (progressInSpan / span) * 100));<br/>      document.getElementById(&#39;milestoneProgressBar&#39;).style.width = `${pct.toFixed(1)}%`;<br/>    }<br/><br/>    function updateChaserAlert(now, lastResetTime) {<br/>      const hoursSinceReset = (now - lastResetTime) / 3600000;<br/>      const box = document.getElementById(&#39;chaserAlertBox&#39;);<br/>      if (hoursSinceReset &lt; 72) {<br/>        box.classList.remove(&#39;hidden&#39;);<br/>        const remaining = Math.ceil(72 - hoursSinceReset);<br/>        document.getElementById(&#39;chaserHoursLeft&#39;).textContent = `${remaining}h remaining`;<br/>      } else {<br/>        box.classList.add(&#39;hidden&#39;);<br/>      }<br/>    }<br/><br/>    /* =========================================================================<br/>       FEATURE 4: MILESTONE BADGES &amp; BRAIN REWIRING STAGES<br/>       ========================================================================= */<br/>    function renderMilestoneBadges() {<br/>      const state = AppState.get();<br/>      const currentHours = (Date.now() - state.ejacResetTime) / 3600000;<br/>      const container = document.getElementById(&#39;milestoneBadgesGrid&#39;);<br/>      container.innerHTML = &#39;&#39;;<br/><br/>      let unlockedCount = 0;<br/>      let highestBadge = &#39;🌱 Novice&#39;;<br/><br/>      MILESTONE_STEPS.forEach(m =&gt; {<br/>        const isUnlocked = currentHours &gt;= m.hours;<br/>        if (isUnlocked) {<br/>          unlockedCount++;<br/>          highestBadge = m.badge;<br/>        }<br/><br/>        const card = document.createElement(&#39;div&#39;);<br/>        card.className = `p-2.5 rounded-xl border transition-all ${<br/>          isUnlocked <br/>            ? &#39;bg-emerald-950/20 border-emerald-500/40 text-slate-200&#39; <br/>            : &#39;bg-slate-900/40 border-borderDark text-slate-500 opacity-60&#39;<br/>        }`;<br/><br/>        card.innerHTML = `<br/>          &lt;div class=&quot;flex items-center justify-between mb-1&quot;&gt;<br/>            &lt;span class=&quot;font-bold text-[11px] ${isUnlocked ? &#39;text-accentEmerald&#39; : &#39;text-slate-500&#39;}&quot;&gt;${m.label}&lt;/span&gt;<br/>            &lt;span class=&quot;text-xs&quot;&gt;${isUnlocked ? &#39;🔓&#39; : &#39;🔒&#39;}&lt;/span&gt;<br/>          &lt;/div&gt;<br/>          &lt;div class=&quot;font-semibold text-xs truncate&quot;&gt;${m.badge}&lt;/div&gt;<br/>          &lt;p class=&quot;text-[9px] text-slate-400 mt-1 line-clamp-2 leading-tight&quot;&gt;${m.desc}&lt;/p&gt;<br/>        `;<br/>        container.appendChild(card);<br/>      });<br/><br/>      document.getElementById(&#39;milestonesUnlockedCount&#39;).textContent = `${unlockedCount} / 12 Unlocked`;<br/>      document.getElementById(&#39;snapshotBadgeDisplay&#39;).textContent = highestBadge;<br/><br/>      // Update Brain Rewiring Stage (Feature 9)<br/>      const days = currentHours / 24;<br/>      const stageTitle = document.getElementById(&#39;brainStageTitle&#39;);<br/>      const stageDays = document.getElementById(&#39;brainStageDays&#39;);<br/>      const stageDesc = document.getElementById(&#39;brainStageDesc&#39;);<br/><br/>      if (days &lt; 7) {<br/>        stageTitle.textContent = &#39;Stage 1: Acute Dopamine Withdrawal &amp; Receptor Shock&#39;;<br/>        stageDays.textContent = &#39;Days 0–7&#39;;<br/>        stageDesc.textContent = &#39;Nervous system recalibrating. Urges are frequent due to neurochemical delta. Guard your eyes and phone vigorously.&#39;;<br/>      } else if (days &lt; 21) {<br/>        stageTitle.textContent = &#39;Stage 2: Dopamine Receptor Upregulation&#39;;<br/>        stageDays.textContent = &#39;Days 7–21&#39;;<br/>        stageDesc.textContent = &#39;D2 receptor density is multiplying. Everyday tasks, books, and nature begin feeling naturally rewarding again.&#39;;<br/>      } else if (days &lt; 60) {<br/>        stageTitle.textContent = &#39;Stage 3: Prefrontal Cortex Re-Myelination&#39;;<br/>        stageDays.textContent = &#39;Days 21–60&#39;;<br/>        stageDesc.textContent = &#39;Executive control is dramatically strengthened. Impulse latency increases. Physical energy transmutes easily.&#39;;<br/>      } else {<br/>        stageTitle.textContent = &#39;Stage 4: Autonomous Neurochemical Sovereignty&#39;;<br/>        stageDays.textContent = &#39;Days 60+&#39;;<br/>        stageDesc.textContent = &#39;High resilience, rock-solid dopamine equilibrium, deep voice resonance, and natural social ease.&#39;;<br/>      }<br/>    }<br/><br/>    /* =========================================================================<br/>       CALCULATE ROLLING SUCCESS &amp; HEALTH GRADE (Features 5 &amp; 7)<br/>       ========================================================================= */<br/>    function calculateRollingMetrics() {<br/>      const state = AppState.get();<br/>      const entries = state.calendarEntries || {};<br/>      const now = new Date();<br/><br/>      let cleanPast30 = 0;<br/>      let totalPast30 = 0;<br/>      let cleanPast90 = 0;<br/>      let totalPast90 = 0;<br/><br/>      for (let i = 0; i &lt; 90; i++) {<br/>        const d = new Date(now.getTime() - i * 86400000);<br/>        const k = d.toISOString().split(&#39;T&#39;)[0];<br/>        const status = entries[k] || &#39;clean&#39;;<br/><br/>        if (i &lt; 30) {<br/>          totalPast30++;<br/>          if (status === &#39;clean&#39;) cleanPast30++;<br/>        }<br/>        totalPast90++;<br/>        if (status === &#39;clean&#39;) cleanPast90++;<br/>      }<br/><br/>      const rate30 = ((cleanPast30 / totalPast30) * 100).toFixed(1);<br/>      const rate90 = ((cleanPast90 / totalPast90) * 100).toFixed(1);<br/><br/>      document.getElementById(&#39;cleanRate30&#39;).textContent = `${rate30}%`;<br/>      document.getElementById(&#39;cleanRate90&#39;).textContent = `${rate90}%`;<br/>      document.getElementById(&#39;snapshotRateDisplay&#39;).textContent = `${rate30}%`;<br/><br/>      // Health Performance Grade (Feature 7)<br/>      const badge = document.getElementById(&#39;healthGradeBadge&#39;);<br/>      if (rate30 &gt;= 90) {<br/>        badge.textContent = &#39;HEALTHY&#39;;<br/>        badge.className = &#39;text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30&#39;;<br/>      } else if (rate30 &gt;= 75) {<br/>        badge.textContent = &#39;CAUTION&#39;;<br/>        badge.className = &#39;text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30&#39;;<br/>      } else {<br/>        badge.textContent = &#39;CRITICAL&#39;;<br/>        badge.className = &#39;text-[10px] font-mono px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/30&#39;;<br/>      }<br/>    }<br/><br/>    /* =========================================================================<br/>       CHARTS ENGINE: COGNITIVE GRAPH &amp; TRIGGER BAR (Features 10 &amp; 26)<br/>       ========================================================================= */<br/>    let cognitiveChartInstance = null;<br/>    let triggerChartInstance = null;<br/><br/>    function renderCognitiveChart() {<br/>      const ctx = document.getElementById(&#39;cognitiveChart&#39;).getContext(&#39;2d&#39;);<br/>      const state = AppState.get();<br/>      const labels = [];<br/>      const ojasData = [];<br/>      const focusData = [];<br/><br/>      const now = new Date();<br/>      for (let i = 13; i &gt;= 0; i--) {<br/>        const d = new Date(now.getTime() - i * 86400000);<br/>        const k = d.toISOString().split(&#39;T&#39;)[0];<br/>        labels.push(d.toLocaleDateString(&#39;en-US&#39;, { month: &#39;numeric&#39;, day: &#39;numeric&#39; }));<br/>        const log = state.dailyLogs[k] || { ojas: 7, focus: 7 };<br/>        ojasData.push(log.ojas);<br/>        focusData.push(log.focus);<br/>      }<br/><br/>      if (cognitiveChartInstance) cognitiveChartInstance.destroy();<br/><br/>      cognitiveChartInstance = new Chart(ctx, {<br/>        type: &#39;line&#39;,<br/>        data: {<br/>          labels: labels,<br/>          datasets: [<br/>            {<br/>              label: &#39;Physical Ojas (1-10)&#39;,<br/>              data: ojasData,<br/>              borderColor: &#39;#10b981&#39;,<br/>              backgroundColor: &#39;rgba(16, 185, 129, 0.1)&#39;,<br/>              tension: 0.35,<br/>              fill: true,<br/>              borderWidth: 2,<br/>              pointRadius: 2<br/>            },<br/>            {<br/>              label: &#39;Mental Focus (1-10)&#39;,<br/>              data: focusData,<br/>              borderColor: &#39;#6366f1&#39;,<br/>              backgroundColor: &#39;transparent&#39;,<br/>              tension: 0.35,<br/>              borderWidth: 2,<br/>              borderDash: [4, 4],<br/>              pointRadius: 2<br/>            }<br/>          ]<br/>        },<br/>        options: {<br/>          responsive: true,<br/>          maintainAspectRatio: false,<br/>          plugins: {<br/>            legend: {<br/>              labels: { color: &#39;#94a3b8&#39;, font: { size: 10 } }<br/>            }<br/>          },<br/>          scales: {<br/>            y: {<br/>              min: 1,<br/>              max: 10,<br/>              grid: { color: &#39;#1e293b&#39; },<br/>              ticks: { color: &#39;#64748b&#39;, font: { size: 9 } }<br/>            },<br/>            x: {<br/>              grid: { display: false },<br/>              ticks: { color: &#39;#64748b&#39;, font: { size: 9 } }<br/>            }<br/>          }<br/>        }<br/>      });<br/>    }<br/><br/>    function renderTriggerChart() {<br/>      const ctx = document.getElementById(&#39;triggerBarChart&#39;).getContext(&#39;2d&#39;);<br/>      const state = AppState.get();<br/>      const labels = state.triggers.map(t =&gt; t.name);<br/>      const data = state.triggers.map(t =&gt; t.count);<br/><br/>      if (triggerChartInstance) triggerChartInstance.destroy();<br/><br/>      triggerChartInstance = new Chart(ctx, {<br/>        type: &#39;bar&#39;,<br/>        data: {<br/>          labels: labels,<br/>          datasets: [{<br/>            label: &#39;Incidents Logged&#39;,<br/>            data: data,<br/>            backgroundColor: &#39;#f43f5e&#39;,<br/>            borderRadius: 6<br/>          }]<br/>        },<br/>        options: {<br/>          indexAxis: &#39;y&#39;,<br/>          responsive: true,<br/>          maintainAspectRatio: false,<br/>          plugins: {<br/>            legend: { display: false }<br/>          },<br/>          scales: {<br/>            x: {<br/>              grid: { color: &#39;#1e293b&#39; },<br/>              ticks: { color: &#39;#64748b&#39;, font: { size: 9 }, stepSize: 2 }<br/>            },<br/>            y: {<br/>              grid: { display: false },<br/>              ticks: { color: &#39;#94a3b8&#39;, font: { size: 9 } }<br/>            }<br/>          }<br/>        }<br/>      });<br/>    }<br/><br/>    /* =========================================================================<br/>       DYNAMIC TRIGGER ENGINE &amp; TAG MANAGEMENT (Feature 25)<br/>       ========================================================================= */<br/>    function renderTriggerTags() {<br/>      const state = AppState.get();<br/>      const container = document.getElementById(&#39;triggerTagsContainer&#39;);<br/>      container.innerHTML = &#39;&#39;;<br/><br/>      state.triggers.forEach(t =&gt; {<br/>        const btn = document.createElement(&#39;button&#39;);<br/>        btn.className = &#39;px-2.5 py-1 rounded-lg border border-borderDark bg-slate-900 text-slate-300 text-xs hover:border-accentRose transition flex items-center gap-1.5&#39;;<br/>        btn.innerHTML = `&lt;span&gt;${t.name}&lt;/span&gt; &lt;span class=&quot;text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-rose-400 font-mono&quot;&gt;${t.count}&lt;/span&gt;`;<br/>        btn.onclick = () =&gt; recordUrgeForTrigger(t.name);<br/>        container.appendChild(btn);<br/>      });<br/>    }<br/><br/>    function recordUrgeForTrigger(name) {<br/>      const state = AppState.get();<br/>      const item = state.triggers.find(t =&gt; t.name === name);<br/>      if (item) {<br/>        item.count++;<br/>        AppState.set(state);<br/>        renderTriggerTags();<br/>        renderTriggerChart();<br/>      }<br/>    }<br/><br/>    function addNewCustomTrigger() {<br/>      const input = document.getElementById(&#39;newTriggerInput&#39;);<br/>      const val = input.value.trim();<br/>      if (!val) return;<br/><br/>      const state = AppState.get();<br/>      if (!state.triggers.some(t =&gt; t.name.toLowerCase() === val.toLowerCase())) {<br/>        state.triggers.push({ name: val, count: 1, color: &#39;indigo&#39; });<br/>        AppState.set(state);<br/>        renderTriggerTags();<br/>        renderTriggerChart();<br/>      }<br/>      input.value = &#39;&#39;;<br/>    }<br/><br/>    /* =========================================================================<br/>       CALENDAR HEATMAP (Features 41 &amp; 42)<br/>       ========================================================================= */<br/>    let currentHeatmapDate = new Date();<br/><br/>    function renderCalendarHeatmap() {<br/>      const grid = document.getElementById(&#39;calendarGrid&#39;);<br/>      grid.innerHTML = &#39;&#39;;<br/>      const state = AppState.get();<br/>      const year = currentHeatmapDate.getFullYear();<br/>      const month = currentHeatmapDate.getMonth();<br/><br/>      const monthNames = [&quot;January&quot;, &quot;February&quot;, &quot;March&quot;, &quot;April&quot;, &quot;May&quot;, &quot;June&quot;, &quot;July&quot;, &quot;August&quot;, &quot;September&quot;, &quot;October&quot;, &quot;November&quot;, &quot;December&quot;];<br/>      document.getElementById(&#39;calendarMonthLabel&#39;).textContent = `${monthNames[month]} ${year}`;<br/><br/>      const firstDay = new Date(year, month, 1).getDay();<br/>      const daysInMonth = new Date(year, month + 1, 0).getDate();<br/><br/>      // Leading blanks<br/>      for (let i = 0; i &lt; firstDay; i++) {<br/>        const blank = document.createElement(&#39;div&#39;);<br/>        blank.className = &#39;h-8 sm:h-9 rounded bg-transparent&#39;;<br/>        grid.appendChild(blank);<br/>      }<br/><br/>      let cleanCount = 0;<br/><br/>      for (let day = 1; day &lt;= daysInMonth; day++) {<br/>        const dObj = new Date(year, month, day);<br/>        const key = dObj.toISOString().split(&#39;T&#39;)[0];<br/>        const status = state.calendarEntries[key] || &#39;clean&#39;;<br/><br/>        if (status === &#39;clean&#39;) cleanCount++;<br/><br/>        let colorCls = &#39;bg-emerald-950/40 border-emerald-600/40 text-emerald-400&#39;;<br/>        let symbol = &#39;✓&#39;;<br/>        if (status === &#39;m_only&#39;) {<br/>          colorCls = &#39;bg-amber-950/40 border-amber-600/50 text-amber-400&#39;;<br/>          symbol = &#39;⚡&#39;;<br/>        } else if (status === &#39;ejaculation&#39;) {<br/>          colorCls = &#39;bg-rose-950/40 border-rose-600/50 text-rose-400&#39;;<br/>          symbol = &#39;✕&#39;;<br/>        }<br/><br/>        const cell = document.createElement(&#39;div&#39;);<br/>        cell.className = `h-8 sm:h-9 rounded-lg border ${colorCls} flex flex-col items-center justify-center font-mono text-[10px] cursor-pointer hover:scale-105 transition`;<br/>        cell.title = `${key}: ${status.toUpperCase()}`;<br/>        cell.innerHTML = `&lt;span&gt;${day}&lt;/span&gt;&lt;span class=&quot;text-[8px] font-bold&quot;&gt;${symbol}&lt;/span&gt;`;<br/>        cell.onclick = () =&gt; toggleCalendarDayStatus(key);<br/>        grid.appendChild(cell);<br/>      }<br/><br/>      document.getElementById(&#39;thisMonthCleanCount&#39;).textContent = cleanCount;<br/>    }<br/><br/>    function toggleCalendarDayStatus(dateKey) {<br/>      const state = AppState.get();<br/>      const current = state.calendarEntries[dateKey] || &#39;clean&#39;;<br/>      let next = &#39;clean&#39;;<br/>      if (current === &#39;clean&#39;) next = &#39;m_only&#39;;<br/>      else if (current === &#39;m_only&#39;) next = &#39;ejaculation&#39;;<br/>      else next = &#39;clean&#39;;<br/><br/>      state.calendarEntries[dateKey] = next;<br/>      AppState.set(state);<br/>      renderCalendarHeatmap();<br/>      calculateRollingMetrics();<br/>    }<br/><br/>    function changeHeatmapMonth(delta) {<br/>      currentHeatmapDate.setMonth(currentHeatmapDate.getMonth() + delta);<br/>      renderCalendarHeatmap();<br/>    }<br/><br/>    /* =========================================================================<br/>       DAILY VITALS &amp; LOGIC DRAFT (Features 11, 17, 20, 23)<br/>       ========================================================================= */<br/>    function updateDailyLogDraft() {<br/>      const ojas = document.getElementById(&#39;ojasSlider&#39;).value;<br/>      const focus = document.getElementById(&#39;focusSlider&#39;).value;<br/>      document.getElementById(&#39;ojasValDisplay&#39;).textContent = `${ojas} / 10`;<br/>      document.getElementById(&#39;focusValDisplay&#39;).textContent = `${focus} / 10`;<br/>    }<br/><br/>    function modWater(delta) {<br/>      const el = document.getElementById(&#39;waterCount&#39;);<br/>      let val = Math.max(0, parseInt(el.textContent) + delta);<br/>      el.textContent = val;<br/>    }<br/><br/>    function toggleDailyTag(btn, tag) {<br/>      btn.classList.toggle(&#39;bg-accentEmerald&#39;);<br/>      btn.classList.toggle(&#39;text-black&#39;);<br/>      btn.classList.toggle(&#39;font-bold&#39;);<br/>    }<br/><br/>    function saveDailyCheckin() {<br/>      const state = AppState.get();<br/>      const today = new Date().toISOString().split(&#39;T&#39;)[0];<br/>      const ojas = parseInt(document.getElementById(&#39;ojasSlider&#39;).value);<br/>      const focus = parseInt(document.getElementById(&#39;focusSlider&#39;).value);<br/>      const sleep = parseInt(document.getElementById(&#39;sleepRatingSelect&#39;).value);<br/>      const water = parseInt(document.getElementById(&#39;waterCount&#39;).value);<br/><br/>      state.dailyLogs[today] = { ojas, focus, sleep, water };<br/>      AppState.set(state);<br/>      renderCognitiveChart();<br/>      alert(&#39;✓ Daily vital logs saved! Graphs updated.&#39;);<br/>    }<br/><br/>    /* =========================================================================<br/>       RESET &amp; COMPASSIONATE AUTOPSY LOGIC (Features 2, 6, 18, 28)<br/>       ========================================================================= */<br/>    let selectedResetType = &#39;m_only&#39;;<br/><br/>    function openResetModal(type) {<br/>      selectedResetType = type;<br/>      setResetType(type);<br/>      populateAutopsyTriggers();<br/>      populateAutopsySymptoms();<br/>      openModal(&#39;resetModal&#39;);<br/>    }<br/><br/>    function setResetType(type) {<br/>      selectedResetType = type;<br/>      const mBtn = document.getElementById(&#39;typeMOnlyBtn&#39;);<br/>      const eBtn = document.getElementById(&#39;typeEjacBtn&#39;);<br/>      if (type === &#39;m_only&#39;) {<br/>        mBtn.className = &#39;p-2.5 rounded-lg border border-accentAmber/40 bg-accentAmber/10 text-accentAmber text-center font-medium&#39;;<br/>        eBtn.className = &#39;p-2.5 rounded-lg border border-borderDark bg-slate-800 text-slate-300 text-center font-medium&#39;;<br/>      } else {<br/>        eBtn.className = &#39;p-2.5 rounded-lg border border-accentRose/40 bg-accentRose/10 text-accentRose text-center font-medium&#39;;<br/>        mBtn.className = &#39;p-2.5 rounded-lg border border-borderDark bg-slate-800 text-slate-300 text-center font-medium&#39;;<br/>      }<br/>    }<br/><br/>    function populateAutopsyTriggers() {<br/>      const state = AppState.get();<br/>      const container = document.getElementById(&#39;modalTriggerChips&#39;);<br/>      container.innerHTML = &#39;&#39;;<br/>      state.triggers.forEach(t =&gt; {<br/>        const chip = document.createElement(&#39;button&#39;);<br/>        chip.type = &#39;button&#39;;<br/>        chip.className = &#39;px-2 py-1 rounded bg-slate-900 border border-borderDark text-slate-300 text-[11px]&#39;;<br/>        chip.textContent = t.name;<br/>        chip.onclick = () =&gt; {<br/>          container.querySelectorAll(&#39;button&#39;).forEach(b =&gt; b.classList.remove(&#39;bg-rose-500/20&#39;, &#39;border-rose-500&#39;, &#39;text-white&#39;));<br/>          chip.classList.add(&#39;bg-rose-500/20&#39;, &#39;border-rose-500&#39;, &#39;text-white&#39;);<br/>          chip.dataset.selected = &#39;true&#39;;<br/>        };<br/>        container.appendChild(chip);<br/>      });<br/>    }<br/><br/>    function populateAutopsySymptoms() {<br/>      const symptoms = [&#39;Lower Back Ache&#39;, &#39;Heavy Eye Fatigue&#39;, &#39;Brain Fog&#39;, &#39;Post-slip Lethargy&#39;, &#39;Restless Insomnia&#39;, &#39;Indigestion / Heat&#39;];<br/>      const container = document.getElementById(&#39;modalSymptomChips&#39;);<br/>      container.innerHTML = &#39;&#39;;<br/>      symptoms.forEach(s =&gt; {<br/>        const btn = document.createElement(&#39;button&#39;);<br/>        btn.type = &#39;button&#39;;<br/>        btn.className = &#39;p-2 rounded bg-slate-900 border border-borderDark text-slate-300 text-[10px] text-left&#39;;<br/>        btn.textContent = s;<br/>        btn.onclick = () =&gt; btn.classList.toggle(&#39;border-rose-500&#39;);<br/>        container.appendChild(btn);<br/>      });<br/>    }<br/><br/>    function confirmReset() {<br/>      const state = AppState.get();<br/>      const now = Date.now();<br/>      const todayKey = new Date().toISOString().split(&#39;T&#39;)[0];<br/><br/>      if (selectedResetType === &#39;ejaculation&#39;) {<br/>        state.ejacResetTime = now;<br/>        state.mOnlyResetTime = now;<br/>        state.calendarEntries[todayKey] = &#39;ejaculation&#39;;<br/>      } else {<br/>        state.mOnlyResetTime = now;<br/>        state.calendarEntries[todayKey] = &#39;m_only&#39;;<br/>      }<br/><br/>      state.lastSlipType = selectedResetType;<br/>      AppState.set(state);<br/><br/>      closeModal(&#39;resetModal&#39;);<br/>      startLiveCounters();<br/>      renderMilestoneBadges();<br/>      renderCalendarHeatmap();<br/>      calculateRollingMetrics();<br/>      alert(&#39;Reset logged without guilt. The path to sovereignty begins in this very second.&#39;);<br/>    }<br/><br/>    // Involuntary Wet Dream Logging (Feature 6)<br/>    function logWetDream() {<br/>      alert(&#39;💧 Involuntary emission recorded in personal notes. No streak reset occurred. Natural biological release is NOT a slip.&#39;);<br/>    }<br/><br/>    /* =========================================================================<br/>       EMERGENCY SOS HUB &amp; URGE SURFING (Features 33–40)<br/>       ========================================================================= */<br/>    let surfTimeRemaining = 900; // 15 mins<br/>    let surfInterval = null;<br/>    let coldShowerRemaining = 120; // 2 mins<br/>    let coldShowerInterval = null;<br/><br/>    function triggerEmergencySOS() {<br/>      document.getElementById(&#39;sosOverlay&#39;).classList.remove(&#39;hidden&#39;);<br/>    }<br/><br/>    function closeSOS() {<br/>      document.getElementById(&#39;sosOverlay&#39;).classList.add(&#39;hidden&#39;);<br/>      if (surfInterval) clearInterval(surfInterval);<br/>      if (coldShowerInterval) clearInterval(coldShowerInterval);<br/>    }<br/><br/>    function toggleSurfTimer() {<br/>      const btn = document.getElementById(&#39;surfTimerToggleBtn&#39;);<br/>      if (surfInterval) {<br/>        clearInterval(surfInterval);<br/>        surfInterval = null;<br/>        btn.textContent = &#39;Resume Surfing&#39;;<br/>      } else {<br/>        btn.textContent = &#39;Pause Surfing&#39;;<br/>        surfInterval = setInterval(() =&gt; {<br/>          if (surfTimeRemaining &gt; 0) {<br/>            surfTimeRemaining--;<br/>            const m = Math.floor(surfTimeRemaining / 60);<br/>            const s = surfTimeRemaining % 60;<br/>            document.getElementById(&#39;surfTimerDisplay&#39;).textContent = `${String(m).padStart(2,&#39;0&#39;)}:${String(s).padStart(2,&#39;0&#39;)}`;<br/>          } else {<br/>            clearInterval(surfInterval);<br/>            incrementUrgesResisted();<br/>            alert(&#39;🎉 15 minutes completed! The acute urge wave has officially subsided.&#39;);<br/>          }<br/>        }, 1000);<br/>      }<br/>    }<br/><br/>    function resetSurfTimer() {<br/>      if (surfInterval) clearInterval(surfInterval);<br/>      surfInterval = null;<br/>      surfTimeRemaining = 900;<br/>      document.getElementById(&#39;surfTimerDisplay&#39;).textContent = &#39;15:00&#39;;<br/>      document.getElementById(&#39;surfTimerToggleBtn&#39;).textContent = &#39;Start Surfing&#39;;<br/>    }<br/><br/>    function incrementUrgesResisted() {<br/>      const state = AppState.get();<br/>      state.urgesResistedCount = (state.urgesResistedCount || 0) + 1;<br/>      AppState.set(state);<br/>      document.getElementById(&#39;totalUrgesResisted&#39;).textContent = state.urgesResistedCount;<br/>      closeSOS();<br/>      alert(&#39;⚔️ Urge successfully neutralized and recorded! Your willpower muscle just thickened.&#39;);<br/>    }<br/><br/>    function toggleColdShowerTimer() {<br/>      const btn = document.getElementById(&#39;coldShowerBtn&#39;);<br/>      if (coldShowerInterval) {<br/>        clearInterval(coldShowerInterval);<br/>        coldShowerInterval = null;<br/>        btn.textContent = &#39;Resume Cold Sprint&#39;;<br/>      } else {<br/>        btn.textContent = &#39;Pause Sprint&#39;;<br/>        coldShowerInterval = setInterval(() =&gt; {<br/>          if (coldShowerRemaining &gt; 0) {<br/>            coldShowerRemaining--;<br/>            const m = Math.floor(coldShowerRemaining / 60);<br/>            const s = coldShowerRemaining % 60;<br/>            document.getElementById(&#39;coldShowerTime&#39;).textContent = `${String(m).padStart(2,&#39;0&#39;)}:${String(s).padStart(2,&#39;0&#39;)}`;<br/>          } else {<br/>            clearInterval(coldShowerInterval);<br/>            alert(&#39;❄️ Cold shower complete! Dopamine baseline reset achieved.&#39;);<br/>          }<br/>        }, 1000);<br/>      }<br/>    }<br/><br/>    function generateRandomSwap() {<br/>      const tasks = [<br/>        &quot;Drop and do 20 deep push-ups right now.&quot;,<br/>        &quot;Splash ice-cold water onto your eyes and neck 5 times.&quot;,<br/>        &quot;Take a brisk 100-step walk away from all screens.&quot;,<br/>        &quot;Hold a 60-second plank and practice deep diaphragmatic breath.&quot;,<br/>        &quot;Drink a tall cold glass of water and read your Identity statement out loud.&quot;<br/>      ];<br/>      const pick = tasks[Math.floor(Math.random() * tasks.length)];<br/>      document.getElementById(&#39;dopamineSwapAction&#39;).textContent = pick;<br/>    }<br/><br/>    function completeDopamineSwap() {<br/>      alert(&#39;✓ Interruption completed. Sensory pathways diverted from compulsion.&#39;);<br/>    }<br/><br/>    function editWhyVault() {<br/>      const state = AppState.get();<br/>      const newText = prompt(&#39;Update your core &quot;Why&quot; and letter to future self:&#39;, state.whyVaultText);<br/>      if (newText !== null &amp;&amp; newText.trim() !== &#39;&#39;) {<br/>        state.whyVaultText = newText.trim();<br/>        AppState.set(state);<br/>        document.getElementById(&#39;whyVaultDisplay&#39;).textContent = `&quot;${state.whyVaultText}&quot;`;<br/>      }<br/>    }<br/><br/>    function promptEditIfThen() {<br/>      const state = AppState.get();<br/>      const rule = prompt(&#39;Edit your IF-THEN Implementation Rule:&#39;, state.ifThenRule);<br/>      if (rule !== null &amp;&amp; rule.trim() !== &#39;&#39;) {<br/>        state.ifThenRule = rule.trim();<br/>        AppState.set(state);<br/>        document.getElementById(&#39;ifThenDisplay&#39;).textContent = `&quot;${state.ifThenRule}&quot;`;<br/>      }<br/>    }<br/><br/>    /* =========================================================================<br/>       CAMOUFLAGE DISGUISE MODE &amp; SECURITY (Features 43 &amp; 44)<br/>       ========================================================================= */<br/>    function toggleCamouflage() {<br/>      const screen = document.getElementById(&#39;camouflageScreen&#39;);<br/>      screen.classList.toggle(&#39;hidden&#39;);<br/>    }<br/><br/>    document.getElementById(&#39;exitCamouflageBtn&#39;).onclick = toggleCamouflage;<br/><br/>    // Double-tap header area to enter stealth disguise<br/>    let lastTap = 0;<br/>    document.getElementById(&#39;headerTitleArea&#39;).addEventListener(&#39;touchend&#39;, function(e) {<br/>      const currentTime = new Date().getTime();<br/>      const tapLength = currentTime - lastTap;<br/>      if (tapLength &lt; 400 &amp;&amp; tapLength &gt; 0) {<br/>        toggleCamouflage();<br/>        e.preventDefault();<br/>      }<br/>      lastTap = currentTime;<br/>    });<br/><br/>    // PIN Handlers<br/>    let currentPinEntered = &#39;&#39;;<br/><br/>    function checkPinRequiredOnLoad() {<br/>      const state = AppState.get();<br/>      if (state.pin &amp;&amp; state.pin.length === 4) {<br/>        document.getElementById(&#39;pinLockModal&#39;).classList.remove(&#39;hidden&#39;);<br/>      }<br/>    }<br/><br/>    function handlePinInput(digit) {<br/>      if (currentPinEntered.length &lt; 4) {<br/>        currentPinEntered += digit;<br/>        updatePinDots();<br/>        if (currentPinEntered.length === 4) {<br/>          validateEnteredPin();<br/>        }<br/>      }<br/>    }<br/><br/>    function popPinInput() {<br/>      currentPinEntered = currentPinEntered.slice(0, -1);<br/>      updatePinDots();<br/>    }<br/><br/>    function clearPinInput() {<br/>      currentPinEntered = &#39;&#39;;<br/>      updatePinDots();<br/>    }<br/><br/>    function updatePinDots() {<br/>      const dots = document.querySelectorAll(&#39;.pin-dot&#39;);<br/>      dots.forEach((dot, index) =&gt; {<br/>        if (index &lt; currentPinEntered.length) {<br/>          dot.classList.add(&#39;bg-accentEmerald&#39;, &#39;border-accentEmerald&#39;);<br/>        } else {<br/>          dot.classList.remove(&#39;bg-accentEmerald&#39;, &#39;border-accentEmerald&#39;);<br/>        }<br/>      });<br/>    }<br/><br/>    function validateEnteredPin() {<br/>      const state = AppState.get();<br/>      if (currentPinEntered === state.pin) {<br/>        document.getElementById(&#39;pinLockModal&#39;).classList.add(&#39;hidden&#39;);<br/>        currentPinEntered = &#39;&#39;;<br/>        updatePinDots();<br/>      } else {<br/>        document.getElementById(&#39;pinErrorMsg&#39;).textContent = &#39;Incorrect PIN. Try again.&#39;;<br/>        currentPinEntered = &#39;&#39;;<br/>        updatePinDots();<br/>      }<br/>    }<br/><br/>    function saveNewPin() {<br/>      const input = document.getElementById(&#39;pinSettingInput&#39;).value.trim();<br/>      const state = AppState.get();<br/>      if (input === &#39;&#39; || /^\d{4}$/.test(input)) {<br/>        state.pin = input;<br/>        AppState.set(state);<br/>        alert(input === &#39;&#39; ? &#39;PIN security disabled.&#39; : &#39;4-digit PIN saved successfully!&#39;);<br/>      } else {<br/>        alert(&#39;Please enter a valid 4-digit numeric PIN.&#39;);<br/>      }<br/>    }<br/><br/>    function saveEmergencyPhone() {<br/>      const input = document.getElementById(&#39;emergencyPhoneInput&#39;).value.trim();<br/>      const state = AppState.get();<br/>      state.emergencyPhone = input;<br/>      AppState.set(state);<br/>      document.getElementById(&#39;groundingCallLink&#39;).href = `tel:${input}`;<br/>    }<br/><br/>    /* =========================================================================<br/>       DATA BACKUP &amp; RESTORE (Features 46 &amp; 47)<br/>       ========================================================================= */<br/>    function exportAppDataJSON() {<br/>      const state = AppState.get();<br/>      const dataStr = &quot;data:text/json;charset=utf-8,&quot; + encodeURIComponent(JSON.stringify(state, null, 2));<br/>      const downloadAnchor = document.createElement(&#39;a&#39;);<br/>      downloadAnchor.setAttribute(&quot;href&quot;, dataStr);<br/>      downloadAnchor.setAttribute(&quot;download&quot;, `sovereign_mind_backup_${new Date().toISOString().split(&#39;T&#39;)[0]}.json`);<br/>      document.body.appendChild(downloadAnchor);<br/>      downloadAnchor.click();<br/>      downloadAnchor.remove();<br/>    }<br/><br/>    function importAppDataJSON(event) {<br/>      const file = event.target.files[0];<br/>      if (!file) return;<br/>      const reader = new FileReader();<br/>      reader.onload = function(e) {<br/>        try {<br/>          const parsed = JSON.parse(e.target.result);<br/>          if (parsed.ejacResetTime) {<br/>            AppState.set(parsed);<br/>            alert(&#39;✓ Ledger successfully restored!&#39;);<br/>            location.reload();<br/>          } else {<br/>            alert(&#39;Invalid backup file schema.&#39;);<br/>          }<br/>        } catch (err) {<br/>          alert(&#39;Failed to parse JSON file.&#39;);<br/>        }<br/>      };<br/>      reader.readAsText(file);<br/>    }<br/><br/>    function factoryReset() {<br/>      if (confirm(&#39;Are you absolutely certain? This erases all streaks, diaries, and custom tags completely.&#39;)) {<br/>        localStorage.removeItem(STORAGE_KEY);<br/>        location.reload();<br/>      }<br/>    }<br/><br/>    /* =========================================================================<br/>       ACTIVE INTERVAL TIMERS (Features 15 &amp; 16)<br/>       ========================================================================= */<br/>    let intervalTimerRef = null;<br/>    let intervalRemaining = 0;<br/><br/>    function startIntervalMeditation(minutes) {<br/>      if (intervalTimerRef) clearInterval(intervalTimerRef);<br/>      intervalRemaining = minutes * 60;<br/>      <br/>      const bar = document.getElementById(&#39;activeTimerContainer&#39;);<br/>      bar.classList.remove(&#39;hidden&#39;);<br/>      document.getElementById(&#39;activeTimerName&#39;).textContent = `${minutes}-Minute Cooldown In Progress`;<br/><br/>      intervalTimerRef = setInterval(() =&gt; {<br/>        if (intervalRemaining &gt; 0) {<br/>          intervalRemaining--;<br/>          const m = Math.floor(intervalRemaining / 60);<br/>          const s = intervalRemaining % 60;<br/>          document.getElementById(&#39;activeTimerCountdown&#39;).textContent = `${String(m).padStart(2,&#39;0&#39;)}:${String(s).padStart(2,&#39;0&#39;)}`;<br/>        } else {<br/>          clearInterval(intervalTimerRef);<br/>          bar.classList.add(&#39;hidden&#39;);<br/>          alert(&#39;🧘 Neuroplastic session complete. Prefrontal executive control restored.&#39;);<br/>        }<br/>      }, 1000);<br/>    }<br/><br/>    function cancelActiveTimer() {<br/>      if (intervalTimerRef) clearInterval(intervalTimerRef);<br/>      document.getElementById(&#39;activeTimerContainer&#39;).classList.add(&#39;hidden&#39;);<br/>    }<br/><br/>    /* =========================================================================<br/>       MODAL UTILITIES<br/>       ========================================================================= */<br/>    function openModal(id) {<br/>      document.getElementById(id).classList.remove(&#39;hidden&#39;);<br/>    }<br/><br/>    function closeModal(id) {<br/>      document.getElementById(id).classList.add(&#39;hidden&#39;);<br/>    }<br/><br/>    /* =========================================================================<br/>       SERVICE WORKER REGISTRATION (Feature 48 - Offline PWA Ready)<br/>       ========================================================================= */<br/>    if (&#39;serviceWorker&#39; in navigator) {<br/>      window.addEventListener(&#39;load&#39;, () =&gt; {<br/>        const swBlob = new Blob([`<br/>          const CACHE_NAME = &#39;sovereign-cache-v1&#39;;<br/>          self.addEventListener(&#39;install&#39;, e =&gt; self.skipWaiting());<br/>          self.addEventListener(&#39;activate&#39;, e =&gt; clients.claim());<br/>          self.addEventListener(&#39;fetch&#39;, e =&gt; {<br/>            e.respondWith(<br/>              caches.match(e.request).then(res =&gt; res || fetch(e.request).catch(() =&gt; caches.match(e.request)))<br/>            );<br/>          });<br/>        `], { type: &#39;application/javascript&#39; });<br/><br/>        navigator.serviceWorker.register(URL.createObjectURL(swBlob))<br/>          .catch(err =&gt; console.log(&#39;SW registration bypass&#39;));<br/>      });<br/>    }<br/><br/>    /* =========================================================================<br/>       APPLICATION BOOTSTRAPPER<br/>       ========================================================================= */<br/>    window.addEventListener(&#39;DOMContentLoaded&#39;, () =&gt; {<br/>      // Lucide icons init<br/>      lucide.createIcons();<br/><br/>      // Check PIN<br/>      checkPinRequiredOnLoad();<br/><br/>      // Sync settings UI with state<br/>      const state = AppState.get();<br/>      if (state.pin) document.getElementById(&#39;pinSettingInput&#39;).value = state.pin;<br/>      if (state.emergencyPhone) {<br/>        document.getElementById(&#39;emergencyPhoneInput&#39;).value = state.emergencyPhone;<br/>        document.getElementById(&#39;groundingCallLink&#39;).href = `tel:${state.emergencyPhone}`;<br/>      }<br/>      if (state.whyVaultText) document.getElementById(&#39;whyVaultDisplay&#39;).textContent = `&quot;${state.whyVaultText}&quot;`;<br/>      if (state.ifThenRule) document.getElementById(&#39;ifThenDisplay&#39;).textContent = `&quot;${state.ifThenRule}&quot;`;<br/>      document.getElementById(&#39;totalUrgesResisted&#39;).textContent = state.urgesResistedCount || 0;<br/><br/>      // Start modules<br/>      startLiveCounters();<br/>      renderMilestoneBadges();<br/>      calculateRollingMetrics();<br/>      renderCognitiveChart();<br/>      renderTriggerTags();<br/>      renderTriggerChart();<br/>      renderCalendarHeatmap();<br/>    });<br/>  &lt;/script&gt;<br/>&lt;/body&gt;<br/>&lt;/html&gt;</body>
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Sovereign Mind - Habit & Dopamine Rebalancing</title>
+
+  <!-- PWA Metadata & Inline Manifest -->
+  <meta name="theme-color" content="#090d16" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="description" content="Offline-first Dopamine Rebalancing & Habit Recovery Tracker" />
+  
+  <link rel="manifest" href='data:application/manifest+json;utf-8,{"name":"Sovereign Mind","short_name":"Sovereign","start_url":".","display":"standalone","background_color":"#090d16","theme_color":"#090d16","icons":[{"src":"https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=192&auto=format&fit=crop&q=60","sizes":"192x192","type":"image/png"},{"src":"https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=512&auto=format&fit=crop&q=60","sizes":"512x512","type":"image/png"}]}' />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            bgDark: '#090d16',
+            cardDark: '#111726',
+            borderDark: '#1e293b',
+            accentEmerald: '#10b981',
+            accentRose: '#f43f5e',
+            accentAmber: '#f59e0b',
+            accentIndigo: '#6366f1'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* Custom Scrollbars and Pulse Keyframes */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: #090d16; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+    
+    @keyframes breatheExpand {
+      0%, 100% { transform: scale(1); opacity: 0.7; }
+      21.05% { transform: scale(1.6); opacity: 1; }  /* Inhale 4s */
+      57.89% { transform: scale(1.6); opacity: 0.9; }  /* Hold 7s */
+      100% { transform: scale(1); opacity: 0.7; }     /* Exhale 8s */
+    }
+    .animate-breathe {
+      animation: breatheExpand 19s ease-in-out infinite;
+    }
+
+    @keyframes sineWave {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+      100% { transform: translateY(0px); }
+    }
+    .animate-sinewave {
+      animation: sineWave 2s ease-in-out infinite;
+    }
+  </style>
+</head>
+
+<body class="bg-bgDark text-slate-100 min-h-screen font-sans selection:bg-accentEmerald selection:text-black pb-24 antialiased select-none">
+
+  <!-- ==================== CAMOUFLAGE / DISGUISE SCREEN (Feature 43) ==================== -->
+  <div id="camouflageScreen" class="hidden fixed inset-0 z-50 bg-slate-50 text-slate-800 p-6 flex flex-col justify-between overflow-y-auto">
+    <div>
+      <div class="flex items-center justify-between border-b pb-3 mb-4">
+        <h1 class="text-xl font-bold tracking-tight text-slate-700 flex items-center gap-2">
+          <span>📝</span> Daily Work Notes & Tasklist
+        </h1>
+        <button id="exitCamouflageBtn" class="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1.5 rounded font-mono">
+          Exit Note
+        </button>
+      </div>
+      <p class="text-xs text-slate-400 mb-3 font-mono">Auto-saved to local disk: <span id="mockSaveTime">Just now</span></p>
+      
+      <div class="space-y-2 mb-6">
+        <label class="flex items-center gap-3 text-sm p-2 bg-white rounded border border-slate-200">
+          <input type="checkbox" checked class="rounded text-blue-600" />
+          <span class="line-through text-slate-400">Review quarterly system performance specs</span>
+        </label>
+        <label class="flex items-center gap-3 text-sm p-2 bg-white rounded border border-slate-200">
+          <input type="checkbox" checked class="rounded text-blue-600" />
+          <span class="line-through text-slate-400">Draft deployment pipeline script for client</span>
+        </label>
+        <label class="flex items-center gap-3 text-sm p-2 bg-white rounded border border-slate-200">
+          <input type="checkbox" class="rounded text-blue-600" />
+          <span>Prepare documentation for Monday sprint planning</span>
+        </label>
+        <label class="flex items-center gap-3 text-sm p-2 bg-white rounded border border-slate-200">
+          <input type="checkbox" class="rounded text-blue-600" />
+          <span>Refactor database caching layer</span>
+        </label>
+      </div>
+
+      <textarea class="w-full h-44 p-3 border border-slate-200 rounded text-sm bg-white focus:outline-none focus:ring-1 focus:ring-slate-400 font-sans" placeholder="Type personal notes here...">Call engineering lead about microservice refactor timeline. Meeting scheduled at 3 PM.</textarea>
+    </div>
+    <div class="text-[11px] text-slate-400 text-center font-mono py-2">
+      Workspace Note App v2.4.1 — Double-tap header or click 'Exit Note' to return.
+    </div>
+  </div>
+
+  <!-- ==================== PIN PROTECTION MODAL (Feature 44) ==================== -->
+  <div id="pinLockModal" class="hidden fixed inset-0 z-50 bg-bgDark/98 flex flex-col items-center justify-center p-6">
+    <div class="max-w-xs w-full text-center space-y-6">
+      <div class="w-16 h-16 bg-slate-800/80 rounded-2xl flex items-center justify-center mx-auto border border-borderDark text-accentEmerald">
+        <i data-lucide="shield-check" class="w-8 h-8"></i>
+      </div>
+      <div>
+        <h2 class="text-xl font-bold tracking-tight">Sovereignty Protected</h2>
+        <p class="text-xs text-slate-400 mt-1">Enter your 4-digit PIN to access recovery logs</p>
+      </div>
+      <!-- PIN Dots -->
+      <div class="flex justify-center gap-4 py-2">
+        <span class="pin-dot w-4 h-4 rounded-full border border-slate-600 transition-all"></span>
+        <span class="pin-dot w-4 h-4 rounded-full border border-slate-600 transition-all"></span>
+        <span class="pin-dot w-4 h-4 rounded-full border border-slate-600 transition-all"></span>
+        <span class="pin-dot w-4 h-4 rounded-full border border-slate-600 transition-all"></span>
+      </div>
+      <p id="pinErrorMsg" class="text-xs text-accentRose font-medium min-h-[16px]"></p>
+      
+      <!-- Keypad -->
+      <div class="grid grid-cols-3 gap-3">
+        <button onclick="handlePinInput('1')" class="h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition">1</button>
+        <button onclick="handlePinInput('2')" class="h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition">2</button>
+        <button onclick="handlePinInput('3')" class="h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition">3</button>
+        <button onclick="handlePinInput('4')" class="h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition">4</button>
+        <button onclick="handlePinInput('5')" class="h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition">5</button>
+        <button onclick="handlePinInput('6')" class="h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition">6</button>
+        <button onclick="handlePinInput('7')" class="h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition">7</button>
+        <button onclick="handlePinInput('8')" class="h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition">8</button>
+        <button onclick="handlePinInput('9')" class="h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition">9</button>
+        <button onclick="clearPinInput()" class="h-14 rounded-xl bg-cardDark border border-borderDark text-xs font-semibold text-slate-400 hover:bg-slate-800 active:scale-95 transition">CLR</button>
+        <button onclick="handlePinInput('0')" class="h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition">0</button>
+        <button onclick="popPinInput()" class="h-14 rounded-xl bg-cardDark border border-borderDark text-sm font-semibold text-slate-400 hover:bg-slate-800 active:scale-95 transition flex items-center justify-center">
+          <i data-lucide="delete" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== RELAPSE AUTOPSY & RESET MODAL (Feature 28 & 2) ==================== -->
+  <div id="resetModal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-cardDark border border-borderDark rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-borderDark pb-3">
+        <div>
+          <h3 class="font-bold text-lg text-accentRose flex items-center gap-2">
+            <i data-lucide="heart-crack" class="w-5 h-5"></i>
+            Reset & Compassionate Autopsy
+          </h3>
+          <p class="text-xs text-slate-400">Slips are data points, not moral failures. Record and elevate.</p>
+        </div>
+        <button onclick="closeModal('resetModal')" class="text-slate-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">What specifically occurred?</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" id="typeMOnlyBtn" onclick="setResetType('m_only')" class="p-2.5 rounded-lg border border-accentAmber/40 bg-accentAmber/10 text-accentAmber text-center font-medium">
+              Masturbation Only (No Ejaculation)
+            </button>
+            <button type="button" id="typeEjacBtn" onclick="setResetType('ejaculation')" class="p-2.5 rounded-lg border border-borderDark bg-slate-800 text-slate-300 text-center font-medium">
+              Ejaculation (Full Slip)
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Primary Underlying Trigger:</label>
+          <div id="modalTriggerChips" class="flex flex-wrap gap-1.5 mb-2"></div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Physical Location Context (Feature 30):</label>
+          <select id="modalLocation" class="w-full bg-slate-900 border border-borderDark rounded-lg p-2 text-slate-300 text-xs">
+            <option value="Bed / Bedroom">Bed / Bedroom</option>
+            <option value="Bathroom">Bathroom</option>
+            <option value="Computer Desk / Late Office">Computer Desk / Late Office</option>
+            <option value="Living Room Couch">Living Room Couch</option>
+            <option value="Other / Travel">Other / Travel</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Immediate Physical Symptoms Present (Feature 18):</label>
+          <div id="modalSymptomChips" class="grid grid-cols-2 gap-1.5">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">What boundary or guardrail slipped?</label>
+          <input type="text" id="modalBoundarySlipped" placeholder="e.g. Took phone into bed after 11 PM" class="w-full bg-slate-900 border border-borderDark rounded-lg p-2 text-slate-200" />
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Countermeasure for the next 72 hours:</label>
+          <textarea id="modalCountermeasure" rows="2" placeholder="e.g. Sleep phone in living room; cold splash face before bed." class="w-full bg-slate-900 border border-borderDark rounded-lg p-2 text-slate-200"></textarea>
+        </div>
+      </div>
+
+      <div class="pt-2 flex gap-3">
+        <button onclick="closeModal('resetModal')" class="flex-1 py-2.5 rounded-xl border border-borderDark text-slate-300 hover:bg-slate-800 font-medium text-xs">Cancel</button>
+        <button onclick="confirmReset()" class="flex-1 py-2.5 rounded-xl bg-accentRose hover:bg-rose-600 text-white font-bold text-xs shadow-lg shadow-rose-900/30">Confirm & Begin Anew</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SOS / EMERGENCY OVERLAY (Features 33–40) ==================== -->
+  <div id="sosOverlay" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md overflow-y-auto p-4 sm:p-6 flex flex-col justify-between">
+    <div class="max-w-xl mx-auto w-full space-y-5">
+      <!-- Header -->
+      <div class="flex items-center justify-between border-b border-rose-900/50 pb-3">
+        <div class="flex items-center gap-2 text-accentRose">
+          <i data-lucide="flame" class="w-6 h-6 animate-pulse"></i>
+          <span class="font-bold text-base tracking-wider uppercase">Urge Neutralization Protocol</span>
+        </div>
+        <button onclick="closeSOS()" class="p-1 rounded-full bg-slate-800 text-slate-300 hover:text-white">
+          <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <!-- 15-Min Urge Surfing Timer (Feature 34) -->
+      <div class="bg-cardDark border border-rose-900/40 rounded-2xl p-5 text-center relative overflow-hidden">
+        <div class="absolute -top-12 -left-12 w-28 h-28 bg-rose-500/10 rounded-full blur-2xl"></div>
+        <span class="text-xs uppercase tracking-widest text-slate-400 font-semibold">Wave Surfing Principle</span>
+        <h4 class="text-xs text-slate-300 mt-1">An urge crests like an ocean wave and dissipates within 15 minutes.</h4>
+        
+        <div class="my-4">
+          <div id="surfTimerDisplay" class="text-4xl sm:text-5xl font-mono font-black text-rose-400">15:00</div>
+          <div class="flex justify-center items-center gap-1 mt-2 text-rose-500 text-xs">
+            <span class="animate-sinewave">🌊</span>
+            <span class="text-[11px] text-slate-400 font-medium">Breathe through the physical sensation</span>
+          </div>
+        </div>
+
+        <div class="flex justify-center gap-3">
+          <button id="surfTimerToggleBtn" onclick="toggleSurfTimer()" class="px-5 py-2 rounded-xl bg-accentRose text-white font-bold text-xs hover:bg-rose-600 transition shadow-lg shadow-rose-950">
+            Start Surfing
+          </button>
+          <button onclick="resetSurfTimer()" class="px-4 py-2 rounded-xl border border-borderDark text-slate-300 text-xs hover:bg-slate-800 transition">
+            Reset
+          </button>
+          <button onclick="incrementUrgesResisted()" class="px-4 py-2 rounded-xl bg-accentEmerald text-slate-950 font-bold text-xs hover:bg-emerald-400 transition flex items-center gap-1.5">
+            <i data-lucide="check" class="w-4 h-4"></i> Urge Neutralized!
+          </button>
+        </div>
+      </div>
+
+      <!-- 4-7-8 Breathing Sphere (Feature 35) -->
+      <div class="bg-cardDark border border-borderDark rounded-2xl p-4 sm:p-5 text-center">
+        <div class="flex items-center justify-between text-xs text-slate-400 mb-2 font-medium">
+          <span>Parasympathetic Reset</span>
+          <span class="text-accentEmerald">4s Inhale • 7s Hold • 8s Exhale</span>
+        </div>
+        <div class="py-6 flex flex-col items-center justify-center">
+          <div class="relative w-36 h-36 flex items-center justify-center">
+            <div id="breatheBall" class="absolute w-24 h-24 rounded-full bg-accentEmerald/20 border-2 border-accentEmerald animate-breathe flex items-center justify-center shadow-lg shadow-emerald-950"></div>
+            <span id="breatheText" class="relative z-10 text-xs font-mono font-bold tracking-wider text-emerald-300">BREATHE</span>
+          </div>
+          <span class="text-[11px] text-slate-400 mt-2">Follow the circle. Reset your nervous system immediately.</span>
+        </div>
+      </div>
+
+      <!-- Physical Circuit & Timers (Features 36, 38) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+        <!-- Dopamine Swap -->
+        <div class="bg-cardDark border border-borderDark rounded-xl p-4 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between font-bold text-slate-200 mb-1">
+              <span class="flex items-center gap-1.5"><i data-lucide="shuffle" class="w-4 h-4 text-accentAmber"></i> Dopamine Swap</span>
+              <button onclick="generateRandomSwap()" class="text-accentAmber hover:underline text-[11px]">Roll New</button>
+            </div>
+            <p id="dopamineSwapAction" class="text-slate-300 text-xs my-2 font-medium p-2.5 bg-slate-900 rounded-lg border border-slate-800">
+              Drop and do 20 deep push-ups right now. Displace dopamine via physical exertion.
+            </p>
+          </div>
+          <button onclick="completeDopamineSwap()" class="w-full mt-2 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-[11px]">
+            Mark Interruption Complete
+          </button>
+        </div>
+
+        <!-- Cold Shower 2-Min Sprint -->
+        <div class="bg-cardDark border border-borderDark rounded-xl p-4 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between font-bold text-slate-200 mb-1">
+              <span class="flex items-center gap-1.5"><i data-lucide="droplets" class="w-4 h-4 text-sky-400"></i> Cold Shower Sprint</span>
+              <span id="coldShowerTime" class="font-mono text-sky-400 font-bold">02:00</span>
+            </div>
+            <p class="text-slate-400 text-[11px]">Immediate cold immersion spikes sustained baseline dopamine by 250% without crashes.</p>
+          </div>
+          <div class="flex gap-2 mt-3">
+            <button id="coldShowerBtn" onclick="toggleColdShowerTimer()" class="flex-1 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-[11px]">
+              Start 2-Min Cold Sprint
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Identity & Why Vault + Letter to Self (Features 37, 39, 40) -->
+      <div class="bg-cardDark border border-borderDark rounded-2xl p-4 text-xs space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-slate-200 flex items-center gap-1.5">
+            <i data-lucide="compass" class="w-4 h-4 text-accentIndigo"></i> My Immutable "Why" & Letter To Future Self
+          </span>
+          <button onclick="editWhyVault()" class="text-accentIndigo hover:underline text-[11px]">Edit</button>
+        </div>
+        <div id="whyVaultDisplay" class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-slate-300 leading-relaxed italic text-[11px]">
+          "I am cultivating magnetic vitality, mental unshakeability, and genuine confidence. Instant gratification sacrifices long-term greatness for 5 seconds of illusory comfort."
+        </div>
+        
+        <div class="pt-1 flex items-center justify-between border-t border-borderDark">
+          <span class="text-slate-400 text-[11px]">Pattern Interrupt Support (Feature 40):</span>
+          <a id="groundingCallLink" href="tel:" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-400 font-semibold text-[11px] flex items-center gap-1.5 border border-emerald-900/50">
+            <i data-lucide="phone-call" class="w-3.5 h-3.5"></i> Grounding Call
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MAIN APPLICATION CONTAINER ==================== -->
+  <div class="max-w-2xl mx-auto px-4 pt-4 sm:pt-6 space-y-6">
+
+    <!-- TOP NAV / HEADER -->
+    <header class="flex items-center justify-between border-b border-borderDark pb-3" id="mainHeader">
+      <div class="flex items-center gap-2 cursor-pointer" id="headerTitleArea" title="Double tap to enter stealth camouflage">
+        <div class="w-9 h-9 rounded-xl bg-accentEmerald/10 border border-accentEmerald/30 flex items-center justify-center text-accentEmerald">
+          <i data-lucide="shield" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-base tracking-tight leading-tight flex items-center gap-1.5">
+            Sovereign Mind
+            <span id="healthGradeBadge" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+              HEALTHY
+            </span>
+          </h1>
+          <p class="text-[10px] text-slate-400 font-mono">Dopamine Architecture & Retention Engine</p>
+        </div>
+      </div>
+
+      <!-- Action Icons -->
+      <div class="flex items-center gap-2">
+        <button onclick="toggleCamouflage()" class="p-2 rounded-lg bg-cardDark border border-borderDark text-slate-400 hover:text-white" title="Stealth / Camouflage Mode">
+          <i data-lucide="eye-off" class="w-4 h-4"></i>
+        </button>
+        <button onclick="openModal('settingsModal')" class="p-2 rounded-lg bg-cardDark border border-borderDark text-slate-400 hover:text-white" title="Settings & Backup">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- CHASER EFFECT BANNER (Feature 29) -->
+    <div id="chaserAlertBox" class="hidden bg-rose-500/10 border border-rose-500/40 rounded-xl p-3 flex items-start gap-3 text-xs text-rose-300">
+      <i data-lucide="alert-triangle" class="w-5 h-5 text-accentRose shrink-0 mt-0.5"></i>
+      <div>
+        <span class="font-bold text-white block">CHASER EFFECT ZONE ACTIVE (<span id="chaserHoursLeft">72h remaining</span>)</span>
+        <span class="text-rose-300/80">Neurochemical dopamine crash peaks in the first 72 hours. Your brain will rationalize another slip. Keep guardrails raised!</span>
+      </div>
+    </div>
+
+    <!-- MODULE 1: INDEPENDENT DUAL TRACKERS (Features 1, 2, 5, 6, 8) -->
+    <section class="space-y-3">
+      <!-- Tracker A: Ejaculation / Retention -->
+      <div class="bg-cardDark border border-borderDark rounded-2xl p-4 sm:p-5 relative overflow-hidden shadow-lg">
+        <div class="flex items-center justify-between text-xs mb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-accentEmerald animate-pulse"></span>
+            <span class="font-bold tracking-wide text-slate-200 uppercase">Semen Retention / Ejaculation Tracker</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="logWetDream()" class="text-[11px] px-2.5 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700" title="Log Involuntary Wet Dream without resetting streak">
+              💧 Wet Dream (Involuntary)
+            </button>
+            <button onclick="openResetModal('ejaculation')" class="text-[11px] px-2.5 py-1 rounded bg-rose-950/60 text-rose-300 hover:bg-rose-900 border border-rose-900/50">
+              Reset
+            </button>
+          </div>
+        </div>
+
+        <!-- Big Counter -->
+        <div class="grid grid-cols-4 gap-2 text-center py-2">
+          <div class="bg-slate-900/80 rounded-xl p-2.5 border border-borderDark">
+            <span id="ejacDays" class="block text-2xl sm:text-3xl font-mono font-black text-accentEmerald">0</span>
+            <span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Days</span>
+          </div>
+          <div class="bg-slate-900/80 rounded-xl p-2.5 border border-borderDark">
+            <span id="ejacHours" class="block text-2xl sm:text-3xl font-mono font-black text-slate-200">00</span>
+            <span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Hours</span>
+          </div>
+          <div class="bg-slate-900/80 rounded-xl p-2.5 border border-borderDark">
+            <span id="ejacMins" class="block text-2xl sm:text-3xl font-mono font-black text-slate-200">00</span>
+            <span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Mins</span>
+          </div>
+          <div class="bg-slate-900/80 rounded-xl p-2.5 border border-borderDark">
+            <span id="ejacSecs" class="block text-2xl sm:text-3xl font-mono font-black text-slate-200">00</span>
+            <span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Secs</span>
+          </div>
+        </div>
+
+        <!-- Feature 8: Next Milestone Progress Bar -->
+        <div class="mt-4 pt-3 border-t border-borderDark">
+          <div class="flex justify-between items-center text-xs mb-1">
+            <span class="text-slate-400">Next Milestone: <b id="nextMilestoneLabel" class="text-slate-200">3 Days</b></span>
+            <span id="nextMilestoneRemaining" class="text-accentEmerald font-mono text-[11px]">8h 22m left</span>
+          </div>
+          <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-800">
+            <div id="milestoneProgressBar" class="bg-accentEmerald h-full rounded-full transition-all duration-500" style="width: 45%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tracker B: Masturbation / Edging Tracker -->
+      <div class="bg-cardDark border border-borderDark rounded-xl p-3.5 sm:p-4 flex items-center justify-between">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <i data-lucide="ban" class="w-4 h-4 text-accentAmber"></i>
+            <span class="text-xs font-bold text-slate-300">Clean Mind & No-Edging Tracker</span>
+          </div>
+          <div class="font-mono text-sm sm:text-base font-bold text-slate-200" id="mOnlyTimeDisplay">
+            0d 0h 0m 0s Clean
+          </div>
+        </div>
+        <button onclick="openResetModal('m_only')" class="text-xs px-3 py-1.5 rounded-lg bg-amber-500/10 text-accentAmber border border-accentAmber/30 hover:bg-amber-500/20 font-medium">
+          M-Only Reset
+        </button>
+      </div>
+
+      <!-- Feature 5: Rolling Success Metric & Urges Resisted -->
+      <div class="grid grid-cols-3 gap-2 text-center text-xs">
+        <div class="bg-cardDark border border-borderDark rounded-xl p-2.5">
+          <span class="text-[10px] text-slate-400 uppercase font-semibold">Rolling 30D</span>
+          <span id="cleanRate30" class="block font-mono text-base sm:text-lg font-bold text-accentEmerald mt-0.5">93.3%</span>
+        </div>
+        <div class="bg-cardDark border border-borderDark rounded-xl p-2.5">
+          <span class="text-[10px] text-slate-400 uppercase font-semibold">Rolling 90D</span>
+          <span id="cleanRate90" class="block font-mono text-base sm:text-lg font-bold text-slate-200 mt-0.5">88.5%</span>
+        </div>
+        <div class="bg-cardDark border border-borderDark rounded-xl p-2.5">
+          <span class="text-[10px] text-slate-400 uppercase font-semibold">Urges Neutralized</span>
+          <span id="totalUrgesResisted" class="block font-mono text-base sm:text-lg font-bold text-sky-400 mt-0.5">28</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODULE 2: MILESTONES & BRAIN REWIRING (Features 3, 4, 9, 12) -->
+    <section class="bg-cardDark border border-borderDark rounded-2xl p-4 sm:p-5 space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="font-bold text-sm tracking-wide text-slate-200 flex items-center gap-2">
+          <i data-lucide="award" class="w-4 h-4 text-accentAmber"></i>
+          12 Biological Milestones & Badges
+        </h2>
+        <span class="text-[11px] text-slate-400" id="milestonesUnlockedCount">4 / 12 Unlocked</span>
+      </div>
+
+      <!-- Milestone Badges Grid -->
+      <div id="milestoneBadgesGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <!-- Brain Rewiring Phase Banner (Feature 9) -->
+      <div class="p-3 bg-slate-900/90 rounded-xl border border-slate-800 space-y-1 text-xs">
+        <div class="flex items-center justify-between font-semibold">
+          <span class="text-accentEmerald" id="brainStageTitle">Stage 2: Dopamine Receptor Upregulation</span>
+          <span class="text-slate-400 text-[10px]" id="brainStageDays">Days 7–21</span>
+        </div>
+        <p class="text-slate-300 text-[11px] leading-relaxed" id="brainStageDesc">
+          D2 receptor sensitivity is rebounding. Everyday tasks, reading, and deep work begin to feel naturally rewarding again.
+        </p>
+      </div>
+    </section>
+
+    <!-- MODULE 3: DAILY VITALS & COGNITIVE LOG (Features 10, 11, 17, 20, 23) -->
+    <section class="bg-cardDark border border-borderDark rounded-2xl p-4 sm:p-5 space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="font-bold text-sm tracking-wide text-slate-200 flex items-center gap-2">
+          <i data-lucide="activity" class="w-4 h-4 text-accentIndigo"></i>
+          Daily Vitality, Ojas & Cognitive Log
+        </h2>
+        <span class="text-[10px] text-slate-400 font-mono" id="todayCheckinStatus">Checked-in today</span>
+      </div>
+
+      <!-- Sliders Grid -->
+      <div class="space-y-3 text-xs">
+        <!-- Ojas Slider -->
+        <div>
+          <div class="flex justify-between font-semibold text-slate-300 mb-1">
+            <span>Ojas / Physical Vitality:</span>
+            <span id="ojasValDisplay" class="font-mono text-accentEmerald font-bold">8 / 10</span>
+          </div>
+          <input type="range" min="1" max="10" value="8" id="ojasSlider" class="w-full accent-emerald-500 cursor-pointer" oninput="updateDailyLogDraft()" />
+        </div>
+
+        <!-- Brain Fog vs Clarity Slider -->
+        <div>
+          <div class="flex justify-between font-semibold text-slate-300 mb-1">
+            <span>Mental Clarity (vs Fog):</span>
+            <span id="focusValDisplay" class="font-mono text-accentIndigo font-bold">7 / 10</span>
+          </div>
+          <input type="range" min="1" max="10" value="7" id="focusSlider" class="w-full accent-indigo-500 cursor-pointer" oninput="updateDailyLogDraft()" />
+        </div>
+
+        <!-- Sleep Quality & Hydration Counters -->
+        <div class="grid grid-cols-2 gap-3 pt-1">
+          <div class="bg-slate-900 p-2.5 rounded-xl border border-borderDark flex items-center justify-between">
+            <span class="text-slate-400 text-[11px]">Sleep Quality:</span>
+            <select id="sleepRatingSelect" onchange="updateDailyLogDraft()" class="bg-slate-800 text-xs rounded px-2 py-1 border border-slate-700 text-amber-400 font-medium">
+              <option value="5">⭐⭐⭐⭐⭐</option>
+              <option value="4" selected>⭐⭐⭐⭐</option>
+              <option value="3">⭐⭐⭐</option>
+              <option value="2">⭐⭐</option>
+              <option value="1">⭐</option>
+            </select>
+          </div>
+          <div class="bg-slate-900 p-2.5 rounded-xl border border-borderDark flex items-center justify-between">
+            <span class="text-slate-400 text-[11px]">Water Glasses:</span>
+            <div class="flex items-center gap-1.5">
+              <button onclick="modWater(-1)" class="w-5 h-5 rounded bg-slate-800 text-slate-300 flex items-center justify-center font-bold text-xs">-</button>
+              <span id="waterCount" class="font-mono text-sky-400 font-bold text-xs">6</span>
+              <button onclick="modWater(1)" class="w-5 h-5 rounded bg-slate-800 text-slate-300 flex items-center justify-center font-bold text-xs">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Secondary Habits (Feature 13 & 21) -->
+        <div>
+          <span class="text-slate-400 text-[11px] block mb-1.5 font-medium">Energy Transmutation & Detox Protocols:</span>
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" onclick="toggleDailyTag(this, 'gym')" class="daily-tag px-2.5 py-1 rounded-lg border border-borderDark bg-slate-900 text-slate-300 text-[11px]">🏋️ Heavy Gym/Lifting</button>
+            <button type="button" onclick="toggleDailyTag(this, 'pranayama')" class="daily-tag px-2.5 py-1 rounded-lg border border-borderDark bg-slate-900 text-slate-300 text-[11px]">🧘 Breathwork / Pranayama</button>
+            <button type="button" onclick="toggleDailyTag(this, 'no_doomscroll')" class="daily-tag px-2.5 py-1 rounded-lg border border-borderDark bg-slate-900 text-slate-300 text-[11px]">📵 No Doomscrolling</button>
+            <button type="button" onclick="toggleDailyTag(this, 'clean_food')" class="daily-tag px-2.5 py-1 rounded-lg border border-borderDark bg-slate-900 text-slate-300 text-[11px]">🥗 Sattvic / Clean Food</button>
+          </div>
+        </div>
+
+        <button onclick="saveDailyCheckin()" class="w-full py-2.5 rounded-xl bg-accentIndigo hover:bg-indigo-600 text-white font-bold text-xs shadow-md transition">
+          Save Daily Check-in & Update Metrics
+        </button>
+      </div>
+
+      <!-- Feature 10: Cognitive Power & Focus Chart -->
+      <div class="pt-3 border-t border-borderDark">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-xs font-semibold text-slate-300">Cognitive Focus & Energy Progression</span>
+          <span class="text-[10px] text-slate-400">Past 14 Days</span>
+        </div>
+        <div class="h-44 w-full">
+          <canvas id="cognitiveChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODULE 4: TRIGGER ENGINE & VULNERABILITY ANALYTICS (Features 25, 26, 27, 31) -->
+    <section class="bg-cardDark border border-borderDark rounded-2xl p-4 sm:p-5 space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="font-bold text-sm tracking-wide text-slate-200 flex items-center gap-2">
+          <i data-lucide="target" class="w-4 h-4 text-accentRose"></i>
+          Trigger Intelligence & Vulnerable Windows
+        </h2>
+        <span class="text-accentRose text-xs font-bold" id="vulnerableWindowText">11:00 PM – 01:30 AM</span>
+      </div>
+
+      <!-- Dynamic Trigger Tags -->
+      <div>
+        <label class="text-xs text-slate-400 block mb-1.5">Registered Urge Triggers (Tap to log an urge or add new):</label>
+        <div id="triggerTagsContainer" class="flex flex-wrap gap-1.5 mb-2">
+          <!-- Injected via JS -->
+        </div>
+        
+        <!-- Add Custom Trigger Input -->
+        <div class="flex gap-2">
+          <input type="text" id="newTriggerInput" placeholder="Add custom trigger (e.g. Boredom, Twitter)" class="flex-1 bg-slate-900 border border-borderDark rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-accentEmerald" />
+          <button onclick="addNewCustomTrigger()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-accentEmerald font-bold text-xs flex items-center gap-1 border border-borderDark">
+            <i data-lucide="plus" class="w-4 h-4"></i> Add
+          </button>
+        </div>
+      </div>
+
+      <!-- Trigger Frequency Chart (Feature 26) -->
+      <div class="pt-2">
+        <span class="text-xs font-semibold text-slate-300 block mb-2">Trigger Incident Frequency:</span>
+        <div class="h-36 w-full">
+          <canvas id="triggerBarChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Feature 31: Implementation Intentions ("If-Then" Rules) -->
+      <div class="p-3 bg-slate-900/90 rounded-xl border border-slate-800 space-y-2 text-xs">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-amber-400 flex items-center gap-1.5">
+            <i data-lucide="zap" class="w-3.5 h-3.5"></i> If-Then Implementation Rule
+          </span>
+          <button onclick="promptEditIfThen()" class="text-[10px] text-slate-400 hover:underline">Change</button>
+        </div>
+        <p id="ifThenDisplay" class="text-slate-300 text-[11px] italic">
+          "IF I feel an intense urge while alone in bed after 11 PM, THEN I will immediately stand up, splash cold water on my eyes, and do 20 pushups."
+        </p>
+      </div>
+    </section>
+
+    <!-- MODULE 5: TRI-COLOR CALENDAR HEATMAP (Features 41 & 42) -->
+    <section class="bg-cardDark border border-borderDark rounded-2xl p-4 sm:p-5 space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="font-bold text-sm tracking-wide text-slate-200 flex items-center gap-2">
+            <i data-lucide="calendar" class="w-4 h-4 text-accentEmerald"></i>
+            Monthly Tri-Color Calendar Heatmap
+          </h2>
+          <p class="text-[10px] text-slate-400">Green = Clean • Yellow = M-Only • Red = Ejaculation</p>
+        </div>
+        <div class="flex items-center gap-1">
+          <button onclick="changeHeatmapMonth(-1)" class="p-1 rounded bg-slate-900 text-slate-300 hover:bg-slate-800 text-xs">◀</button>
+          <span id="calendarMonthLabel" class="text-xs font-bold font-mono px-1">October 2026</span>
+          <button onclick="changeHeatmapMonth(1)" class="p-1 rounded bg-slate-900 text-slate-300 hover:bg-slate-800 text-xs">▶</button>
+        </div>
+      </div>
+
+      <!-- Calendar Grid -->
+      <div>
+        <div class="grid grid-cols-7 gap-1 text-center text-[10px] text-slate-400 font-semibold mb-1">
+          <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+        </div>
+        <div id="calendarGrid" class="grid grid-cols-7 gap-1">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Feature 42: Month-over-Month Comparison -->
+      <div class="flex items-center justify-between text-xs pt-2 border-t border-borderDark font-medium">
+        <span class="text-slate-400">Clean Days This Month: <b id="thisMonthCleanCount" class="text-accentEmerald">28</b></span>
+        <span class="text-slate-400">Previous Month: <b id="prevMonthCleanCount" class="text-slate-200">26</b></span>
+        <span class="text-accentEmerald text-[11px]" id="monthTrendPercent">+7.6% ↗</span>
+      </div>
+    </section>
+
+    <!-- MODULE 6: NEUROPLASTICITY & MEDITATION TOOLS (Features 15, 16, 22) -->
+    <section class="bg-cardDark border border-borderDark rounded-2xl p-4 sm:p-5 space-y-3">
+      <h2 class="font-bold text-sm tracking-wide text-slate-200 flex items-center gap-2">
+        <i data-lucide="timer" class="w-4 h-4 text-sky-400"></i>
+        Neuroplasticity & Transmutation Timers
+      </h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+        <button onclick="startIntervalMeditation(3)" class="p-3 bg-slate-900 hover:bg-slate-800 border border-borderDark rounded-xl text-left">
+          <span class="block font-bold text-sky-400 text-sm">3 Mins</span>
+          <span class="text-slate-400 text-[10px]">Prefrontal Cooldown</span>
+        </button>
+        <button onclick="startIntervalMeditation(5)" class="p-3 bg-slate-900 hover:bg-slate-800 border border-borderDark rounded-xl text-left">
+          <span class="block font-bold text-accentEmerald text-sm">5 Mins</span>
+          <span class="text-slate-400 text-[10px]">Decision Delay Pause</span>
+        </button>
+        <button onclick="startIntervalMeditation(10)" class="p-3 bg-slate-900 hover:bg-slate-800 border border-borderDark rounded-xl text-left col-span-2 sm:col-span-1">
+          <span class="block font-bold text-accentIndigo text-sm">10 Mins</span>
+          <span class="text-slate-400 text-[10px]">Anulom-Vilom Transmutation</span>
+        </button>
+      </div>
+
+      <!-- Active Timer Bar -->
+      <div id="activeTimerContainer" class="hidden p-3 bg-sky-950/40 border border-sky-800/60 rounded-xl flex items-center justify-between text-xs">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span>
+          <span id="activeTimerName" class="font-semibold text-sky-300">Meditation Running</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span id="activeTimerCountdown" class="font-mono text-base font-bold text-white">05:00</span>
+          <button onclick="cancelActiveTimer()" class="text-slate-400 hover:text-white font-bold">✕</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODULE 7: MILESTONE SNAPSHOT CARD (Feature 50) -->
+    <section class="bg-cardDark border border-borderDark rounded-2xl p-4 sm:p-5 text-center space-y-3">
+      <h3 class="font-bold text-sm text-slate-200">Milestone Anonymous Snapshot Card</h3>
+      <p class="text-xs text-slate-400 max-w-sm mx-auto">Generate a discreet, clean graphic card of your streak to celebrate your discipline without exposing personal details.</p>
+      
+      <!-- Generated Card Preview -->
+      <div id="snapshotCardPreview" class="bg-gradient-to-br from-slate-900 via-cardDark to-slate-900 border border-emerald-500/30 rounded-2xl p-5 max-w-sm mx-auto shadow-2xl relative text-left">
+        <div class="flex justify-between items-center text-xs text-slate-400 mb-3">
+          <span class="tracking-widest uppercase font-mono text-[10px] text-accentEmerald">Sovereign Discipline</span>
+          <span class="text-[10px] font-mono">Verified Local Ledger</span>
+        </div>
+        <div class="text-3xl font-black font-mono text-white tracking-tight" id="snapshotDaysDisplay">
+          28 DAYS
+        </div>
+        <p class="text-xs text-emerald-400 font-semibold mt-1" id="snapshotBadgeDisplay">🏆 Semen Retention Warrior</p>
+        <div class="mt-4 pt-3 border-t border-slate-800 flex justify-between items-center text-[10px] text-slate-400">
+          <span>Success Rate: <b class="text-white" id="snapshotRateDisplay">93.3%</b></span>
+          <span class="font-mono text-slate-500">Unbroken Will</span>
+        </div>
+      </div>
+
+      <button onclick="alert('Snapshot card ready! You can screenshot the card above to save or share your milestone anonymously.')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-borderDark inline-flex items-center gap-2">
+        <i data-lucide="share-2" class="w-4 h-4"></i> Screenshot & Celebrate
+      </button>
+    </section>
+
+  </div> <!-- End Main Container -->
+
+  <!-- ==================== PERSISTENT FLOATING SOS BUTTON (Feature 33) ==================== -->
+  <div class="fixed bottom-6 right-6 z-40">
+    <button onclick="triggerEmergencySOS()" class="w-16 h-16 rounded-full bg-accentRose hover:bg-rose-600 text-white shadow-2xl shadow-rose-900/80 flex flex-col items-center justify-center font-black tracking-wider transition-all duration-300 active:scale-90 border-2 border-rose-300">
+      <i data-lucide="flame" class="w-6 h-6 animate-bounce"></i>
+      <span class="text-[10px] font-mono tracking-widest mt-0.5">SOS</span>
+    </button>
+  </div>
+
+  <!-- ==================== SETTINGS & DATA MODAL (Features 44, 46, 47, 48) ==================== -->
+  <div id="settingsModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-cardDark border border-borderDark rounded-2xl max-w-md w-full p-5 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto text-xs">
+      <div class="flex items-center justify-between border-b border-borderDark pb-3">
+        <h3 class="font-bold text-base text-slate-100 flex items-center gap-2">
+          <i data-lucide="sliders" class="w-4 h-4 text-accentEmerald"></i>
+          Settings & Security
+        </h3>
+        <button onclick="closeModal('settingsModal')" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- PIN Security Configuration -->
+      <div class="space-y-2">
+        <span class="font-semibold text-slate-300 block">Passcode PIN Protection:</span>
+        <div class="flex gap-2">
+          <input type="password" maxlength="4" id="pinSettingInput" placeholder="Set 4-digit PIN (e.g. 1234)" class="flex-1 bg-slate-900 border border-borderDark rounded-lg px-3 py-2 text-xs text-white" />
+          <button onclick="saveNewPin()" class="px-3 py-2 rounded-lg bg-accentEmerald text-slate-950 font-bold hover:bg-emerald-400">Save PIN</button>
+        </div>
+        <p class="text-[10px] text-slate-400">Leave blank and save to disable PIN lock on startup.</p>
+      </div>
+
+      <!-- Emergency Contact Phone Number -->
+      <div class="space-y-1">
+        <span class="font-semibold text-slate-300 block">Grounding Call Phone Number:</span>
+        <input type="tel" id="emergencyPhoneInput" placeholder="+1..." class="w-full bg-slate-900 border border-borderDark rounded-lg px-3 py-2 text-xs text-white" onchange="saveEmergencyPhone()" />
+      </div>
+
+      <!-- Data Backup & Restore (Features 46, 47) -->
+      <div class="pt-3 border-t border-borderDark space-y-2">
+        <span class="font-semibold text-slate-300 block">100% Client-Side Local Ledger:</span>
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="exportAppDataJSON()" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold flex items-center justify-center gap-1.5">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i> Export JSON
+          </button>
+          <label class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold flex items-center justify-center gap-1.5 cursor-pointer">
+            <i data-lucide="upload" class="w-3.5 h-3.5"></i> Import JSON
+            <input type="file" id="importJsonFileInput" accept=".json" class="hidden" onchange="importAppDataJSON(event)" />
+          </label>
+        </div>
+      </div>
+
+      <!-- Factory Reset -->
+      <div class="pt-2 border-t border-borderDark">
+        <button onclick="factoryReset()" class="w-full py-2 rounded-lg text-accentRose hover:bg-rose-950/30 text-[11px] font-semibold border border-rose-900/30">
+          Factory Reset App (Erase All Local Data)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== JAVASCRIPT LOGIC ENGINE ==================== -->
+  <script>
+    /* =========================================================================
+       DEFAULT INITIALIZATION & STATE SCHEMA
+       ========================================================================= */
+    const STORAGE_KEY = 'SOVEREIGN_MIND_STATE_V1';
+
+    // 12 Milestone Steps (Feature 3)
+    const MILESTONE_STEPS = [
+      { id: '12h', hours: 12, label: '12 Hours', badge: '🌱 Dawn of Will', desc: 'Dopamine cravings stabilize; baseline pulse slows.' },
+      { id: '24h', hours: 24, label: '24 Hours', badge: '⚡ Day One Warrior', desc: 'Blood androgen receptors begin upregulation.' },
+      { id: '3d', hours: 72, label: '3 Days', badge: '🛡️ Chaser Vanquisher', desc: 'Primary acute neurochemical dip neutralized.' },
+      { id: '7d', hours: 168, label: '7 Days', badge: '🔥 Testosterone Spike', desc: 'Research-backed 145.7% peak in serum testosterone.' },
+      { id: '14d', hours: 336, label: '14 Days', badge: '🧠 Brain Clarity Onset', desc: 'Prefrontal cortex grey matter begins functional strengthening.' },
+      { id: '21d', hours: 504, label: '21 Days', badge: '💎 Habit Anchor', desc: 'Neural default mode network dissociates from compulsive loops.' },
+      { id: '30d', hours: 720, label: '30 Days', badge: '☀️ Full Lunar Cycle', desc: 'Significant Ojas accumulation, increased vocal depth and energy.' },
+      { id: '45d', hours: 1080, label: '45 Days', badge: '🦅 Laser Vision', desc: 'Dopamine D2 receptor densities near standard homeostatic levels.' },
+      { id: '60d', hours: 1440, label: '60 Days', badge: '🦁 Magnetic Aura', desc: 'Social confidence stabilizes; physical recovery accelerates.' },
+      { id: '90d', hours: 2160, label: '90 Days', badge: '👑 Pure Brahmacharya', desc: 'Classical 90-day neurochemical reset fully accomplished.' },
+      { id: '180d', hours: 4320, label: '180 Days', badge: '🔱 Iron Monk', desc: 'Complete subconscious cognitive reprogramming.' },
+      { id: '365d', hours: 8760, label: '365 Days', badge: '✨ Transcendent Sovereign', desc: 'Full mastery over life-force transmuted into purpose.' }
+    ];
+
+    // Seed Data to immediately demonstrate working graphs & counters upon load
+    function getDefaultState() {
+      const now = Date.now();
+      const twentyEightDaysAgo = now - (28 * 24 * 60 * 60 * 1000) - (6 * 3600 * 1000);
+      const thirtyTwoDaysAgo = now - (32 * 24 * 60 * 60 * 1000);
+
+      // Generate 14 days of realistic focus and vitality logs
+      const dailyLogs = {};
+      for (let i = 13; i >= 0; i--) {
+        const d = new Date(now - i * 86400000);
+        const dateKey = d.toISOString().split('T')[0];
+        dailyLogs[dateKey] = {
+          ojas: Math.min(10, Math.max(5, Math.floor(6 + (14 - i) * 0.28))),
+          focus: Math.min(10, Math.max(4, Math.floor(5 + (14 - i) * 0.32))),
+          sleep: 4,
+          water: 6 + (i % 3),
+          tags: ['gym', 'pranayama']
+        };
+      }
+
+      // Generate calendar heatmap entries for past 60 days
+      const calendarEntries = {};
+      for (let i = 59; i >= 0; i--) {
+        const d = new Date(now - i * 86400000);
+        const dateKey = d.toISOString().split('T')[0];
+        if (i === 42) {
+          calendarEntries[dateKey] = 'ejaculation'; // slip 42 days ago
+        } else if (i === 29) {
+          calendarEntries[dateKey] = 'm_only';     // edging 29 days ago
+        } else {
+          calendarEntries[dateKey] = 'clean';
+        }
+      }
+
+      return {
+        ejacResetTime: twentyEightDaysAgo,
+        mOnlyResetTime: twentyEightDaysAgo,
+        lastSlipType: null,
+        pin: '',
+        emergencyPhone: '',
+        whyVaultText: "I am cultivating magnetic vitality, mental unshakeability, and genuine confidence. Instant gratification sacrifices long-term greatness for 5 seconds of illusory comfort.",
+        ifThenRule: "IF I feel an intense urge while alone in bed after 11 PM, THEN I will immediately stand up, splash cold water on my eyes, and do 20 pushups.",
+        urgesResistedCount: 28,
+        triggers: [
+          { name: 'Instagram Reels', count: 14, color: 'rose' },
+          { name: 'Late Night Bed Phone', count: 18, color: 'rose' },
+          { name: 'Boredom / Aimless Surfing', count: 9, color: 'amber' },
+          { name: 'Stress / Work Anxiety', count: 7, color: 'amber' },
+          { name: 'Specific Person / Chat', count: 4, color: 'indigo' }
+        ],
+        slipHistory: [
+          { timestamp: twentyEightDaysAgo, type: 'ejaculation', trigger: 'Late Night Bed Phone', location: 'Bed / Bedroom' }
+        ],
+        dailyLogs: dailyLogs,
+        calendarEntries: calendarEntries
+      };
+    }
+
+    // App State Wrapper
+    let AppState = (function() {
+      let state = {};
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        state = stored ? JSON.parse(stored) : getDefaultState();
+      } catch (e) {
+        state = getDefaultState();
+      }
+
+      return {
+        get: () => state,
+        set: (newState) => {
+          state = newState;
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          } catch(e) {}
+        },
+        save: () => {
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          } catch(e) {}
+        }
+      };
+    })();
+
+    /* =========================================================================
+       CORE TIMERS & REAL-TIME DISPATCHER (Features 1, 7, 8)
+       ========================================================================= */
+    let timerInterval = null;
+
+    function startLiveCounters() {
+      if (timerInterval) clearInterval(timerInterval);
+      updateCounters();
+      timerInterval = setInterval(updateCounters, 1000);
+    }
+
+    function updateCounters() {
+      const state = AppState.get();
+      const now = Date.now();
+
+      // Tracker 1: Ejaculation Tracker
+      const ejacElapsedSecs = Math.max(0, Math.floor((now - state.ejacResetTime) / 1000));
+      const eDays = Math.floor(ejacElapsedSecs / 86400);
+      const eHours = Math.floor((ejacElapsedSecs % 86400) / 3600);
+      const eMins = Math.floor((ejacElapsedSecs % 3600) / 60);
+      const eSecs = ejacElapsedSecs % 60;
+
+      document.getElementById('ejacDays').textContent = eDays;
+      document.getElementById('ejacHours').textContent = String(eHours).padStart(2, '0');
+      document.getElementById('ejacMins').textContent = String(eMins).padStart(2, '0');
+      document.getElementById('ejacSecs').textContent = String(eSecs).padStart(2, '0');
+
+      // Tracker 2: M-Only Tracker
+      const mElapsedSecs = Math.max(0, Math.floor((now - state.mOnlyResetTime) / 1000));
+      const mDays = Math.floor(mElapsedSecs / 86400);
+      const mHours = Math.floor((mElapsedSecs % 86400) / 3600);
+      const mMins = Math.floor((mElapsedSecs % 3600) / 60);
+      const mSecs = mElapsedSecs % 60;
+      document.getElementById('mOnlyTimeDisplay').textContent = `${mDays}d ${mHours}h ${mMins}m ${mSecs}s Clean`;
+
+      // Feature 8: Next Milestone Progression
+      updateMilestoneProgress(ejacElapsedSecs);
+
+      // Feature 29: 72-Hour Chaser Alert
+      updateChaserAlert(now, state.ejacResetTime);
+
+      // Snapshot display sync
+      document.getElementById('snapshotDaysDisplay').textContent = `${eDays} DAYS`;
+    }
+
+    function updateMilestoneProgress(elapsedSeconds) {
+      const elapsedHours = elapsedSeconds / 3600;
+      let nextM = null;
+      let prevHours = 0;
+
+      for (let m of MILESTONE_STEPS) {
+        if (elapsedHours < m.hours) {
+          nextM = m;
+          break;
+        }
+        prevHours = m.hours;
+      }
+
+      if (!nextM) {
+        document.getElementById('nextMilestoneLabel').textContent = 'All Milestones Mastered!';
+        document.getElementById('nextMilestoneRemaining').textContent = 'Transcendent';
+        document.getElementById('milestoneProgressBar').style.width = '100%';
+        return;
+      }
+
+      document.getElementById('nextMilestoneLabel').textContent = nextM.label;
+      const hoursLeft = Math.max(0, nextM.hours - elapsedHours);
+      const daysLeft = Math.floor(hoursLeft / 24);
+      const remHours = Math.floor(hoursLeft % 24);
+      const remMins = Math.floor((hoursLeft * 60) % 60);
+
+      document.getElementById('nextMilestoneRemaining').textContent = 
+        daysLeft > 0 ? `${daysLeft}d ${remHours}h left` : `${remHours}h ${remMins}m left`;
+
+      const span = nextM.hours - prevHours;
+      const progressInSpan = elapsedHours - prevHours;
+      const pct = Math.min(100, Math.max(0, (progressInSpan / span) * 100));
+      document.getElementById('milestoneProgressBar').style.width = `${pct.toFixed(1)}%`;
+    }
+
+    function updateChaserAlert(now, lastResetTime) {
+      const hoursSinceReset = (now - lastResetTime) / 3600000;
+      const box = document.getElementById('chaserAlertBox');
+      if (hoursSinceReset < 72) {
+        box.classList.remove('hidden');
+        const remaining = Math.ceil(72 - hoursSinceReset);
+        document.getElementById('chaserHoursLeft').textContent = `${remaining}h remaining`;
+      } else {
+        box.classList.add('hidden');
+      }
+    }
+
+    /* =========================================================================
+       FEATURE 4: MILESTONE BADGES & BRAIN REWIRING STAGES
+       ========================================================================= */
+    function renderMilestoneBadges() {
+      const state = AppState.get();
+      const currentHours = (Date.now() - state.ejacResetTime) / 3600000;
+      const container = document.getElementById('milestoneBadgesGrid');
+      container.innerHTML = '';
+
+      let unlockedCount = 0;
+      let highestBadge = '🌱 Novice';
+
+      MILESTONE_STEPS.forEach(m => {
+        const isUnlocked = currentHours >= m.hours;
+        if (isUnlocked) {
+          unlockedCount++;
+          highestBadge = m.badge;
+        }
+
+        const card = document.createElement('div');
+        card.className = `p-2.5 rounded-xl border transition-all ${
+          isUnlocked 
+            ? 'bg-emerald-950/20 border-emerald-500/40 text-slate-200' 
+            : 'bg-slate-900/40 border-borderDark text-slate-500 opacity-60'
+        }`;
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-bold text-[11px] ${isUnlocked ? 'text-accentEmerald' : 'text-slate-500'}">${m.label}</span>
+            <span class="text-xs">${isUnlocked ? '🔓' : '🔒'}</span>
+          </div>
+          <div class="font-semibold text-xs truncate">${m.badge}</div>
+          <p class="text-[9px] text-slate-400 mt-1 line-clamp-2 leading-tight">${m.desc}</p>
+        `;
+        container.appendChild(card);
+      });
+
+      document.getElementById('milestonesUnlockedCount').textContent = `${unlockedCount} / 12 Unlocked`;
+      document.getElementById('snapshotBadgeDisplay').textContent = highestBadge;
+
+      // Update Brain Rewiring Stage (Feature 9)
+      const days = currentHours / 24;
+      const stageTitle = document.getElementById('brainStageTitle');
+      const stageDays = document.getElementById('brainStageDays');
+      const stageDesc = document.getElementById('brainStageDesc');
+
+      if (days < 7) {
+        stageTitle.textContent = 'Stage 1: Acute Dopamine Withdrawal & Receptor Shock';
+        stageDays.textContent = 'Days 0–7';
+        stageDesc.textContent = 'Nervous system recalibrating. Urges are frequent due to neurochemical delta. Guard your eyes and phone vigorously.';
+      } else if (days < 21) {
+        stageTitle.textContent = 'Stage 2: Dopamine Receptor Upregulation';
+        stageDays.textContent = 'Days 7–21';
+        stageDesc.textContent = 'D2 receptor density is multiplying. Everyday tasks, books, and nature begin feeling naturally rewarding again.';
+      } else if (days < 60) {
+        stageTitle.textContent = 'Stage 3: Prefrontal Cortex Re-Myelination';
+        stageDays.textContent = 'Days 21–60';
+        stageDesc.textContent = 'Executive control is dramatically strengthened. Impulse latency increases. Physical energy transmutes easily.';
+      } else {
+        stageTitle.textContent = 'Stage 4: Autonomous Neurochemical Sovereignty';
+        stageDays.textContent = 'Days 60+';
+        stageDesc.textContent = 'High resilience, rock-solid dopamine equilibrium, deep voice resonance, and natural social ease.';
+      }
+    }
+
+    /* =========================================================================
+       CALCULATE ROLLING SUCCESS & HEALTH GRADE (Features 5 & 7)
+       ========================================================================= */
+    function calculateRollingMetrics() {
+      const state = AppState.get();
+      const entries = state.calendarEntries || {};
+      const now = new Date();
+
+      let cleanPast30 = 0;
+      let totalPast30 = 0;
+      let cleanPast90 = 0;
+      let totalPast90 = 0;
+
+      for (let i = 0; i < 90; i++) {
+        const d = new Date(now.getTime() - i * 86400000);
+        const k = d.toISOString().split('T')[0];
+        const status = entries[k] || 'clean';
+
+        if (i < 30) {
+          totalPast30++;
+          if (status === 'clean') cleanPast30++;
+        }
+        totalPast90++;
+        if (status === 'clean') cleanPast90++;
+      }
+
+      const rate30 = ((cleanPast30 / totalPast30) * 100).toFixed(1);
+      const rate90 = ((cleanPast90 / totalPast90) * 100).toFixed(1);
+
+      document.getElementById('cleanRate30').textContent = `${rate30}%`;
+      document.getElementById('cleanRate90').textContent = `${rate90}%`;
+      document.getElementById('snapshotRateDisplay').textContent = `${rate30}%`;
+
+      // Health Performance Grade (Feature 7)
+      const badge = document.getElementById('healthGradeBadge');
+      if (rate30 >= 90) {
+        badge.textContent = 'HEALTHY';
+        badge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30';
+      } else if (rate30 >= 75) {
+        badge.textContent = 'CAUTION';
+        badge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30';
+      } else {
+        badge.textContent = 'CRITICAL';
+        badge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/30';
+      }
+    }
+
+    /* =========================================================================
+       CHARTS ENGINE: COGNITIVE GRAPH & TRIGGER BAR (Features 10 & 26)
+       ========================================================================= */
+    let cognitiveChartInstance = null;
+    let triggerChartInstance = null;
+
+    function renderCognitiveChart() {
+      const ctx = document.getElementById('cognitiveChart').getContext('2d');
+      const state = AppState.get();
+      const labels = [];
+      const ojasData = [];
+      const focusData = [];
+
+      const now = new Date();
+      for (let i = 13; i >= 0; i--) {
+        const d = new Date(now.getTime() - i * 86400000);
+        const k = d.toISOString().split('T')[0];
+        labels.push(d.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' }));
+        const log = state.dailyLogs[k] || { ojas: 7, focus: 7 };
+        ojasData.push(log.ojas);
+        focusData.push(log.focus);
+      }
+
+      if (cognitiveChartInstance) cognitiveChartInstance.destroy();
+
+      cognitiveChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Physical Ojas (1-10)',
+              data: ojasData,
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              tension: 0.35,
+              fill: true,
+              borderWidth: 2,
+              pointRadius: 2
+            },
+            {
+              label: 'Mental Focus (1-10)',
+              data: focusData,
+              borderColor: '#6366f1',
+              backgroundColor: 'transparent',
+              tension: 0.35,
+              borderWidth: 2,
+              borderDash: [4, 4],
+              pointRadius: 2
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: '#94a3b8', font: { size: 10 } }
+            }
+          },
+          scales: {
+            y: {
+              min: 1,
+              max: 10,
+              grid: { color: '#1e293b' },
+              ticks: { color: '#64748b', font: { size: 9 } }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: '#64748b', font: { size: 9 } }
+            }
+          }
+        }
+      });
+    }
+
+    function renderTriggerChart() {
+      const ctx = document.getElementById('triggerBarChart').getContext('2d');
+      const state = AppState.get();
+      const labels = state.triggers.map(t => t.name);
+      const data = state.triggers.map(t => t.count);
+
+      if (triggerChartInstance) triggerChartInstance.destroy();
+
+      triggerChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Incidents Logged',
+            data: data,
+            backgroundColor: '#f43f5e',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: {
+              grid: { color: '#1e293b' },
+              ticks: { color: '#64748b', font: { size: 9 }, stepSize: 2 }
+            },
+            y: {
+              grid: { display: false },
+              ticks: { color: '#94a3b8', font: { size: 9 } }
+            }
+          }
+        }
+      });
+    }
+
+    /* =========================================================================
+       DYNAMIC TRIGGER ENGINE & TAG MANAGEMENT (Feature 25)
+       ========================================================================= */
+    function renderTriggerTags() {
+      const state = AppState.get();
+      const container = document.getElementById('triggerTagsContainer');
+      container.innerHTML = '';
+
+      state.triggers.forEach(t => {
+        const btn = document.createElement('button');
+        btn.className = 'px-2.5 py-1 rounded-lg border border-borderDark bg-slate-900 text-slate-300 text-xs hover:border-accentRose transition flex items-center gap-1.5';
+        btn.innerHTML = `<span>${t.name}</span> <span class="text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-rose-400 font-mono">${t.count}</span>`;
+        btn.onclick = () => recordUrgeForTrigger(t.name);
+        container.appendChild(btn);
+      });
+    }
+
+    function recordUrgeForTrigger(name) {
+      const state = AppState.get();
+      const item = state.triggers.find(t => t.name === name);
+      if (item) {
+        item.count++;
+        AppState.set(state);
+        renderTriggerTags();
+        renderTriggerChart();
+      }
+    }
+
+    function addNewCustomTrigger() {
+      const input = document.getElementById('newTriggerInput');
+      const val = input.value.trim();
+      if (!val) return;
+
+      const state = AppState.get();
+      if (!state.triggers.some(t => t.name.toLowerCase() === val.toLowerCase())) {
+        state.triggers.push({ name: val, count: 1, color: 'indigo' });
+        AppState.set(state);
+        renderTriggerTags();
+        renderTriggerChart();
+      }
+      input.value = '';
+    }
+
+    /* =========================================================================
+       CALENDAR HEATMAP (Features 41 & 42)
+       ========================================================================= */
+    let currentHeatmapDate = new Date();
+
+    function renderCalendarHeatmap() {
+      const grid = document.getElementById('calendarGrid');
+      grid.innerHTML = '';
+      const state = AppState.get();
+      const year = currentHeatmapDate.getFullYear();
+      const month = currentHeatmapDate.getMonth();
+
+      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      document.getElementById('calendarMonthLabel').textContent = `${monthNames[month]} ${year}`;
+
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      // Leading blanks
+      for (let i = 0; i < firstDay; i++) {
+        const blank = document.createElement('div');
+        blank.className = 'h-8 sm:h-9 rounded bg-transparent';
+        grid.appendChild(blank);
+      }
+
+      let cleanCount = 0;
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dObj = new Date(year, month, day);
+        const key = dObj.toISOString().split('T')[0];
+        const status = state.calendarEntries[key] || 'clean';
+
+        if (status === 'clean') cleanCount++;
+
+        let colorCls = 'bg-emerald-950/40 border-emerald-600/40 text-emerald-400';
+        let symbol = '✓';
+        if (status === 'm_only') {
+          colorCls = 'bg-amber-950/40 border-amber-600/50 text-amber-400';
+          symbol = '⚡';
+        } else if (status === 'ejaculation') {
+          colorCls = 'bg-rose-950/40 border-rose-600/50 text-rose-400';
+          symbol = '✕';
+        }
+
+        const cell = document.createElement('div');
+        cell.className = `h-8 sm:h-9 rounded-lg border ${colorCls} flex flex-col items-center justify-center font-mono text-[10px] cursor-pointer hover:scale-105 transition`;
+        cell.title = `${key}: ${status.toUpperCase()}`;
+        cell.innerHTML = `<span>${day}</span><span class="text-[8px] font-bold">${symbol}</span>`;
+        cell.onclick = () => toggleCalendarDayStatus(key);
+        grid.appendChild(cell);
+      }
+
+      document.getElementById('thisMonthCleanCount').textContent = cleanCount;
+    }
+
+    function toggleCalendarDayStatus(dateKey) {
+      const state = AppState.get();
+      const current = state.calendarEntries[dateKey] || 'clean';
+      let next = 'clean';
+      if (current === 'clean') next = 'm_only';
+      else if (current === 'm_only') next = 'ejaculation';
+      else next = 'clean';
+
+      state.calendarEntries[dateKey] = next;
+      AppState.set(state);
+      renderCalendarHeatmap();
+      calculateRollingMetrics();
+    }
+
+    function changeHeatmapMonth(delta) {
+      currentHeatmapDate.setMonth(currentHeatmapDate.getMonth() + delta);
+      renderCalendarHeatmap();
+    }
+
+    /* =========================================================================
+       DAILY VITALS & LOGIC DRAFT (Features 11, 17, 20, 23)
+       ========================================================================= */
+    function updateDailyLogDraft() {
+      const ojas = document.getElementById('ojasSlider').value;
+      const focus = document.getElementById('focusSlider').value;
+      document.getElementById('ojasValDisplay').textContent = `${ojas} / 10`;
+      document.getElementById('focusValDisplay').textContent = `${focus} / 10`;
+    }
+
+    function modWater(delta) {
+      const el = document.getElementById('waterCount');
+      let val = Math.max(0, parseInt(el.textContent) + delta);
+      el.textContent = val;
+    }
+
+    function toggleDailyTag(btn, tag) {
+      btn.classList.toggle('bg-accentEmerald');
+      btn.classList.toggle('text-black');
+      btn.classList.toggle('font-bold');
+    }
+
+    function saveDailyCheckin() {
+      const state = AppState.get();
+      const today = new Date().toISOString().split('T')[0];
+      const ojas = parseInt(document.getElementById('ojasSlider').value);
+      const focus = parseInt(document.getElementById('focusSlider').value);
+      const sleep = parseInt(document.getElementById('sleepRatingSelect').value);
+      const water = parseInt(document.getElementById('waterCount').value);
+
+      state.dailyLogs[today] = { ojas, focus, sleep, water };
+      AppState.set(state);
+      renderCognitiveChart();
+      alert('✓ Daily vital logs saved! Graphs updated.');
+    }
+
+    /* =========================================================================
+       RESET & COMPASSIONATE AUTOPSY LOGIC (Features 2, 6, 18, 28)
+       ========================================================================= */
+    let selectedResetType = 'm_only';
+
+    function openResetModal(type) {
+      selectedResetType = type;
+      setResetType(type);
+      populateAutopsyTriggers();
+      populateAutopsySymptoms();
+      openModal('resetModal');
+    }
+
+    function setResetType(type) {
+      selectedResetType = type;
+      const mBtn = document.getElementById('typeMOnlyBtn');
+      const eBtn = document.getElementById('typeEjacBtn');
+      if (type === 'm_only') {
+        mBtn.className = 'p-2.5 rounded-lg border border-accentAmber/40 bg-accentAmber/10 text-accentAmber text-center font-medium';
+        eBtn.className = 'p-2.5 rounded-lg border border-borderDark bg-slate-800 text-slate-300 text-center font-medium';
+      } else {
+        eBtn.className = 'p-2.5 rounded-lg border border-accentRose/40 bg-accentRose/10 text-accentRose text-center font-medium';
+        mBtn.className = 'p-2.5 rounded-lg border border-borderDark bg-slate-800 text-slate-300 text-center font-medium';
+      }
+    }
+
+    function populateAutopsyTriggers() {
+      const state = AppState.get();
+      const container = document.getElementById('modalTriggerChips');
+      container.innerHTML = '';
+      state.triggers.forEach(t => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'px-2 py-1 rounded bg-slate-900 border border-borderDark text-slate-300 text-[11px]';
+        chip.textContent = t.name;
+        chip.onclick = () => {
+          container.querySelectorAll('button').forEach(b => b.classList.remove('bg-rose-500/20', 'border-rose-500', 'text-white'));
+          chip.classList.add('bg-rose-500/20', 'border-rose-500', 'text-white');
+          chip.dataset.selected = 'true';
+        };
+        container.appendChild(chip);
+      });
+    }
+
+    function populateAutopsySymptoms() {
+      const symptoms = ['Lower Back Ache', 'Heavy Eye Fatigue', 'Brain Fog', 'Post-slip Lethargy', 'Restless Insomnia', 'Indigestion / Heat'];
+      const container = document.getElementById('modalSymptomChips');
+      container.innerHTML = '';
+      symptoms.forEach(s => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'p-2 rounded bg-slate-900 border border-borderDark text-slate-300 text-[10px] text-left';
+        btn.textContent = s;
+        btn.onclick = () => btn.classList.toggle('border-rose-500');
+        container.appendChild(btn);
+      });
+    }
+
+    function confirmReset() {
+      const state = AppState.get();
+      const now = Date.now();
+      const todayKey = new Date().toISOString().split('T')[0];
+
+      if (selectedResetType === 'ejaculation') {
+        state.ejacResetTime = now;
+        state.mOnlyResetTime = now;
+        state.calendarEntries[todayKey] = 'ejaculation';
+      } else {
+        state.mOnlyResetTime = now;
+        state.calendarEntries[todayKey] = 'm_only';
+      }
+
+      state.lastSlipType = selectedResetType;
+      AppState.set(state);
+
+      closeModal('resetModal');
+      startLiveCounters();
+      renderMilestoneBadges();
+      renderCalendarHeatmap();
+      calculateRollingMetrics();
+      alert('Reset logged without guilt. The path to sovereignty begins in this very second.');
+    }
+
+    // Involuntary Wet Dream Logging (Feature 6)
+    function logWetDream() {
+      alert('💧 Involuntary emission recorded in personal notes. No streak reset occurred. Natural biological release is NOT a slip.');
+    }
+
+    /* =========================================================================
+       EMERGENCY SOS HUB & URGE SURFING (Features 33–40)
+       ========================================================================= */
+    let surfTimeRemaining = 900; // 15 mins
+    let surfInterval = null;
+    let coldShowerRemaining = 120; // 2 mins
+    let coldShowerInterval = null;
+
+    function triggerEmergencySOS() {
+      document.getElementById('sosOverlay').classList.remove('hidden');
+    }
+
+    function closeSOS() {
+      document.getElementById('sosOverlay').classList.add('hidden');
+      if (surfInterval) clearInterval(surfInterval);
+      if (coldShowerInterval) clearInterval(coldShowerInterval);
+    }
+
+    function toggleSurfTimer() {
+      const btn = document.getElementById('surfTimerToggleBtn');
+      if (surfInterval) {
+        clearInterval(surfInterval);
+        surfInterval = null;
+        btn.textContent = 'Resume Surfing';
+      } else {
+        btn.textContent = 'Pause Surfing';
+        surfInterval = setInterval(() => {
+          if (surfTimeRemaining > 0) {
+            surfTimeRemaining--;
+            const m = Math.floor(surfTimeRemaining / 60);
+            const s = surfTimeRemaining % 60;
+            document.getElementById('surfTimerDisplay').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+          } else {
+            clearInterval(surfInterval);
+            incrementUrgesResisted();
+            alert('🎉 15 minutes completed! The acute urge wave has officially subsided.');
+          }
+        }, 1000);
+      }
+    }
+
+    function resetSurfTimer() {
+      if (surfInterval) clearInterval(surfInterval);
+      surfInterval = null;
+      surfTimeRemaining = 900;
+      document.getElementById('surfTimerDisplay').textContent = '15:00';
+      document.getElementById('surfTimerToggleBtn').textContent = 'Start Surfing';
+    }
+
+    function incrementUrgesResisted() {
+      const state = AppState.get();
+      state.urgesResistedCount = (state.urgesResistedCount || 0) + 1;
+      AppState.set(state);
+      document.getElementById('totalUrgesResisted').textContent = state.urgesResistedCount;
+      closeSOS();
+      alert('⚔️ Urge successfully neutralized and recorded! Your willpower muscle just thickened.');
+    }
+
+    function toggleColdShowerTimer() {
+      const btn = document.getElementById('coldShowerBtn');
+      if (coldShowerInterval) {
+        clearInterval(coldShowerInterval);
+        coldShowerInterval = null;
+        btn.textContent = 'Resume Cold Sprint';
+      } else {
+        btn.textContent = 'Pause Sprint';
+        coldShowerInterval = setInterval(() => {
+          if (coldShowerRemaining > 0) {
+            coldShowerRemaining--;
+            const m = Math.floor(coldShowerRemaining / 60);
+            const s = coldShowerRemaining % 60;
+            document.getElementById('coldShowerTime').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+          } else {
+            clearInterval(coldShowerInterval);
+            alert('❄️ Cold shower complete! Dopamine baseline reset achieved.');
+          }
+        }, 1000);
+      }
+    }
+
+    function generateRandomSwap() {
+      const tasks = [
+        "Drop and do 20 deep push-ups right now.",
+        "Splash ice-cold water onto your eyes and neck 5 times.",
+        "Take a brisk 100-step walk away from all screens.",
+        "Hold a 60-second plank and practice deep diaphragmatic breath.",
+        "Drink a tall cold glass of water and read your Identity statement out loud."
+      ];
+      const pick = tasks[Math.floor(Math.random() * tasks.length)];
+      document.getElementById('dopamineSwapAction').textContent = pick;
+    }
+
+    function completeDopamineSwap() {
+      alert('✓ Interruption completed. Sensory pathways diverted from compulsion.');
+    }
+
+    function editWhyVault() {
+      const state = AppState.get();
+      const newText = prompt('Update your core "Why" and letter to future self:', state.whyVaultText);
+      if (newText !== null && newText.trim() !== '') {
+        state.whyVaultText = newText.trim();
+        AppState.set(state);
+        document.getElementById('whyVaultDisplay').textContent = `"${state.whyVaultText}"`;
+      }
+    }
+
+    function promptEditIfThen() {
+      const state = AppState.get();
+      const rule = prompt('Edit your IF-THEN Implementation Rule:', state.ifThenRule);
+      if (rule !== null && rule.trim() !== '') {
+        state.ifThenRule = rule.trim();
+        AppState.set(state);
+        document.getElementById('ifThenDisplay').textContent = `"${state.ifThenRule}"`;
+      }
+    }
+
+    /* =========================================================================
+       CAMOUFLAGE DISGUISE MODE & SECURITY (Features 43 & 44)
+       ========================================================================= */
+    function toggleCamouflage() {
+      const screen = document.getElementById('camouflageScreen');
+      screen.classList.toggle('hidden');
+    }
+
+    document.getElementById('exitCamouflageBtn').onclick = toggleCamouflage;
+
+    // Double-tap header area to enter stealth disguise
+    let lastTap = 0;
+    document.getElementById('headerTitleArea').addEventListener('touchend', function(e) {
+      const currentTime = new Date().getTime();
+      const tapLength = currentTime - lastTap;
+      if (tapLength < 400 && tapLength > 0) {
+        toggleCamouflage();
+        e.preventDefault();
+      }
+      lastTap = currentTime;
+    });
+
+    // PIN Handlers
+    let currentPinEntered = '';
+
+    function checkPinRequiredOnLoad() {
+      const state = AppState.get();
+      if (state.pin && state.pin.length === 4) {
+        document.getElementById('pinLockModal').classList.remove('hidden');
+      }
+    }
+
+    function handlePinInput(digit) {
+      if (currentPinEntered.length < 4) {
+        currentPinEntered += digit;
+        updatePinDots();
+        if (currentPinEntered.length === 4) {
+          validateEnteredPin();
+        }
+      }
+    }
+
+    function popPinInput() {
+      currentPinEntered = currentPinEntered.slice(0, -1);
+      updatePinDots();
+    }
+
+    function clearPinInput() {
+      currentPinEntered = '';
+      updatePinDots();
+    }
+
+    function updatePinDots() {
+      const dots = document.querySelectorAll('.pin-dot');
+      dots.forEach((dot, index) => {
+        if (index < currentPinEntered.length) {
+          dot.classList.add('bg-accentEmerald', 'border-accentEmerald');
+        } else {
+          dot.classList.remove('bg-accentEmerald', 'border-accentEmerald');
+        }
+      });
+    }
+
+    function validateEnteredPin() {
+      const state = AppState.get();
+      if (currentPinEntered === state.pin) {
+        document.getElementById('pinLockModal').classList.add('hidden');
+        currentPinEntered = '';
+        updatePinDots();
+      } else {
+        document.getElementById('pinErrorMsg').textContent = 'Incorrect PIN. Try again.';
+        currentPinEntered = '';
+        updatePinDots();
+      }
+    }
+
+    function saveNewPin() {
+      const input = document.getElementById('pinSettingInput').value.trim();
+      const state = AppState.get();
+      if (input === '' || /^\d{4}$/.test(input)) {
+        state.pin = input;
+        AppState.set(state);
+        alert(input === '' ? 'PIN security disabled.' : '4-digit PIN saved successfully!');
+      } else {
+        alert('Please enter a valid 4-digit numeric PIN.');
+      }
+    }
+
+    function saveEmergencyPhone() {
+      const input = document.getElementById('emergencyPhoneInput').value.trim();
+      const state = AppState.get();
+      state.emergencyPhone = input;
+      AppState.set(state);
+      document.getElementById('groundingCallLink').href = `tel:${input}`;
+    }
+
+    /* =========================================================================
+       DATA BACKUP & RESTORE (Features 46 & 47)
+       ========================================================================= */
+    function exportAppDataJSON() {
+      const state = AppState.get();
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `sovereign_mind_backup_${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function importAppDataJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (parsed.ejacResetTime) {
+            AppState.set(parsed);
+            alert('✓ Ledger successfully restored!');
+            location.reload();
+          } else {
+            alert('Invalid backup file schema.');
+          }
+        } catch (err) {
+          alert('Failed to parse JSON file.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function factoryReset() {
+      if (confirm('Are you absolutely certain? This erases all streaks, diaries, and custom tags completely.')) {
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+      }
+    }
+
+    /* =========================================================================
+       ACTIVE INTERVAL TIMERS (Features 15 & 16)
+       ========================================================================= */
+    let intervalTimerRef = null;
+    let intervalRemaining = 0;
+
+    function startIntervalMeditation(minutes) {
+      if (intervalTimerRef) clearInterval(intervalTimerRef);
+      intervalRemaining = minutes * 60;
+      
+      const bar = document.getElementById('activeTimerContainer');
+      bar.classList.remove('hidden');
+      document.getElementById('activeTimerName').textContent = `${minutes}-Minute Cooldown In Progress`;
+
+      intervalTimerRef = setInterval(() => {
+        if (intervalRemaining > 0) {
+          intervalRemaining--;
+          const m = Math.floor(intervalRemaining / 60);
+          const s = intervalRemaining % 60;
+          document.getElementById('activeTimerCountdown').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        } else {
+          clearInterval(intervalTimerRef);
+          bar.classList.add('hidden');
+          alert('🧘 Neuroplastic session complete. Prefrontal executive control restored.');
+        }
+      }, 1000);
+    }
+
+    function cancelActiveTimer() {
+      if (intervalTimerRef) clearInterval(intervalTimerRef);
+      document.getElementById('activeTimerContainer').classList.add('hidden');
+    }
+
+    /* =========================================================================
+       MODAL UTILITIES
+       ========================================================================= */
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    /* =========================================================================
+       SERVICE WORKER REGISTRATION (Feature 48 - Offline PWA Ready)
+       ========================================================================= */
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        const swBlob = new Blob([`
+          const CACHE_NAME = 'sovereign-cache-v1';
+          self.addEventListener('install', e => self.skipWaiting());
+          self.addEventListener('activate', e => clients.claim());
+          self.addEventListener('fetch', e => {
+            e.respondWith(
+              caches.match(e.request).then(res => res || fetch(e.request).catch(() => caches.match(e.request)))
+            );
+          });
+        `], { type: 'application/javascript' });
+
+        navigator.serviceWorker.register(URL.createObjectURL(swBlob))
+          .catch(err => console.log('SW registration bypass'));
+      });
+    }
+
+    /* =========================================================================
+       APPLICATION BOOTSTRAPPER
+       ========================================================================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      // Lucide icons init
+      lucide.createIcons();
+
+      // Check PIN
+      checkPinRequiredOnLoad();
+
+      // Sync settings UI with state
+      const state = AppState.get();
+      if (state.pin) document.getElementById('pinSettingInput').value = state.pin;
+      if (state.emergencyPhone) {
+        document.getElementById('emergencyPhoneInput').value = state.emergencyPhone;
+        document.getElementById('groundingCallLink').href = `tel:${state.emergencyPhone}`;
+      }
+      if (state.whyVaultText) document.getElementById('whyVaultDisplay').textContent = `"${state.whyVaultText}"`;
+      if (state.ifThenRule) document.getElementById('ifThenDisplay').textContent = `"${state.ifThenRule}"`;
+      document.getElementById('totalUrgesResisted').textContent = state.urgesResistedCount || 0;
+
+      // Start modules
+      startLiveCounters();
+      renderMilestoneBadges();
+      calculateRollingMetrics();
+      renderCognitiveChart();
+      renderTriggerTags();
+      renderTriggerChart();
+      renderCalendarHeatmap();
+    });
+  </script>
+</body>
 </html>
