@@ -1,1787 +1,1429 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Sovereign Mind - Habit & Dopamine Rebalancing</title>
-
-  <!-- PWA Metadata & Inline Manifest -->
-  <meta name="theme-color" content="#090d16" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="description" content="Offline-first Dopamine Rebalancing & Habit Recovery Tracker" />
-  
-  <link rel="manifest" href='data:application/manifest+json;utf-8,{"name":"Sovereign Mind","short_name":"Sovereign","start_url":".","display":"standalone","background_color":"#090d16","theme_color":"#090d16","icons":[{"src":"https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=192&auto=format&fit=crop&q=60","sizes":"192x192","type":"image/png"},{"src":"https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=512&auto=format&fit=crop&q=60","sizes":"512x512","type":"image/png"}]}' />
-
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            bgDark: '#090d16',
-            cardDark: '#111726',
-            borderDark: '#1e293b',
-            accentEmerald: '#10b981',
-            accentRose: '#f43f5e',
-            accentAmber: '#f59e0b',
-            accentIndigo: '#6366f1'
-          }
-        }
-      }
-    }
-  </script>
-
-  <!-- Chart.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Lucide Icons CDN -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-
-  <style>
-    /* Custom Scrollbars and Pulse Keyframes */
-    ::-webkit-scrollbar { width: 4px; height: 4px; }
-    ::-webkit-scrollbar-track { background: #090d16; }
-    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
-    
-    @keyframes breatheExpand {
-      0%, 100% { transform: scale(1); opacity: 0.7; }
-      21.05% { transform: scale(1.6); opacity: 1; }  /* Inhale 4s */
-      57.89% { transform: scale(1.6); opacity: 0.9; }  /* Hold 7s */
-      100% { transform: scale(1); opacity: 0.7; }     /* Exhale 8s */
-    }
-    .animate-breathe {
-      animation: breatheExpand 19s ease-in-out infinite;
-    }
-
-    @keyframes sineWave {
-      0% { transform: translateY(0px); }
-      50% { transform: translateY(-8px); }
-      100% { transform: translateY(0px); }
-    }
-    .animate-sinewave {
-      animation: sineWave 2s ease-in-out infinite;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#050505">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Vitalis — Rewire OS</title>
+<link rel="manifest" id="manifestLink">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: { extend: {
+    colors: { ink:'#050505', panel:'#0b0b0d', panel2:'#121216', line:'#202024', gold:'#f59e0b' },
+    fontFamily: { sans:['Inter','system-ui','sans-serif'] }
+  } }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  * { -webkit-tap-highlight-color: transparent; }
+  html,body { background:#050505; overscroll-behavior:none; }
+  body { font-family:'Inter',system-ui,sans-serif; }
+  .no-scrollbar::-webkit-scrollbar { display:none; }
+  .no-scrollbar { scrollbar-width:none; }
+  input[type="range"] { accent-color:#10b981; width:100%; }
+  .btn-h { min-height:44px; }
+  .card { background:#0b0b0d; border:1px solid #202024; border-radius:1rem; }
+  .chip { border:1px solid #27272a; border-radius:9999px; padding:.45rem .85rem; font-size:.78rem; }
+  .chip.on { background:rgba(16,185,129,.14); border-color:#10b981; color:#34d399; }
+  .chip.on-amber { background:rgba(245,158,11,.14); border-color:#f59e0b; color:#fbbf24; }
+  .tabbar-active { color:#34d399; }
+  .tabbar-active .tabdot { opacity:1; transform:scale(1); }
+  .tabdot { opacity:0; transform:scale(.4); transition:all .25s; width:4px;height:4px;border-radius:9999px;background:#34d399; }
+  .sphere-wrap { transition:transform 4s cubic-bezier(.45,0,.35,1); }
+  .sphere { width:170px;height:170px;border-radius:9999px;
+    background:radial-gradient(circle at 35% 30%, #6ee7b7, #059669 55%, #064e3b);
+    box-shadow:0 0 70px rgba(16,185,129,.45), inset 0 0 40px rgba(255,255,255,.12);
+    transition:transform 4s cubic-bezier(.45,0,.35,1); }
+  .sphere.hold { transition-duration:7s; }
+  .sphere.exhale { transition-duration:8s; }
+  @keyframes fabPulse { 0%,100%{box-shadow:0 0 0 0 rgba(244,63,94,.55);} 60%{box-shadow:0 0 0 16px rgba(244,63,94,0);} }
+  .fab-sos { animation:fabPulse 2.2s infinite; }
+  @keyframes shake { 0%,100%{transform:translateX(0);} 20%,60%{transform:translateX(-8px);} 40%,80%{transform:translateX(8px);} }
+  .shake { animation:shake .45s; }
+  @keyframes popIn { from{opacity:0; transform:scale(.92) translateY(10px);} to{opacity:1; transform:scale(1) translateY(0);} }
+  .pop { animation:popIn .35s cubic-bezier(.2,.9,.3,1.2); }
+  @keyframes bannerPulse { 0%,100%{opacity:1;} 50%{opacity:.75;} }
+  .banner-pulse { animation:bannerPulse 2s infinite; }
+  .heat-cell { aspect-ratio:1/1; border-radius:.55rem; font-size:.62rem; display:flex; align-items:center; justify-content:center; }
+  .modal-bg { background:rgba(0,0,0,.78); backdrop-filter:blur(6px); }
+  .kbd { min-height:60px; border-radius:1rem; background:#151518; border:1px solid #27272a; font-size:1.35rem; font-weight:600; color:#e4e4e7; }
+  .kbd:active { background:#27272a; transform:scale(.96); }
+  .star { cursor:pointer; }
+  .grid7 { display:grid; grid-template-columns:repeat(7,1fr); gap:.35rem; }
+  .seg { border-radius:.75rem; border:1px solid #27272a; color:#a1a1aa; }
+  .seg.on { background:rgba(16,185,129,.15); border-color:#10b981; color:#34d399; }
+  .med-ring { transition:stroke-dashoffset .95s linear; }
+  .toast-in { animation:popIn .3s ease; }
+  .check-row input { accent-color:#10b981; width:18px; height:18px; }
+  .stealth-body { background:#fafaf7 !important; }
+  .numkey { touch-action:manipulation; }
+  select,textarea,input[type="text"],input[type="tel"] { outline:none; }
+</style>
 </head>
+<body class="bg-ink text-zinc-300 antialiased select-none">
 
-<body class="bg-bgDark text-slate-100 min-h-screen font-sans selection:bg-accentEmerald selection:text-black pb-24 antialiased select-none">
+<!-- ================= TOAST ================= -->
+<div id="toast" class="fixed left-1/2 -translate-x-1/2 bottom-28 z-[95] hidden">
+  <div class="bg-zinc-100 text-zinc-900 text-sm font-medium px-4 py-2.5 rounded-full shadow-xl toast-in" id="toastInner"></div>
+</div>
 
-  <!-- ==================== CAMOUFLAGE / DISGUISE SCREEN (Feature 43) ==================== -->
-  <div id="camouflageScreen" class="hidden fixed inset-0 z-50 bg-slate-50 text-slate-800 p-6 flex flex-col justify-between overflow-y-auto">
-    <div>
-      <div class="flex items-center justify-between border-b pb-3 mb-4">
-        <h1 class="text-xl font-bold tracking-tight text-slate-700 flex items-center gap-2">
-          <span>📝</span> Daily Work Notes & Tasklist
-        </h1>
-        <button id="exitCamouflageBtn" class="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1.5 rounded font-mono">
-          Exit Note
-        </button>
-      </div>
-      <p class="text-xs text-slate-400 mb-3 font-mono">Auto-saved to local disk: <span id="mockSaveTime">Just now</span></p>
-      
-      <div class="space-y-2 mb-6">
-        <label class="flex items-center gap-3 text-sm p-2 bg-white rounded border border-slate-200">
-          <input type="checkbox" checked class="rounded text-blue-600" />
-          <span class="line-through text-slate-400">Review quarterly system performance specs</span>
-        </label>
-        <label class="flex items-center gap-3 text-sm p-2 bg-white rounded border border-slate-200">
-          <input type="checkbox" checked class="rounded text-blue-600" />
-          <span class="line-through text-slate-400">Draft deployment pipeline script for client</span>
-        </label>
-        <label class="flex items-center gap-3 text-sm p-2 bg-white rounded border border-slate-200">
-          <input type="checkbox" class="rounded text-blue-600" />
-          <span>Prepare documentation for Monday sprint planning</span>
-        </label>
-        <label class="flex items-center gap-3 text-sm p-2 bg-white rounded border border-slate-200">
-          <input type="checkbox" class="rounded text-blue-600" />
-          <span>Refactor database caching layer</span>
-        </label>
-      </div>
-
-      <textarea class="w-full h-44 p-3 border border-slate-200 rounded text-sm bg-white focus:outline-none focus:ring-1 focus:ring-slate-400 font-sans" placeholder="Type personal notes here...">Call engineering lead about microservice refactor timeline. Meeting scheduled at 3 PM.</textarea>
-    </div>
-    <div class="text-[11px] text-slate-400 text-center font-mono py-2">
-      Workspace Note App v2.4.1 — Double-tap header or click 'Exit Note' to return.
-    </div>
+<!-- ================= PIN LOCK SCREEN ================= -->
+<div id="lockScreen" class="fixed inset-0 z-[100] bg-ink hidden flex-col items-center justify-center px-8">
+  <div class="w-14 h-14 rounded-2xl bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center mb-4">
+    <i data-lucide="lock" class="w-7 h-7 text-emerald-400"></i>
   </div>
-
-  <!-- ==================== PIN PROTECTION MODAL (Feature 44) ==================== -->
-  <div id="pinLockModal" class="hidden fixed inset-0 z-50 bg-bgDark/98 flex flex-col items-center justify-center p-6">
-    <div class="max-w-xs w-full text-center space-y-6">
-      <div class="w-16 h-16 bg-slate-800/80 rounded-2xl flex items-center justify-center mx-auto border border-borderDark text-accentEmerald">
-        <i data-lucide="shield-check" class="w-8 h-8"></i>
-      </div>
-      <div>
-        <h2 class="text-xl font-bold tracking-tight">Sovereignty Protected</h2>
-        <p class="text-xs text-slate-400 mt-1">Enter your 4-digit PIN to access recovery logs</p>
-      </div>
-      <!-- PIN Dots -->
-      <div class="flex justify-center gap-4 py-2">
-        <span class="pin-dot w-4 h-4 rounded-full border border-slate-600 transition-all"></span>
-        <span class="pin-dot w-4 h-4 rounded-full border border-slate-600 transition-all"></span>
-        <span class="pin-dot w-4 h-4 rounded-full border border-slate-600 transition-all"></span>
-        <span class="pin-dot w-4 h-4 rounded-full border border-slate-600 transition-all"></span>
-      </div>
-      <p id="pinErrorMsg" class="text-xs text-accentRose font-medium min-h-[16px]"></p>
-      
-      <!-- Keypad -->
-      <div class="grid grid-cols-3 gap-3">
-        <button onclick="handlePinInput('1')" class="h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition">1</button>
-        <button onclick="handlePinInput('2')" class="h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition">2</button>
-        <button onclick="handlePinInput('3')" class="h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition">3</button>
-        <button onclick="handlePinInput('4')" class="h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition">4</button>
-        <button onclick="handlePinInput('5')" class="h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition">5</button>
-        <button onclick="handlePinInput('6')" class="h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition">6</button>
-        <button onclick="handlePinInput('7')" class="h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition">7</button>
-        <button onclick="handlePinInput('8')" class="h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition">8</button>
-        <button onclick="handlePinInput('9')" class="h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition">9</button>
-        <button onclick="clearPinInput()" class="h-14 rounded-xl bg-cardDark border border-borderDark text-xs font-semibold text-slate-400 hover:bg-slate-800 active:scale-95 transition">CLR</button>
-        <button onclick="handlePinInput('0')" class="h-14 rounded-xl bg-cardDark border border-borderDark text-xl font-semibold hover:bg-slate-800 active:scale-95 transition">0</button>
-        <button onclick="popPinInput()" class="h-14 rounded-xl bg-cardDark border border-borderDark text-sm font-semibold text-slate-400 hover:bg-slate-800 active:scale-95 transition flex items-center justify-center">
-          <i data-lucide="delete" class="w-5 h-5"></i>
-        </button>
-      </div>
-    </div>
+  <h2 class="text-white font-bold text-lg mb-1">Vault Locked</h2>
+  <p class="text-zinc-500 text-sm mb-6">Enter your 4-digit PIN</p>
+  <div id="pinDots" class="flex gap-4 mb-8">
+    <span class="w-4 h-4 rounded-full bg-zinc-800 border border-zinc-700"></span>
+    <span class="w-4 h-4 rounded-full bg-zinc-800 border border-zinc-700"></span>
+    <span class="w-4 h-4 rounded-full bg-zinc-800 border border-zinc-700"></span>
+    <span class="w-4 h-4 rounded-full bg-zinc-800 border border-zinc-700"></span>
   </div>
+  <div class="grid grid-cols-3 gap-3 w-full max-w-[280px] numkey" id="pinPad"></div>
+  <button id="pinForgot" class="mt-8 text-xs text-zinc-600 underline">Forgot PIN? Erase all data</button>
+</div>
 
-  <!-- ==================== RELAPSE AUTOPSY & RESET MODAL (Feature 28 & 2) ==================== -->
-  <div id="resetModal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-cardDark border border-borderDark rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 space-y-4">
-      <div class="flex items-center justify-between border-b border-borderDark pb-3">
-        <div>
-          <h3 class="font-bold text-lg text-accentRose flex items-center gap-2">
-            <i data-lucide="heart-crack" class="w-5 h-5"></i>
-            Reset & Compassionate Autopsy
-          </h3>
-          <p class="text-xs text-slate-400">Slips are data points, not moral failures. Record and elevate.</p>
-        </div>
-        <button onclick="closeModal('resetModal')" class="text-slate-400 hover:text-white p-1">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+<!-- ================= STEALTH / CAMOUFLAGE SCREEN ================= -->
+<div id="stealthScreen" class="fixed inset-0 z-[90] hidden bg-[#fafaf7] text-zinc-800 overflow-y-auto">
+  <div class="max-w-md mx-auto px-5 pt-8 pb-16">
+    <div id="stealthHeader" class="flex items-start justify-between mb-1">
+      <div>
+        <h1 class="text-2xl font-bold text-zinc-900 tracking-tight">Work Notes</h1>
+        <p class="text-sm text-zinc-500" id="stealthDate"></p>
       </div>
-
-      <div class="space-y-4 text-xs">
-        <div>
-          <label class="block font-semibold text-slate-300 mb-1">What specifically occurred?</label>
-          <div class="grid grid-cols-2 gap-2">
-            <button type="button" id="typeMOnlyBtn" onclick="setResetType('m_only')" class="p-2.5 rounded-lg border border-accentAmber/40 bg-accentAmber/10 text-accentAmber text-center font-medium">
-              Masturbation Only (No Ejaculation)
-            </button>
-            <button type="button" id="typeEjacBtn" onclick="setResetType('ejaculation')" class="p-2.5 rounded-lg border border-borderDark bg-slate-800 text-slate-300 text-center font-medium">
-              Ejaculation (Full Slip)
-            </button>
-          </div>
-        </div>
-
-        <div>
-          <label class="block font-semibold text-slate-300 mb-1">Primary Underlying Trigger:</label>
-          <div id="modalTriggerChips" class="flex flex-wrap gap-1.5 mb-2"></div>
-        </div>
-
-        <div>
-          <label class="block font-semibold text-slate-300 mb-1">Physical Location Context (Feature 30):</label>
-          <select id="modalLocation" class="w-full bg-slate-900 border border-borderDark rounded-lg p-2 text-slate-300 text-xs">
-            <option value="Bed / Bedroom">Bed / Bedroom</option>
-            <option value="Bathroom">Bathroom</option>
-            <option value="Computer Desk / Late Office">Computer Desk / Late Office</option>
-            <option value="Living Room Couch">Living Room Couch</option>
-            <option value="Other / Travel">Other / Travel</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block font-semibold text-slate-300 mb-1">Immediate Physical Symptoms Present (Feature 18):</label>
-          <div id="modalSymptomChips" class="grid grid-cols-2 gap-1.5">
-            <!-- Populated via JS -->
-          </div>
-        </div>
-
-        <div>
-          <label class="block font-semibold text-slate-300 mb-1">What boundary or guardrail slipped?</label>
-          <input type="text" id="modalBoundarySlipped" placeholder="e.g. Took phone into bed after 11 PM" class="w-full bg-slate-900 border border-borderDark rounded-lg p-2 text-slate-200" />
-        </div>
-
-        <div>
-          <label class="block font-semibold text-slate-300 mb-1">Countermeasure for the next 72 hours:</label>
-          <textarea id="modalCountermeasure" rows="2" placeholder="e.g. Sleep phone in living room; cold splash face before bed." class="w-full bg-slate-900 border border-borderDark rounded-lg p-2 text-slate-200"></textarea>
-        </div>
-      </div>
-
-      <div class="pt-2 flex gap-3">
-        <button onclick="closeModal('resetModal')" class="flex-1 py-2.5 rounded-xl border border-borderDark text-slate-300 hover:bg-slate-800 font-medium text-xs">Cancel</button>
-        <button onclick="confirmReset()" class="flex-1 py-2.5 rounded-xl bg-accentRose hover:bg-rose-600 text-white font-bold text-xs shadow-lg shadow-rose-900/30">Confirm & Begin Anew</button>
-      </div>
+      <div class="w-9 h-9 rounded-lg bg-amber-100 flex items-center justify-center"><i data-lucide="notebook-pen" class="w-5 h-5 text-amber-600"></i></div>
     </div>
+    <div class="h-px bg-zinc-200 my-4"></div>
+    <h2 class="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">Tasks</h2>
+    <ul id="stealthTasks" class="space-y-2 mb-5"></ul>
+    <div class="flex gap-2">
+      <input id="stealthInput" type="text" placeholder="Add a task..." class="flex-1 bg-white border border-zinc-300 rounded-xl px-4 py-3 text-sm text-zinc-800">
+      <button id="stealthAdd" class="bg-amber-500 text-white rounded-xl px-4 font-semibold text-sm">Add</button>
+    </div>
+    <div class="h-px bg-zinc-200 my-6"></div>
+    <h2 class="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-2">Notes</h2>
+    <p class="text-sm text-zinc-600 leading-relaxed">• Review Q3 roadmap draft<br>• Email Priya re: standup times<br>• Book dentist appointment<br>• Refactor onboarding copy — keep sentences short, remove jargon. Second pass Friday.</p>
+    <p class="text-[11px] text-zinc-400 mt-8 text-center">Double-tap the header to return</p>
   </div>
+</div>
 
-  <!-- ==================== SOS / EMERGENCY OVERLAY (Features 33–40) ==================== -->
-  <div id="sosOverlay" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md overflow-y-auto p-4 sm:p-6 flex flex-col justify-between">
-    <div class="max-w-xl mx-auto w-full space-y-5">
-      <!-- Header -->
-      <div class="flex items-center justify-between border-b border-rose-900/50 pb-3">
-        <div class="flex items-center gap-2 text-accentRose">
-          <i data-lucide="flame" class="w-6 h-6 animate-pulse"></i>
-          <span class="font-bold text-base tracking-wider uppercase">Urge Neutralization Protocol</span>
-        </div>
-        <button onclick="closeSOS()" class="p-1 rounded-full bg-slate-800 text-slate-300 hover:text-white">
-          <i data-lucide="x" class="w-6 h-6"></i>
-        </button>
-      </div>
+<!-- ================= APP ================= -->
+<div id="app" class="max-w-md mx-auto min-h-screen flex flex-col relative">
 
-      <!-- 15-Min Urge Surfing Timer (Feature 34) -->
-      <div class="bg-cardDark border border-rose-900/40 rounded-2xl p-5 text-center relative overflow-hidden">
-        <div class="absolute -top-12 -left-12 w-28 h-28 bg-rose-500/10 rounded-full blur-2xl"></div>
-        <span class="text-xs uppercase tracking-widest text-slate-400 font-semibold">Wave Surfing Principle</span>
-        <h4 class="text-xs text-slate-300 mt-1">An urge crests like an ocean wave and dissipates within 15 minutes.</h4>
-        
-        <div class="my-4">
-          <div id="surfTimerDisplay" class="text-4xl sm:text-5xl font-mono font-black text-rose-400">15:00</div>
-          <div class="flex justify-center items-center gap-1 mt-2 text-rose-500 text-xs">
-            <span class="animate-sinewave">🌊</span>
-            <span class="text-[11px] text-slate-400 font-medium">Breathe through the physical sensation</span>
-          </div>
-        </div>
-
-        <div class="flex justify-center gap-3">
-          <button id="surfTimerToggleBtn" onclick="toggleSurfTimer()" class="px-5 py-2 rounded-xl bg-accentRose text-white font-bold text-xs hover:bg-rose-600 transition shadow-lg shadow-rose-950">
-            Start Surfing
-          </button>
-          <button onclick="resetSurfTimer()" class="px-4 py-2 rounded-xl border border-borderDark text-slate-300 text-xs hover:bg-slate-800 transition">
-            Reset
-          </button>
-          <button onclick="incrementUrgesResisted()" class="px-4 py-2 rounded-xl bg-accentEmerald text-slate-950 font-bold text-xs hover:bg-emerald-400 transition flex items-center gap-1.5">
-            <i data-lucide="check" class="w-4 h-4"></i> Urge Neutralized!
-          </button>
-        </div>
-      </div>
-
-      <!-- 4-7-8 Breathing Sphere (Feature 35) -->
-      <div class="bg-cardDark border border-borderDark rounded-2xl p-4 sm:p-5 text-center">
-        <div class="flex items-center justify-between text-xs text-slate-400 mb-2 font-medium">
-          <span>Parasympathetic Reset</span>
-          <span class="text-accentEmerald">4s Inhale • 7s Hold • 8s Exhale</span>
-        </div>
-        <div class="py-6 flex flex-col items-center justify-center">
-          <div class="relative w-36 h-36 flex items-center justify-center">
-            <div id="breatheBall" class="absolute w-24 h-24 rounded-full bg-accentEmerald/20 border-2 border-accentEmerald animate-breathe flex items-center justify-center shadow-lg shadow-emerald-950"></div>
-            <span id="breatheText" class="relative z-10 text-xs font-mono font-bold tracking-wider text-emerald-300">BREATHE</span>
-          </div>
-          <span class="text-[11px] text-slate-400 mt-2">Follow the circle. Reset your nervous system immediately.</span>
-        </div>
-      </div>
-
-      <!-- Physical Circuit & Timers (Features 36, 38) -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-        <!-- Dopamine Swap -->
-        <div class="bg-cardDark border border-borderDark rounded-xl p-4 flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between font-bold text-slate-200 mb-1">
-              <span class="flex items-center gap-1.5"><i data-lucide="shuffle" class="w-4 h-4 text-accentAmber"></i> Dopamine Swap</span>
-              <button onclick="generateRandomSwap()" class="text-accentAmber hover:underline text-[11px]">Roll New</button>
-            </div>
-            <p id="dopamineSwapAction" class="text-slate-300 text-xs my-2 font-medium p-2.5 bg-slate-900 rounded-lg border border-slate-800">
-              Drop and do 20 deep push-ups right now. Displace dopamine via physical exertion.
-            </p>
-          </div>
-          <button onclick="completeDopamineSwap()" class="w-full mt-2 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-[11px]">
-            Mark Interruption Complete
-          </button>
-        </div>
-
-        <!-- Cold Shower 2-Min Sprint -->
-        <div class="bg-cardDark border border-borderDark rounded-xl p-4 flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between font-bold text-slate-200 mb-1">
-              <span class="flex items-center gap-1.5"><i data-lucide="droplets" class="w-4 h-4 text-sky-400"></i> Cold Shower Sprint</span>
-              <span id="coldShowerTime" class="font-mono text-sky-400 font-bold">02:00</span>
-            </div>
-            <p class="text-slate-400 text-[11px]">Immediate cold immersion spikes sustained baseline dopamine by 250% without crashes.</p>
-          </div>
-          <div class="flex gap-2 mt-3">
-            <button id="coldShowerBtn" onclick="toggleColdShowerTimer()" class="flex-1 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-[11px]">
-              Start 2-Min Cold Sprint
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Identity & Why Vault + Letter to Self (Features 37, 39, 40) -->
-      <div class="bg-cardDark border border-borderDark rounded-2xl p-4 text-xs space-y-3">
-        <div class="flex items-center justify-between">
-          <span class="font-bold text-slate-200 flex items-center gap-1.5">
-            <i data-lucide="compass" class="w-4 h-4 text-accentIndigo"></i> My Immutable "Why" & Letter To Future Self
-          </span>
-          <button onclick="editWhyVault()" class="text-accentIndigo hover:underline text-[11px]">Edit</button>
-        </div>
-        <div id="whyVaultDisplay" class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-slate-300 leading-relaxed italic text-[11px]">
-          "I am cultivating magnetic vitality, mental unshakeability, and genuine confidence. Instant gratification sacrifices long-term greatness for 5 seconds of illusory comfort."
-        </div>
-        
-        <div class="pt-1 flex items-center justify-between border-t border-borderDark">
-          <span class="text-slate-400 text-[11px]">Pattern Interrupt Support (Feature 40):</span>
-          <a id="groundingCallLink" href="tel:" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-400 font-semibold text-[11px] flex items-center gap-1.5 border border-emerald-900/50">
-            <i data-lucide="phone-call" class="w-3.5 h-3.5"></i> Grounding Call
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==================== MAIN APPLICATION CONTAINER ==================== -->
-  <div class="max-w-2xl mx-auto px-4 pt-4 sm:pt-6 space-y-6">
-
-    <!-- TOP NAV / HEADER -->
-    <header class="flex items-center justify-between border-b border-borderDark pb-3" id="mainHeader">
-      <div class="flex items-center gap-2 cursor-pointer" id="headerTitleArea" title="Double tap to enter stealth camouflage">
-        <div class="w-9 h-9 rounded-xl bg-accentEmerald/10 border border-accentEmerald/30 flex items-center justify-center text-accentEmerald">
-          <i data-lucide="shield" class="w-5 h-5"></i>
-        </div>
-        <div>
-          <h1 class="font-bold text-base tracking-tight leading-tight flex items-center gap-1.5">
-            Sovereign Mind
-            <span id="healthGradeBadge" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-              HEALTHY
-            </span>
-          </h1>
-          <p class="text-[10px] text-slate-400 font-mono">Dopamine Architecture & Retention Engine</p>
-        </div>
-      </div>
-
-      <!-- Action Icons -->
-      <div class="flex items-center gap-2">
-        <button onclick="toggleCamouflage()" class="p-2 rounded-lg bg-cardDark border border-borderDark text-slate-400 hover:text-white" title="Stealth / Camouflage Mode">
-          <i data-lucide="eye-off" class="w-4 h-4"></i>
-        </button>
-        <button onclick="openModal('settingsModal')" class="p-2 rounded-lg bg-cardDark border border-borderDark text-slate-400 hover:text-white" title="Settings & Backup">
-          <i data-lucide="settings" class="w-4 h-4"></i>
-        </button>
-      </div>
-    </header>
-
-    <!-- CHASER EFFECT BANNER (Feature 29) -->
-    <div id="chaserAlertBox" class="hidden bg-rose-500/10 border border-rose-500/40 rounded-xl p-3 flex items-start gap-3 text-xs text-rose-300">
-      <i data-lucide="alert-triangle" class="w-5 h-5 text-accentRose shrink-0 mt-0.5"></i>
+  <header id="appHeader" class="sticky top-0 z-40 bg-ink/95 backdrop-blur border-b border-line px-4 pt-4 pb-3">
+    <div class="flex items-center justify-between">
       <div>
-        <span class="font-bold text-white block">CHASER EFFECT ZONE ACTIVE (<span id="chaserHoursLeft">72h remaining</span>)</span>
-        <span class="text-rose-300/80">Neurochemical dopamine crash peaks in the first 72 hours. Your brain will rationalize another slip. Keep guardrails raised!</span>
-      </div>
-    </div>
-
-    <!-- MODULE 1: INDEPENDENT DUAL TRACKERS (Features 1, 2, 5, 6, 8) -->
-    <section class="space-y-3">
-      <!-- Tracker A: Ejaculation / Retention -->
-      <div class="bg-cardDark border border-borderDark rounded-2xl p-4 sm:p-5 relative overflow-hidden shadow-lg">
-        <div class="flex items-center justify-between text-xs mb-3">
-          <div class="flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-accentEmerald animate-pulse"></span>
-            <span class="font-bold tracking-wide text-slate-200 uppercase">Semen Retention / Ejaculation Tracker</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <button onclick="logWetDream()" class="text-[11px] px-2.5 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700" title="Log Involuntary Wet Dream without resetting streak">
-              💧 Wet Dream (Involuntary)
-            </button>
-            <button onclick="openResetModal('ejaculation')" class="text-[11px] px-2.5 py-1 rounded bg-rose-950/60 text-rose-300 hover:bg-rose-900 border border-rose-900/50">
-              Reset
-            </button>
-          </div>
-        </div>
-
-        <!-- Big Counter -->
-        <div class="grid grid-cols-4 gap-2 text-center py-2">
-          <div class="bg-slate-900/80 rounded-xl p-2.5 border border-borderDark">
-            <span id="ejacDays" class="block text-2xl sm:text-3xl font-mono font-black text-accentEmerald">0</span>
-            <span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Days</span>
-          </div>
-          <div class="bg-slate-900/80 rounded-xl p-2.5 border border-borderDark">
-            <span id="ejacHours" class="block text-2xl sm:text-3xl font-mono font-black text-slate-200">00</span>
-            <span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Hours</span>
-          </div>
-          <div class="bg-slate-900/80 rounded-xl p-2.5 border border-borderDark">
-            <span id="ejacMins" class="block text-2xl sm:text-3xl font-mono font-black text-slate-200">00</span>
-            <span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Mins</span>
-          </div>
-          <div class="bg-slate-900/80 rounded-xl p-2.5 border border-borderDark">
-            <span id="ejacSecs" class="block text-2xl sm:text-3xl font-mono font-black text-slate-200">00</span>
-            <span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Secs</span>
-          </div>
-        </div>
-
-        <!-- Feature 8: Next Milestone Progress Bar -->
-        <div class="mt-4 pt-3 border-t border-borderDark">
-          <div class="flex justify-between items-center text-xs mb-1">
-            <span class="text-slate-400">Next Milestone: <b id="nextMilestoneLabel" class="text-slate-200">3 Days</b></span>
-            <span id="nextMilestoneRemaining" class="text-accentEmerald font-mono text-[11px]">8h 22m left</span>
-          </div>
-          <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-800">
-            <div id="milestoneProgressBar" class="bg-accentEmerald h-full rounded-full transition-all duration-500" style="width: 45%"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tracker B: Masturbation / Edging Tracker -->
-      <div class="bg-cardDark border border-borderDark rounded-xl p-3.5 sm:p-4 flex items-center justify-between">
-        <div>
-          <div class="flex items-center gap-2 mb-1">
-            <i data-lucide="ban" class="w-4 h-4 text-accentAmber"></i>
-            <span class="text-xs font-bold text-slate-300">Clean Mind & No-Edging Tracker</span>
-          </div>
-          <div class="font-mono text-sm sm:text-base font-bold text-slate-200" id="mOnlyTimeDisplay">
-            0d 0h 0m 0s Clean
-          </div>
-        </div>
-        <button onclick="openResetModal('m_only')" class="text-xs px-3 py-1.5 rounded-lg bg-amber-500/10 text-accentAmber border border-accentAmber/30 hover:bg-amber-500/20 font-medium">
-          M-Only Reset
-        </button>
-      </div>
-
-      <!-- Feature 5: Rolling Success Metric & Urges Resisted -->
-      <div class="grid grid-cols-3 gap-2 text-center text-xs">
-        <div class="bg-cardDark border border-borderDark rounded-xl p-2.5">
-          <span class="text-[10px] text-slate-400 uppercase font-semibold">Rolling 30D</span>
-          <span id="cleanRate30" class="block font-mono text-base sm:text-lg font-bold text-accentEmerald mt-0.5">93.3%</span>
-        </div>
-        <div class="bg-cardDark border border-borderDark rounded-xl p-2.5">
-          <span class="text-[10px] text-slate-400 uppercase font-semibold">Rolling 90D</span>
-          <span id="cleanRate90" class="block font-mono text-base sm:text-lg font-bold text-slate-200 mt-0.5">88.5%</span>
-        </div>
-        <div class="bg-cardDark border border-borderDark rounded-xl p-2.5">
-          <span class="text-[10px] text-slate-400 uppercase font-semibold">Urges Neutralized</span>
-          <span id="totalUrgesResisted" class="block font-mono text-base sm:text-lg font-bold text-sky-400 mt-0.5">28</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- MODULE 2: MILESTONES & BRAIN REWIRING (Features 3, 4, 9, 12) -->
-    <section class="bg-cardDark border border-borderDark rounded-2xl p-4 sm:p-5 space-y-4">
-      <div class="flex items-center justify-between">
-        <h2 class="font-bold text-sm tracking-wide text-slate-200 flex items-center gap-2">
-          <i data-lucide="award" class="w-4 h-4 text-accentAmber"></i>
-          12 Biological Milestones & Badges
-        </h2>
-        <span class="text-[11px] text-slate-400" id="milestonesUnlockedCount">4 / 12 Unlocked</span>
-      </div>
-
-      <!-- Milestone Badges Grid -->
-      <div id="milestoneBadgesGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-        <!-- Injected via JavaScript -->
-      </div>
-
-      <!-- Brain Rewiring Phase Banner (Feature 9) -->
-      <div class="p-3 bg-slate-900/90 rounded-xl border border-slate-800 space-y-1 text-xs">
-        <div class="flex items-center justify-between font-semibold">
-          <span class="text-accentEmerald" id="brainStageTitle">Stage 2: Dopamine Receptor Upregulation</span>
-          <span class="text-slate-400 text-[10px]" id="brainStageDays">Days 7–21</span>
-        </div>
-        <p class="text-slate-300 text-[11px] leading-relaxed" id="brainStageDesc">
-          D2 receptor sensitivity is rebounding. Everyday tasks, reading, and deep work begin to feel naturally rewarding again.
-        </p>
-      </div>
-    </section>
-
-    <!-- MODULE 3: DAILY VITALS & COGNITIVE LOG (Features 10, 11, 17, 20, 23) -->
-    <section class="bg-cardDark border border-borderDark rounded-2xl p-4 sm:p-5 space-y-4">
-      <div class="flex items-center justify-between">
-        <h2 class="font-bold text-sm tracking-wide text-slate-200 flex items-center gap-2">
-          <i data-lucide="activity" class="w-4 h-4 text-accentIndigo"></i>
-          Daily Vitality, Ojas & Cognitive Log
-        </h2>
-        <span class="text-[10px] text-slate-400 font-mono" id="todayCheckinStatus">Checked-in today</span>
-      </div>
-
-      <!-- Sliders Grid -->
-      <div class="space-y-3 text-xs">
-        <!-- Ojas Slider -->
-        <div>
-          <div class="flex justify-between font-semibold text-slate-300 mb-1">
-            <span>Ojas / Physical Vitality:</span>
-            <span id="ojasValDisplay" class="font-mono text-accentEmerald font-bold">8 / 10</span>
-          </div>
-          <input type="range" min="1" max="10" value="8" id="ojasSlider" class="w-full accent-emerald-500 cursor-pointer" oninput="updateDailyLogDraft()" />
-        </div>
-
-        <!-- Brain Fog vs Clarity Slider -->
-        <div>
-          <div class="flex justify-between font-semibold text-slate-300 mb-1">
-            <span>Mental Clarity (vs Fog):</span>
-            <span id="focusValDisplay" class="font-mono text-accentIndigo font-bold">7 / 10</span>
-          </div>
-          <input type="range" min="1" max="10" value="7" id="focusSlider" class="w-full accent-indigo-500 cursor-pointer" oninput="updateDailyLogDraft()" />
-        </div>
-
-        <!-- Sleep Quality & Hydration Counters -->
-        <div class="grid grid-cols-2 gap-3 pt-1">
-          <div class="bg-slate-900 p-2.5 rounded-xl border border-borderDark flex items-center justify-between">
-            <span class="text-slate-400 text-[11px]">Sleep Quality:</span>
-            <select id="sleepRatingSelect" onchange="updateDailyLogDraft()" class="bg-slate-800 text-xs rounded px-2 py-1 border border-slate-700 text-amber-400 font-medium">
-              <option value="5">⭐⭐⭐⭐⭐</option>
-              <option value="4" selected>⭐⭐⭐⭐</option>
-              <option value="3">⭐⭐⭐</option>
-              <option value="2">⭐⭐</option>
-              <option value="1">⭐</option>
-            </select>
-          </div>
-          <div class="bg-slate-900 p-2.5 rounded-xl border border-borderDark flex items-center justify-between">
-            <span class="text-slate-400 text-[11px]">Water Glasses:</span>
-            <div class="flex items-center gap-1.5">
-              <button onclick="modWater(-1)" class="w-5 h-5 rounded bg-slate-800 text-slate-300 flex items-center justify-center font-bold text-xs">-</button>
-              <span id="waterCount" class="font-mono text-sky-400 font-bold text-xs">6</span>
-              <button onclick="modWater(1)" class="w-5 h-5 rounded bg-slate-800 text-slate-300 flex items-center justify-center font-bold text-xs">+</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Secondary Habits (Feature 13 & 21) -->
-        <div>
-          <span class="text-slate-400 text-[11px] block mb-1.5 font-medium">Energy Transmutation & Detox Protocols:</span>
-          <div class="flex flex-wrap gap-1.5">
-            <button type="button" onclick="toggleDailyTag(this, 'gym')" class="daily-tag px-2.5 py-1 rounded-lg border border-borderDark bg-slate-900 text-slate-300 text-[11px]">🏋️ Heavy Gym/Lifting</button>
-            <button type="button" onclick="toggleDailyTag(this, 'pranayama')" class="daily-tag px-2.5 py-1 rounded-lg border border-borderDark bg-slate-900 text-slate-300 text-[11px]">🧘 Breathwork / Pranayama</button>
-            <button type="button" onclick="toggleDailyTag(this, 'no_doomscroll')" class="daily-tag px-2.5 py-1 rounded-lg border border-borderDark bg-slate-900 text-slate-300 text-[11px]">📵 No Doomscrolling</button>
-            <button type="button" onclick="toggleDailyTag(this, 'clean_food')" class="daily-tag px-2.5 py-1 rounded-lg border border-borderDark bg-slate-900 text-slate-300 text-[11px]">🥗 Sattvic / Clean Food</button>
-          </div>
-        </div>
-
-        <button onclick="saveDailyCheckin()" class="w-full py-2.5 rounded-xl bg-accentIndigo hover:bg-indigo-600 text-white font-bold text-xs shadow-md transition">
-          Save Daily Check-in & Update Metrics
-        </button>
-      </div>
-
-      <!-- Feature 10: Cognitive Power & Focus Chart -->
-      <div class="pt-3 border-t border-borderDark">
-        <div class="flex justify-between items-center mb-2">
-          <span class="text-xs font-semibold text-slate-300">Cognitive Focus & Energy Progression</span>
-          <span class="text-[10px] text-slate-400">Past 14 Days</span>
-        </div>
-        <div class="h-44 w-full">
-          <canvas id="cognitiveChart"></canvas>
-        </div>
-      </div>
-    </section>
-
-    <!-- MODULE 4: TRIGGER ENGINE & VULNERABILITY ANALYTICS (Features 25, 26, 27, 31) -->
-    <section class="bg-cardDark border border-borderDark rounded-2xl p-4 sm:p-5 space-y-4">
-      <div class="flex items-center justify-between">
-        <h2 class="font-bold text-sm tracking-wide text-slate-200 flex items-center gap-2">
-          <i data-lucide="target" class="w-4 h-4 text-accentRose"></i>
-          Trigger Intelligence & Vulnerable Windows
-        </h2>
-        <span class="text-accentRose text-xs font-bold" id="vulnerableWindowText">11:00 PM – 01:30 AM</span>
-      </div>
-
-      <!-- Dynamic Trigger Tags -->
-      <div>
-        <label class="text-xs text-slate-400 block mb-1.5">Registered Urge Triggers (Tap to log an urge or add new):</label>
-        <div id="triggerTagsContainer" class="flex flex-wrap gap-1.5 mb-2">
-          <!-- Injected via JS -->
-        </div>
-        
-        <!-- Add Custom Trigger Input -->
-        <div class="flex gap-2">
-          <input type="text" id="newTriggerInput" placeholder="Add custom trigger (e.g. Boredom, Twitter)" class="flex-1 bg-slate-900 border border-borderDark rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-accentEmerald" />
-          <button onclick="addNewCustomTrigger()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-accentEmerald font-bold text-xs flex items-center gap-1 border border-borderDark">
-            <i data-lucide="plus" class="w-4 h-4"></i> Add
-          </button>
-        </div>
-      </div>
-
-      <!-- Trigger Frequency Chart (Feature 26) -->
-      <div class="pt-2">
-        <span class="text-xs font-semibold text-slate-300 block mb-2">Trigger Incident Frequency:</span>
-        <div class="h-36 w-full">
-          <canvas id="triggerBarChart"></canvas>
-        </div>
-      </div>
-
-      <!-- Feature 31: Implementation Intentions ("If-Then" Rules) -->
-      <div class="p-3 bg-slate-900/90 rounded-xl border border-slate-800 space-y-2 text-xs">
-        <div class="flex items-center justify-between">
-          <span class="font-bold text-amber-400 flex items-center gap-1.5">
-            <i data-lucide="zap" class="w-3.5 h-3.5"></i> If-Then Implementation Rule
-          </span>
-          <button onclick="promptEditIfThen()" class="text-[10px] text-slate-400 hover:underline">Change</button>
-        </div>
-        <p id="ifThenDisplay" class="text-slate-300 text-[11px] italic">
-          "IF I feel an intense urge while alone in bed after 11 PM, THEN I will immediately stand up, splash cold water on my eyes, and do 20 pushups."
-        </p>
-      </div>
-    </section>
-
-    <!-- MODULE 5: TRI-COLOR CALENDAR HEATMAP (Features 41 & 42) -->
-    <section class="bg-cardDark border border-borderDark rounded-2xl p-4 sm:p-5 space-y-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <h2 class="font-bold text-sm tracking-wide text-slate-200 flex items-center gap-2">
-            <i data-lucide="calendar" class="w-4 h-4 text-accentEmerald"></i>
-            Monthly Tri-Color Calendar Heatmap
-          </h2>
-          <p class="text-[10px] text-slate-400">Green = Clean • Yellow = M-Only • Red = Ejaculation</p>
-        </div>
-        <div class="flex items-center gap-1">
-          <button onclick="changeHeatmapMonth(-1)" class="p-1 rounded bg-slate-900 text-slate-300 hover:bg-slate-800 text-xs">◀</button>
-          <span id="calendarMonthLabel" class="text-xs font-bold font-mono px-1">October 2026</span>
-          <button onclick="changeHeatmapMonth(1)" class="p-1 rounded bg-slate-900 text-slate-300 hover:bg-slate-800 text-xs">▶</button>
-        </div>
-      </div>
-
-      <!-- Calendar Grid -->
-      <div>
-        <div class="grid grid-cols-7 gap-1 text-center text-[10px] text-slate-400 font-semibold mb-1">
-          <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
-        </div>
-        <div id="calendarGrid" class="grid grid-cols-7 gap-1">
-          <!-- Populated by JS -->
-        </div>
-      </div>
-
-      <!-- Feature 42: Month-over-Month Comparison -->
-      <div class="flex items-center justify-between text-xs pt-2 border-t border-borderDark font-medium">
-        <span class="text-slate-400">Clean Days This Month: <b id="thisMonthCleanCount" class="text-accentEmerald">28</b></span>
-        <span class="text-slate-400">Previous Month: <b id="prevMonthCleanCount" class="text-slate-200">26</b></span>
-        <span class="text-accentEmerald text-[11px]" id="monthTrendPercent">+7.6% ↗</span>
-      </div>
-    </section>
-
-    <!-- MODULE 6: NEUROPLASTICITY & MEDITATION TOOLS (Features 15, 16, 22) -->
-    <section class="bg-cardDark border border-borderDark rounded-2xl p-4 sm:p-5 space-y-3">
-      <h2 class="font-bold text-sm tracking-wide text-slate-200 flex items-center gap-2">
-        <i data-lucide="timer" class="w-4 h-4 text-sky-400"></i>
-        Neuroplasticity & Transmutation Timers
-      </h2>
-      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
-        <button onclick="startIntervalMeditation(3)" class="p-3 bg-slate-900 hover:bg-slate-800 border border-borderDark rounded-xl text-left">
-          <span class="block font-bold text-sky-400 text-sm">3 Mins</span>
-          <span class="text-slate-400 text-[10px]">Prefrontal Cooldown</span>
-        </button>
-        <button onclick="startIntervalMeditation(5)" class="p-3 bg-slate-900 hover:bg-slate-800 border border-borderDark rounded-xl text-left">
-          <span class="block font-bold text-accentEmerald text-sm">5 Mins</span>
-          <span class="text-slate-400 text-[10px]">Decision Delay Pause</span>
-        </button>
-        <button onclick="startIntervalMeditation(10)" class="p-3 bg-slate-900 hover:bg-slate-800 border border-borderDark rounded-xl text-left col-span-2 sm:col-span-1">
-          <span class="block font-bold text-accentIndigo text-sm">10 Mins</span>
-          <span class="text-slate-400 text-[10px]">Anulom-Vilom Transmutation</span>
-        </button>
-      </div>
-
-      <!-- Active Timer Bar -->
-      <div id="activeTimerContainer" class="hidden p-3 bg-sky-950/40 border border-sky-800/60 rounded-xl flex items-center justify-between text-xs">
         <div class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span>
-          <span id="activeTimerName" class="font-semibold text-sky-300">Meditation Running</span>
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center">
+            <i data-lucide="brain-circuit" class="w-4.5 h-4.5 text-emerald-400"></i>
+          </div>
+          <h1 class="text-lg font-extrabold tracking-tight text-white">VITALIS</h1>
+          <span class="text-[10px] font-semibold text-emerald-500/80 border border-emerald-500/30 rounded-full px-2 py-0.5">REWIRE OS</span>
         </div>
-        <div class="flex items-center gap-3">
-          <span id="activeTimerCountdown" class="font-mono text-base font-bold text-white">05:00</span>
-          <button onclick="cancelActiveTimer()" class="text-slate-400 hover:text-white font-bold">✕</button>
+        <p id="hdrDate" class="text-[11px] text-zinc-500 mt-1"></p>
+      </div>
+      <div class="flex gap-2">
+        <button id="stealthBtn" class="btn-h w-11 rounded-xl bg-panel2 border border-line flex items-center justify-center text-zinc-400 active:scale-95 transition" aria-label="Stealth mode">
+          <i data-lucide="eye-off" class="w-5 h-5"></i>
+        </button>
+        <button id="sosTopBtn" class="btn-h w-11 rounded-xl bg-rose-500/15 border border-rose-500/40 flex items-center justify-center text-rose-400 active:scale-95 transition" aria-label="Emergency">
+          <i data-lucide="siren" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+    <div id="chaserBanner" class="hidden mt-3 banner-pulse rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-2.5 flex items-center gap-2.5">
+      <i data-lucide="flame" class="w-4 h-4 text-amber-400 shrink-0"></i>
+      <p class="text-[12px] text-amber-200 leading-snug"><span class="font-bold">CHASER WINDOW ACTIVE.</span> <span id="chaserText"></span></p>
+    </div>
+  </header>
+
+  <main class="flex-1 px-4 pt-4 pb-40">
+
+    <!-- ============ TAB 1: TRACKER ============ -->
+    <section id="tab-tracker" class="tab-view space-y-4">
+
+      <div class="grid grid-cols-2 gap-3">
+        <div class="card p-4 relative overflow-hidden">
+          <div class="absolute -right-3 -top-3 w-16 h-16 rounded-full bg-emerald-500/10"></div>
+          <div class="flex items-center gap-1.5 mb-2">
+            <i data-lucide="ban" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">No-Edging</p>
+          </div>
+          <p class="text-white font-extrabold text-xl leading-none tabular-nums" id="edgeTimer">0d 00:00:00</p>
+          <p class="text-[10px] text-zinc-600 mt-1.5" id="edgeSub">streak running</p>
         </div>
+        <div class="card p-4 relative overflow-hidden">
+          <div class="absolute -right-3 -top-3 w-16 h-16 rounded-full bg-gold/10"></div>
+          <div class="flex items-center gap-1.5 mb-2">
+            <i data-lucide="flame" class="w-3.5 h-3.5 text-gold"></i>
+            <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Retention</p>
+          </div>
+          <p class="text-white font-extrabold text-xl leading-none tabular-nums" id="retTimer">0d 00:00:00</p>
+          <p class="text-[10px] text-zinc-600 mt-1.5" id="retSub">streak running</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-4 gap-2">
+        <div class="card p-3 text-center">
+          <p class="text-[9px] uppercase tracking-wider text-zinc-500 font-bold">Status</p>
+          <p id="healthTag" class="text-[12px] font-bold text-emerald-400 mt-1">Healthy</p>
+        </div>
+        <div class="card p-3 text-center">
+          <p class="text-[9px] uppercase tracking-wider text-zinc-500 font-bold">30d clean</p>
+          <p id="clean30" class="text-[12px] font-bold text-white mt-1">—</p>
+        </div>
+        <div class="card p-3 text-center">
+          <p class="text-[9px] uppercase tracking-wider text-zinc-500 font-bold">90d clean</p>
+          <p id="clean90" class="text-[12px] font-bold text-white mt-1">—</p>
+        </div>
+        <div class="card p-3 text-center">
+          <p class="text-[9px] uppercase tracking-wider text-zinc-500 font-bold">Wet dreams</p>
+          <p id="wdCount" class="text-[12px] font-bold text-sky-400 mt-1">0</p>
+        </div>
+      </div>
+
+      <div class="card p-4 border-emerald-500/25" id="nextMileCard">
+        <div class="flex items-center justify-between mb-2">
+          <p class="text-[10px] font-bold uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
+            <i data-lucide="milestone" class="w-3.5 h-3.5"></i> Next Milestone
+          </p>
+          <p class="text-xs font-bold text-white tabular-nums" id="milePct">0%</p>
+        </div>
+        <p class="text-white font-bold" id="mileName">—</p>
+        <p class="text-[11px] text-zinc-500 mt-0.5" id="mileDesc">—</p>
+        <div class="h-2 rounded-full bg-zinc-800 mt-3 overflow-hidden">
+          <div id="mileBar" class="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-300 transition-all duration-1000" style="width:0%"></div>
+        </div>
+        <p class="text-[11px] text-zinc-400 mt-2 tabular-nums" id="mileEta">—</p>
+      </div>
+
+      <div class="card p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span id="alertDot" class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+          <p class="text-[12px] font-semibold text-zinc-200" id="alertText">Systems nominal. Keep transmuting energy.</p>
+        </div>
+        <div class="flex gap-2 mt-3">
+          <button id="logM" class="btn-h flex-1 rounded-xl bg-amber-500/10 border border-amber-500/40 text-amber-300 text-[12px] font-bold active:scale-95 transition flex items-center justify-center gap-1.5">
+            <i data-lucide="hand" class="w-4 h-4"></i> Log M-Only
+          </button>
+          <button id="logEJ" class="btn-h flex-1 rounded-xl bg-rose-500/10 border border-rose-500/40 text-rose-300 text-[12px] font-bold active:scale-95 transition flex items-center justify-center gap-1.5">
+            <i data-lucide="alert-triangle" class="w-4 h-4"></i> Full Reset
+          </button>
+        </div>
+        <button id="logWD" class="btn-h w-full mt-2 rounded-xl bg-sky-500/10 border border-sky-500/30 text-sky-300 text-[12px] font-bold active:scale-95 transition flex items-center justify-center gap-1.5">
+          <i data-lucide="moon-star" class="w-4 h-4"></i> Log Wet Dream (no reset)
+        </button>
+      </div>
+
+      <div>
+        <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Unlocked Milestones</p>
+        <div id="badgeStrip" class="flex gap-2 overflow-x-auto no-scrollbar pb-1"></div>
       </div>
     </section>
 
-    <!-- MODULE 7: MILESTONE SNAPSHOT CARD (Feature 50) -->
-    <section class="bg-cardDark border border-borderDark rounded-2xl p-4 sm:p-5 text-center space-y-3">
-      <h3 class="font-bold text-sm text-slate-200">Milestone Anonymous Snapshot Card</h3>
-      <p class="text-xs text-slate-400 max-w-sm mx-auto">Generate a discreet, clean graphic card of your streak to celebrate your discipline without exposing personal details.</p>
-      
-      <!-- Generated Card Preview -->
-      <div id="snapshotCardPreview" class="bg-gradient-to-br from-slate-900 via-cardDark to-slate-900 border border-emerald-500/30 rounded-2xl p-5 max-w-sm mx-auto shadow-2xl relative text-left">
-        <div class="flex justify-between items-center text-xs text-slate-400 mb-3">
-          <span class="tracking-widest uppercase font-mono text-[10px] text-accentEmerald">Sovereign Discipline</span>
-          <span class="text-[10px] font-mono">Verified Local Ledger</span>
+    <!-- ============ TAB 2: REWIRE & VITALS ============ -->
+    <section id="tab-rewire" class="tab-view hidden space-y-4">
+
+      <div class="card p-4">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-emerald-400 flex items-center gap-1.5 mb-3">
+          <i data-lucide="git-branch" class="w-3.5 h-3.5"></i> Dopamine Receptor Timeline
+        </p>
+        <div class="flex items-center" id="stageRow">
+          <div class="flex-1 text-center" data-stage="1">
+            <div class="w-8 h-8 mx-auto rounded-full border-2 flex items-center justify-center text-[11px] font-bold stage-dot">1</div>
+            <p class="text-[9px] mt-1.5 text-zinc-500 stage-lbl">Desensitization</p>
+          </div>
+          <div class="flex-1 h-0.5 bg-zinc-800 -mx-1 mt-[-14px]"></div>
+          <div class="flex-1 text-center" data-stage="2">
+            <div class="w-8 h-8 mx-auto rounded-full border-2 flex items-center justify-center text-[11px] font-bold stage-dot">2</div>
+            <p class="text-[9px] mt-1.5 text-zinc-500 stage-lbl">Rebalancing</p>
+          </div>
+          <div class="flex-1 h-0.5 bg-zinc-800 -mx-1 mt-[-14px]"></div>
+          <div class="flex-1 text-center" data-stage="3">
+            <div class="w-8 h-8 mx-auto rounded-full border-2 flex items-center justify-center text-[11px] font-bold stage-dot">3</div>
+            <p class="text-[9px] mt-1.5 text-zinc-500 stage-lbl">Rewiring</p>
+          </div>
+          <div class="flex-1 h-0.5 bg-zinc-800 -mx-1 mt-[-14px]"></div>
+          <div class="flex-1 text-center" data-stage="4">
+            <div class="w-8 h-8 mx-auto rounded-full border-2 flex items-center justify-center text-[11px] font-bold stage-dot">4</div>
+            <p class="text-[9px] mt-1.5 text-zinc-500 stage-lbl">Mastery</p>
+          </div>
         </div>
-        <div class="text-3xl font-black font-mono text-white tracking-tight" id="snapshotDaysDisplay">
-          28 DAYS
+        <p class="text-[11px] text-zinc-500 mt-3" id="stageText">—</p>
+      </div>
+
+      <div class="card p-4">
+        <div class="flex items-center justify-between mb-1">
+          <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Cognition × Streak — 14 days</p>
+          <i data-lucide="line-chart" class="w-4 h-4 text-zinc-600"></i>
         </div>
-        <p class="text-xs text-emerald-400 font-semibold mt-1" id="snapshotBadgeDisplay">🏆 Semen Retention Warrior</p>
-        <div class="mt-4 pt-3 border-t border-slate-800 flex justify-between items-center text-[10px] text-slate-400">
-          <span>Success Rate: <b class="text-white" id="snapshotRateDisplay">93.3%</b></span>
-          <span class="font-mono text-slate-500">Unbroken Will</span>
+        <div class="h-44"><canvas id="focusChart"></canvas></div>
+      </div>
+
+      <div class="card p-4">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-3">Daily Check-In</p>
+        <div class="space-y-4">
+          <div>
+            <div class="flex justify-between text-[12px] mb-1">
+              <label class="text-zinc-400">Mental Clarity</label>
+              <span class="font-bold text-emerald-400 tabular-nums" id="clarityVal">—</span>
+            </div>
+            <input type="range" min="1" max="10" id="claritySlider">
+          </div>
+          <div>
+            <div class="flex justify-between text-[12px] mb-1">
+              <label class="text-zinc-400">Ojas & Physical Vitality</label>
+              <span class="font-bold text-gold tabular-nums" id="ojasVal">—</span>
+            </div>
+            <input type="range" min="1" max="10" id="ojasSlider">
+          </div>
+          <div>
+            <p class="text-[12px] text-zinc-400 mb-1.5">Sleep Quality</p>
+            <div class="flex gap-1.5" id="sleepStars"></div>
+          </div>
+          <div>
+            <p class="text-[12px] text-zinc-400 mb-1.5">Hydration <span class="text-zinc-600" id="hydroLabel"></span></p>
+            <div class="flex items-center gap-3">
+              <button id="hydroMinus" class="w-11 h-11 rounded-xl bg-panel2 border border-line text-xl font-bold text-zinc-300 active:scale-95">−</button>
+              <div class="flex gap-1.5 flex-1 justify-center" id="hydroGlasses"></div>
+              <button id="hydroPlus" class="w-11 h-11 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-xl font-bold text-emerald-300 active:scale-95">+</button>
+            </div>
+          </div>
+          <div>
+            <p class="text-[12px] text-zinc-400 mb-1.5">Energy Transmutation today</p>
+            <div class="flex flex-wrap gap-2" id="transmuteChips"></div>
+          </div>
+          <div>
+            <p class="text-[12px] text-zinc-400 mb-1.5">Dopamine Detox</p>
+            <div class="space-y-2" id="detoxList"></div>
+          </div>
+          <button id="saveCheckin" class="btn-h w-full rounded-xl bg-emerald-500 text-ink font-bold text-sm active:scale-95 transition">Save Check-In</button>
         </div>
       </div>
 
-      <button onclick="alert('Snapshot card ready! You can screenshot the card above to save or share your milestone anonymously.')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-borderDark inline-flex items-center gap-2">
-        <i data-lucide="share-2" class="w-4 h-4"></i> Screenshot & Celebrate
+      <div class="card p-4" id="recoveryCard">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 flex items-center gap-1.5 mb-2">
+          <i data-lucide="battery-charging" class="w-3.5 h-3.5"></i> Vitality Recovery Estimator
+        </p>
+        <p class="text-sm text-zinc-300" id="recoveryText">—</p>
+      </div>
+
+      <div class="card p-4">
+        <div class="flex items-center justify-between mb-2">
+          <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Withdrawal Cheat Cards</p>
+          <i data-lucide="cards" class="w-4 h-4 text-zinc-600"></i>
+        </div>
+        <div class="space-y-2" id="cheatCards"></div>
+      </div>
+
+      <div class="card p-4">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Neuroplasticity Cooldown</p>
+        <div class="flex gap-2 mb-3">
+          <button class="btn-h flex-1 seg text-[12px] font-bold med-btn" data-min="3">3 min</button>
+          <button class="btn-h flex-1 seg text-[12px] font-bold med-btn" data-min="5">5 min</button>
+          <button class="btn-h flex-1 seg text-[12px] font-bold med-btn" data-min="10">10 min</button>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="relative w-20 h-20 shrink-0">
+            <svg viewBox="0 0 80 80" class="w-20 h-20 -rotate-90">
+              <circle cx="40" cy="40" r="34" fill="none" stroke="#27272a" stroke-width="6"/>
+              <circle id="medRing" class="med-ring" cx="40" cy="40" r="34" fill="none" stroke="#10b981" stroke-width="6" stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="213.6"/>
+            </svg>
+            <p id="medClock" class="absolute inset-0 flex items-center justify-center text-[13px] font-bold text-white tabular-nums">--:--</p>
+          </div>
+          <div class="flex-1">
+            <p class="text-[12px] text-zinc-400" id="medStatus">Stillness rebuilds receptor density. Choose a duration.</p>
+            <button id="medStop" class="mt-2 hidden text-[11px] font-bold text-rose-400 underline">Stop session</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <button id="openDelay" class="card p-4 text-left active:scale-95 transition">
+          <i data-lucide="hourglass" class="w-5 h-5 text-emerald-400 mb-2"></i>
+          <p class="text-[13px] font-bold text-white">5-Min Decision Delay</p>
+          <p class="text-[10px] text-zinc-500 mt-0.5">Urge ≠ decision. Outwait it.</p>
+        </button>
+        <button id="openPranayama" class="card p-4 text-left active:scale-95 transition">
+          <i data-lucide="wind" class="w-5 h-5 text-sky-400 mb-2"></i>
+          <p class="text-[13px] font-bold text-white">Pranayama Guide</p>
+          <p class="text-[10px] text-zinc-500 mt-0.5">Anulom Vilom & Kapalabhati</p>
+        </button>
+      </div>
+
+      <div class="card p-4">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 flex items-center gap-1.5 mb-2">
+          <i data-lucide="radar" class="w-3.5 h-3.5 text-amber-400"></i> Peak Craving Forecast
+        </p>
+        <p class="text-sm text-zinc-300" id="peakHours">—</p>
+      </div>
+
+      <div class="card p-4">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Weekly Voice Resonance Audit</p>
+        <div class="flex gap-1.5 mb-2" id="voiceStars"></div>
+        <p class="text-[11px] text-zinc-500" id="voiceLabel">Rate your speaking confidence this week.</p>
+      </div>
+    </section>
+
+    <!-- ============ TAB 3: TRIGGERS & ANALYTICS ============ -->
+    <section id="tab-triggers" class="tab-view hidden space-y-4">
+
+      <div class="card p-4">
+        <div class="flex items-center justify-between mb-3">
+          <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Trigger Engine — log one now</p>
+          <span class="text-[10px] text-zinc-600">tap = logged</span>
+        </div>
+        <div class="flex flex-wrap gap-2" id="triggerChips"></div>
+        <div class="flex gap-2 mt-3">
+          <input id="newTrigger" type="text" placeholder="Custom trigger..." class="flex-1 bg-panel2 border border-line rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 placeholder-zinc-600">
+          <button id="addTrigger" class="btn-h px-4 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-bold active:scale-95">+</button>
+        </div>
+      </div>
+
+      <div class="card p-4">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1">Trigger Frequency</p>
+        <div class="h-48"><canvas id="triggerChart"></canvas></div>
+      </div>
+
+      <div class="card p-4 border-amber-500/25">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400 flex items-center gap-1.5 mb-2">
+          <i data-lucide="clock-alert" class="w-3.5 h-3.5"></i> Vulnerability Window
+        </p>
+        <p class="text-xl font-extrabold text-white" id="vulnWindow">—</p>
+        <p class="text-[11px] text-zinc-500 mt-1" id="vulnHint">—</p>
+      </div>
+
+      <div class="card p-4">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">IF → THEN Implementation Intentions</p>
+        <div id="ifThenList" class="space-y-2 mb-3"></div>
+        <div class="flex gap-2">
+          <input id="ifThenInput" type="text" placeholder="IF I open Reels in bed, THEN I..." class="flex-1 bg-panel2 border border-line rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 placeholder-zinc-600">
+          <button id="ifThenAdd" class="btn-h px-4 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-bold active:scale-95">Add</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3">
+        <div class="card p-3 text-center">
+          <p class="text-lg font-extrabold text-emerald-400 tabular-nums" id="neutralCount">0</p>
+          <p class="text-[9px] uppercase tracking-wider text-zinc-500 font-bold mt-0.5">Urges surfed</p>
+        </div>
+        <div class="card p-3 text-center">
+          <p class="text-lg font-extrabold text-amber-400 tabular-nums" id="slipCount">0</p>
+          <p class="text-[9px] uppercase tracking-wider text-zinc-500 font-bold mt-0.5">Total slips</p>
+        </div>
+        <div class="card p-3 text-center">
+          <p class="text-lg font-extrabold text-white tabular-nums" id="triggerToday">0</p>
+          <p class="text-[9px] uppercase tracking-wider text-zinc-500 font-bold mt-0.5">Triggers today</p>
+        </div>
+      </div>
+
+      <button id="openAutopsy" class="btn-h w-full card !border-rose-500/30 p-4 flex items-center justify-center gap-2 text-rose-300 font-bold text-sm active:scale-95">
+        <i data-lucide="stethoscope" class="w-4.5 h-4.5"></i> Open Compassionate Relapse Autopsy
       </button>
     </section>
 
-  </div> <!-- End Main Container -->
-
-  <!-- ==================== PERSISTENT FLOATING SOS BUTTON (Feature 33) ==================== -->
-  <div class="fixed bottom-6 right-6 z-40">
-    <button onclick="triggerEmergencySOS()" class="w-16 h-16 rounded-full bg-accentRose hover:bg-rose-600 text-white shadow-2xl shadow-rose-900/80 flex flex-col items-center justify-center font-black tracking-wider transition-all duration-300 active:scale-90 border-2 border-rose-300">
-      <i data-lucide="flame" class="w-6 h-6 animate-bounce"></i>
-      <span class="text-[10px] font-mono tracking-widest mt-0.5">SOS</span>
-    </button>
-  </div>
-
-  <!-- ==================== SETTINGS & DATA MODAL (Features 44, 46, 47, 48) ==================== -->
-  <div id="settingsModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-cardDark border border-borderDark rounded-2xl max-w-md w-full p-5 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto text-xs">
-      <div class="flex items-center justify-between border-b border-borderDark pb-3">
-        <h3 class="font-bold text-base text-slate-100 flex items-center gap-2">
-          <i data-lucide="sliders" class="w-4 h-4 text-accentEmerald"></i>
-          Settings & Security
-        </h3>
-        <button onclick="closeModal('settingsModal')" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <!-- PIN Security Configuration -->
-      <div class="space-y-2">
-        <span class="font-semibold text-slate-300 block">Passcode PIN Protection:</span>
-        <div class="flex gap-2">
-          <input type="password" maxlength="4" id="pinSettingInput" placeholder="Set 4-digit PIN (e.g. 1234)" class="flex-1 bg-slate-900 border border-borderDark rounded-lg px-3 py-2 text-xs text-white" />
-          <button onclick="saveNewPin()" class="px-3 py-2 rounded-lg bg-accentEmerald text-slate-950 font-bold hover:bg-emerald-400">Save PIN</button>
+    <!-- ============ TAB 4: HEATMAP & HISTORY ============ -->
+    <section id="tab-heat" class="tab-view hidden space-y-4">
+      <div class="card p-4">
+        <div class="flex items-center justify-between mb-3">
+          <button id="prevMonth" class="btn-h w-10 rounded-xl bg-panel2 border border-line text-zinc-400 active:scale-95">‹</button>
+          <p class="text-sm font-bold text-white" id="heatMonth">—</p>
+          <button id="nextMonth" class="btn-h w-10 rounded-xl bg-panel2 border border-line text-zinc-400 active:scale-95">›</button>
         </div>
-        <p class="text-[10px] text-slate-400">Leave blank and save to disable PIN lock on startup.</p>
+        <div class="grid grid-cols-7 gap-1 text-center text-[9px] font-bold text-zinc-600 mb-1.5">
+          <span>SU</span><span>MO</span><span>TU</span><span>WE</span><span>TH</span><span>FR</span><span>SA</span>
+        </div>
+        <div class="grid7" id="heatGrid"></div>
+        <div class="flex gap-4 mt-3 justify-center text-[10px] text-zinc-500">
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-emerald-500/70 inline-block"></span>Clean</span>
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-amber-500/70 inline-block"></span>M-Only</span>
+          <span class="flex itemsspan><span>TU</span><span>WE</span><span>TH</span><span>FR</span><span>SA</span>
+        </div>
+        <div class="grid7" id="heatGrid"></div>
+        <div class="flex gap-4 mt-3 justify-center text-[10px] text-zinc-500">
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-emerald-500/70 inline-block"></span>Clean</span>
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-amber-500/70 inline-block"></span>M-Only</span>
+          <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-rose-500/70 inline-block"></span>Ejaculation</span>
+        </div>
       </div>
 
-      <!-- Emergency Contact Phone Number -->
-      <div class="space-y-1">
-        <span class="font-semibold text-slate-300 block">Grounding Call Phone Number:</span>
-        <input type="tel" id="emergencyPhoneInput" placeholder="+1..." class="w-full bg-slate-900 border border-borderDark rounded-lg px-3 py-2 text-xs text-white" onchange="saveEmergencyPhone()" />
+      <div class="grid grid-cols-2 gap-3">
+        <div class="card p-4">
+          <p class="text-[9px] uppercase tracking-wider text-zinc-500 font-bold">This month</p>
+          <p class="text-2xl font-extrabold text-emerald-400 mt-1 tabular-nums" id="momThis">0</p>
+          <p class="text-[10px] text-zinc-500">clean days</p>
+        </div>
+        <div class="card p-4">
+          <p class="text-[9px] uppercase tracking-wider text-zinc-500 font-bold">Last month</p>
+          <p class="text-2xl font-extrabold text-zinc-300 mt-1 tabular-nums" id="momLast">0</p>
+          <p class="text-[10px] text-zinc-500" id="momDelta">clean days</p>
+        </div>
       </div>
 
-      <!-- Data Backup & Restore (Features 46, 47) -->
-      <div class="pt-3 border-t border-borderDark space-y-2">
-        <span class="font-semibold text-slate-300 block">100% Client-Side Local Ledger:</span>
-        <div class="grid grid-cols-2 gap-2">
-          <button onclick="exportAppDataJSON()" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold flex items-center justify-center gap-1.5">
-            <i data-lucide="download" class="w-3.5 h-3.5"></i> Export JSON
+      <div class="card p-4">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Slip Log & Autopsy History</p>
+        <div id="slipLogList" class="space-y-2 max-h-72 overflow-y-auto no-scrollbar"></div>
+      </div>
+    </section>
+
+    <!-- ============ TAB 5: VAULT & SETTINGS ============ -->
+    <section id="tab-vault" class="tab-view hidden space-y-4">
+      <div>
+        <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Milestone Badges</p>
+        <div class="grid grid-cols-4 gap-2" id="badgeGrid"></div>
+      </div>
+
+      <div class="card p-4 border-emerald-500/25">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-emerald-400 flex items-center gap-1.5 mb-2">
+          <i data-lucide="gem" class="w-3.5 h-3.5"></i> My "Why" Vault
+        </p>
+        <textarea id="whyVault" rows="3" class="w-full bg-panel2 border border-line rounded-xl p-3 text-sm text-zinc-200 resize-none" placeholder="Why am I doing this?"></textarea>
+        <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mt-3 mb-1.5">Identity Statement</p>
+        <input id="identityVault" type="text" class="w-full bg-panel2 border border-line rounded-xl px-3 py-2.5 text-sm text-zinc-200" placeholder="I am the kind of person who...">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mt-3 mb-1.5">Letter to Future Self</p>
+        <textarea id="letterVault" rows="3" class="w-full bg-panel2 border border-line rounded-xl p-3 text-sm text-zinc-200 resize-none" placeholder="Dear future me, when you crave..."></textarea>
+        <button id="saveVault" class="btn-h w-full mt-3 rounded-xl bg-emerald-500 text-ink font-bold text-sm active:scale-95">Save Vault</button>
+      </div>
+
+      <div class="card p-4">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Privacy</p>
+        <div class="flex items-center justify-between py-2">
+          <div>
+            <p class="text-sm text-zinc-200 font-semibold">4-Digit PIN Lock</p>
+            <p class="text-[11px] text-zinc-500" id="pinStatus">Not set</p>
+          </div>
+          <button id="pinToggle" class="btn-h px-4 rounded-xl bg-panel2 border border-line text-[12px] font-bold text-emerald-300 active:scale-95">Set PIN</button>
+        </div>
+        <div class="mt-2">
+          <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">Trusted contact (SOS grounding call)</p>
+          <div class="flex gap-2">
+            <input id="trustedPhone" type="tel" placeholder="+1 555 000 0000" class="flex-1 bg-panel2 border border-line rounded-xl px-3.5 py-2.5 text-sm text-zinc-200 placeholder-zinc-600">
+            <button id="phoneSave" class="btn-h px-4 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-[12px] font-bold active:scale-95">Save</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card p-4">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Backup & Restore — 100% offline</p>
+        <div class="flex gap-2">
+          <button id="exportBtn" class="btn-h flex-1 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-[12px] font-bold active:scale-95 flex items-center justify-center gap-1.5">
+            <i data-lucide="download" class="w-4 h-4"></i> Export JSON
           </button>
-          <label class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold flex items-center justify-center gap-1.5 cursor-pointer">
-            <i data-lucide="upload" class="w-3.5 h-3.5"></i> Import JSON
-            <input type="file" id="importJsonFileInput" accept=".json" class="hidden" onchange="importAppDataJSON(event)" />
+          <label class="btn-h flex-1 rounded-xl bg-panel2 border border-line text-zinc-300 text-[12px] font-bold active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer">
+            <i data-lucide="upload" class="w-4 h-4"></i> Import JSON
+            <input id="importFile" type="file" accept=".json" class="hidden">
           </label>
         </div>
+        <button id="snapBtn" class="btn-h w-full mt-2 rounded-xl bg-gold/15 border border-gold/40 text-gold text-[12px] font-bold active:scale-95 flex items-center justify-center gap-1.5">
+          <i data-lucide="camera" class="w-4 h-4"></i> Milestone Snapshot Card
+        </button>
+        <button id="wipeBtn" class="btn-h w-full mt-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-[12px] font-bold active:scale-95">Erase all data</button>
       </div>
 
-      <!-- Factory Reset -->
-      <div class="pt-2 border-t border-borderDark">
-        <button onclick="factoryReset()" class="w-full py-2 rounded-lg text-accentRose hover:bg-rose-950/30 text-[11px] font-semibold border border-rose-900/30">
-          Factory Reset App (Erase All Local Data)
-        </button>
+      <p class="text-center text-[10px] text-zinc-700 pb-2">All data lives only on this device.<br>Vitalis Rewire OS v1.0</p>
+    </section>
+  </main>
+
+  <!-- ================= SOS FAB ================= -->
+  <button id="sosFab" class="fab-sos fixed z-50 left-1/2 -translate-x-1/2 bottom-[86px] w-16 h-16 rounded-full bg-rose-600 border-4 border-rose-400/40 flex items-center justify-center text-white active:scale-90 transition shadow-2xl" style="bottom:calc(env(safe-area-inset-bottom, 0px) + 86px)" aria-label="SOS">
+    <i data-lucide="life-buoy" class="w-7 h-7"></i>
+  </button>
+
+  <!-- ================= BOTTOM NAV ================= -->
+  <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md z-40 bg-panel/95 backdrop-blur border-t border-line px-2 pt-2" style="padding-bottom:env(safe-area-inset-bottom, 8px)">
+    <div class="grid grid-cols-5">
+      <button class="nav-btn flex flex-col items-center gap-0.5 py-1 text-zinc-500" data-tab="tracker">
+        <i data-lucide="activity" class="w-5 h-5"></i><span class="text-[9px] font-bold">Tracker</span><span class="tabdot"></span>
+      </button>
+      <button class="nav-btn flex flex-col items-center gap-0.5 py-1 text-zinc-500" data-tab="rewire">
+        <i data-lucide="brain" class="w-5 h-5"></i><span class="text-[9px] font-bold">Rewire</span><span class="tabdot"></span>
+      </button>
+      <div></div>
+      <button class="nav-btn flex flex-col items-center gap-0.5 py-1 text-zinc-500" data-tab="triggers">
+        <i data-lucide="radar" class="w-5 h-5"></i><span class="text-[9px] font-bold">Triggers</span><span class="tabdot"></span>
+      </button>
+      <button class="nav-btn flex flex-col items-center gap-0.5 py-1 text-zinc-500" data-tab="heat">
+        <i data-lucide="calendar-days" class="w-5 h-5"></i><span class="text-[9px] font-bold">History</span><span class="tabdot"></span>
+      </button>
+    </div>
+    <button class="nav-btn absolute left-1/2 -translate-x-1/2 -top-7 w-14 h-14 rounded-2xl bg-panel border border-line flex flex-col items-center justify-center text-zinc-400 active:scale-95" data-tab="vault" aria-label="Vault">
+      <i data-lucide="shield-check" class="w-5 h-5"></i><span class="text-[8px] font-bold mt-0.5">Vault</span>
+    </button>
+  </nav>
+</div>
+
+<!-- ================= SOS FULLSCREEN MODAL ================= -->
+<div id="sosModal" class="fixed inset-0 z-[80] hidden">
+  <div class="absolute inset-0 modal-bg" id="sosBg"></div>
+  <div class="absolute inset-x-0 bottom-0 top-10 max-w-md mx-auto bg-panel border-t border-rose-500/30 rounded-t-3xl overflow-y-auto no-scrollbar pop">
+    <div class="sticky top-0 bg-panel/95 backdrop-blur border-b border-line px-4 py-3 flex items-center justify-between z-10">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span>
+        <p class="text-sm font-extrabold text-white tracking-wide">EMERGENCY SOS</p>
+      </div>
+      <button id="sosClose" class="btn-h w-10 rounded-xl bg-panel2 border border-line text-zinc-400 active:scale-95">✕</button>
+    </div>
+
+    <div class="px-4 py-4 space-y-4 pb-10">
+      <div class="card !border-rose-500/30 p-4">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-rose-400 mb-1">Urge Surfing — Ride the wave</p>
+        <p class="text-3xl font-extrabold text-white text-center tabular-nums my-2" id="surfClock">15:00</p>
+        <div class="h-1.5 rounded-full bg-zinc-800 overflow-hidden mb-1">
+          <div id="surfBar" class="h-full bg-rose-500 rounded-full transition-all duration-1000" style="width:100%"></div>
+        </div>
+        <p class="text-center text-[11px] text-zinc-500 mb-3" id="surfGuide">Waves peak and always fall. Stay on the board.</p>
+        <div class="flex gap-2">
+          <button id="surfToggle" class="btn-h flex-1 rounded-xl bg-rose-500/20 border border-rose-500/50 text-rose-300 font-bold text-[12px] active:scale-95">Start Surfing</button>
+          <button id="surfReset" class="btn-h px-4 rounded-xl bg-panel2 border border-line text-zinc-400 text-[12px] active:scale-95">Reset</button>
+        </div>
+        <button id="survivedBtn" class="btn-h w-full mt-2 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-bold text-[12px] active:scale-95">✓ I surfed it — neutralize urge (+1)</button>
+      </div>
+
+      <div class="card p-4">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-3">4-7-8 Parasympathetic Reset</p>
+        <div class="flex justify-center py-3">
+          <div class="sphere-wrap" id="sphereWrap"><div class="sphere" id="sphere"></div></div>
+        </div>
+        <p class="text-center text-lg font-extrabold text-white" id="breathPhase">Ready</p>
+        <p class="text-center text-[11px] text-zinc-500 mb-3" id="breathCount">Cycles completed: 0</p>
+        <button id="breathToggle" class="btn-h w-full rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-bold text-[12px] active:scale-95">Begin Breathing</button>
+      </div>
+
+      <div class="card p-4">
+        <div class="flex items-center justify-between mb-2">
+          <p class="text-[10px] font-bold uppercase tracking-widest text-gold">Dopamine Swap</p>
+          <button id="swapBtn" class="btn-h px-3 rounded-lg bg-gold/15 border border-gold/40 text-gold text-[11px] font-bold active:scale-95">New task</button>
+        </div>
+        <p class="text-sm font-semibold text-white text-center py-3" id="swapTask">Tap "New task" for an instant replacement action.</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div class="card p-4">
+          <p class="text-[10px] font-bold uppercase tracking-widest text-sky-400 mb-1.5">Cold Shower Sprint</p>
+          <p class="text-2xl font-extrabold text-white text-center tabular-nums" id="coldClock">02:00</p>
+          <button id="coldToggle" class="btn-h w-full mt-2 rounded-xl bg-sky-500/15 border border-sky-500/40 text-sky-300 font-bold text-[11px] active:scale-95">Start 2:00</button>
+        </div>
+        <div class="card p-4 flex flex-col">
+          <p class="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-2">Grounding Call</p>
+          <a id="callLink" href="tel:" class="btn-h flex-1 rounded-xl bg-emerald-500 text-ink font-bold text-[12px] flex items-center justify-center gap-1.5 active:scale-95">
+            <i data-lucide="phone-call" class="w-4 h-4"></i> Call now
+          </a>
+        </div>
+      </div>
+
+      <div class="card p-4 border-emerald-500/25">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-2">Remember Your Why</p>
+        <p class="text-[12px] text-zinc-300 italic" id="sosWhy">—</p>
+        <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mt-3 mb-1.5">Letter to Future Self</p>
+        <p class="text-[12px] text-zinc-400" id="sosLetter">—</p>
       </div>
     </div>
   </div>
-
-  <!-- ==================== JAVASCRIPT LOGIC ENGINE ==================== -->
-  <script>
-    /* =========================================================================
-       DEFAULT INITIALIZATION & STATE SCHEMA
-       ========================================================================= */
-    const STORAGE_KEY = 'SOVEREIGN_MIND_STATE_V1';
-
-    // 12 Milestone Steps (Feature 3)
-    const MILESTONE_STEPS = [
-      { id: '12h', hours: 12, label: '12 Hours', badge: '🌱 Dawn of Will', desc: 'Dopamine cravings stabilize; baseline pulse slows.' },
-      { id: '24h', hours: 24, label: '24 Hours', badge: '⚡ Day One Warrior', desc: 'Blood androgen receptors begin upregulation.' },
-      { id: '3d', hours: 72, label: '3 Days', badge: '🛡️ Chaser Vanquisher', desc: 'Primary acute neurochemical dip neutralized.' },
-      { id: '7d', hours: 168, label: '7 Days', badge: '🔥 Testosterone Spike', desc: 'Research-backed 145.7% peak in serum testosterone.' },
-      { id: '14d', hours: 336, label: '14 Days', badge: '🧠 Brain Clarity Onset', desc: 'Prefrontal cortex grey matter begins functional strengthening.' },
-      { id: '21d', hours: 504, label: '21 Days', badge: '💎 Habit Anchor', desc: 'Neural default mode network dissociates from compulsive loops.' },
-      { id: '30d', hours: 720, label: '30 Days', badge: '☀️ Full Lunar Cycle', desc: 'Significant Ojas accumulation, increased vocal depth and energy.' },
-      { id: '45d', hours: 1080, label: '45 Days', badge: '🦅 Laser Vision', desc: 'Dopamine D2 receptor densities near standard homeostatic levels.' },
-      { id: '60d', hours: 1440, label: '60 Days', badge: '🦁 Magnetic Aura', desc: 'Social confidence stabilizes; physical recovery accelerates.' },
-      { id: '90d', hours: 2160, label: '90 Days', badge: '👑 Pure Brahmacharya', desc: 'Classical 90-day neurochemical reset fully accomplished.' },
-      { id: '180d', hours: 4320, label: '180 Days', badge: '🔱 Iron Monk', desc: 'Complete subconscious cognitive reprogramming.' },
-      { id: '365d', hours: 8760, label: '365 Days', badge: '✨ Transcendent Sovereign', desc: 'Full mastery over life-force transmuted into purpose.' }
-    ];
-
-    // Seed Data to immediately demonstrate working graphs & counters upon load
-    function getDefaultState() {
-      const now = Date.now();
-      const twentyEightDaysAgo = now - (28 * 24 * 60 * 60 * 1000) - (6 * 3600 * 1000);
-      const thirtyTwoDaysAgo = now - (32 * 24 * 60 * 60 * 1000);
-
-      // Generate 14 days of realistic focus and vitality logs
-      const dailyLogs = {};
-      for (let i = 13; i >= 0; i--) {
-        const d = new Date(now - i * 86400000);
-        const dateKey = d.toISOString().split('T')[0];
-        dailyLogs[dateKey] = {
-          ojas: Math.min(10, Math.max(5, Math.floor(6 + (14 - i) * 0.28))),
-          focus: Math.min(10, Math.max(4, Math.floor(5 + (14 - i) * 0.32))),
-          sleep: 4,
-          water: 6 + (i % 3),
-          tags: ['gym', 'pranayama']
-        };
-      }
-
-      // Generate calendar heatmap entries for past 60 days
-      const calendarEntries = {};
-      for (let i = 59; i >= 0; i--) {
-        const d = new Date(now - i * 86400000);
-        const dateKey = d.toISOString().split('T')[0];
-        if (i === 42) {
-          calendarEntries[dateKey] = 'ejaculation'; // slip 42 days ago
-        } else if (i === 29) {
-          calendarEntries[dateKey] = 'm_only';     // edging 29 days ago
-        } else {
-          calendarEntries[dateKey] = 'clean';
-        }
-      }
-
-      return {
-        ejacResetTime: twentyEightDaysAgo,
-        mOnlyResetTime: twentyEightDaysAgo,
-        lastSlipType: null,
-        pin: '',
-        emergencyPhone: '',
-        whyVaultText: "I am cultivating magnetic vitality, mental unshakeability, and genuine confidence. Instant gratification sacrifices long-term greatness for 5 seconds of illusory comfort.",
-        ifThenRule: "IF I feel an intense urge while alone in bed after 11 PM, THEN I will immediately stand up, splash cold water on my eyes, and do 20 pushups.",
-        urgesResistedCount: 28,
-        triggers: [
-          { name: 'Instagram Reels', count: 14, color: 'rose' },
-          { name: 'Late Night Bed Phone', count: 18, color: 'rose' },
-          { name: 'Boredom / Aimless Surfing', count: 9, color: 'amber' },
-          { name: 'Stress / Work Anxiety', count: 7, color: 'amber' },
-          { name: 'Specific Person / Chat', count: 4, color: 'indigo' }
-        ],
-        slipHistory: [
-          { timestamp: twentyEightDaysAgo, type: 'ejaculation', trigger: 'Late Night Bed Phone', location: 'Bed / Bedroom' }
-        ],
-        dailyLogs: dailyLogs,
-        calendarEntries: calendarEntries
-      };
-    }
-
-    // App State Wrapper
-    let AppState = (function() {
-      let state = {};
-      try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        state = stored ? JSON.parse(stored) : getDefaultState();
-      } catch (e) {
-        state = getDefaultState();
-      }
-
-      return {
-        get: () => state,
-        set: (newState) => {
-          state = newState;
-          try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-          } catch(e) {}
-        },
-        save: () => {
-          try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-          } catch(e) {}
-        }
-      };
-    })();
-
-    /* =========================================================================
-       CORE TIMERS & REAL-TIME DISPATCHER (Features 1, 7, 8)
-       ========================================================================= */
-    let timerInterval = null;
-
-    function startLiveCounters() {
-      if (timerInterval) clearInterval(timerInterval);
-      updateCounters();
-      timerInterval = setInterval(updateCounters, 1000);
-    }
-
-    function updateCounters() {
-      const state = AppState.get();
-      const now = Date.now();
-
-      // Tracker 1: Ejaculation Tracker
-      const ejacElapsedSecs = Math.max(0, Math.floor((now - state.ejacResetTime) / 1000));
-      const eDays = Math.floor(ejacElapsedSecs / 86400);
-      const eHours = Math.floor((ejacElapsedSecs % 86400) / 3600);
-      const eMins = Math.floor((ejacElapsedSecs % 3600) / 60);
-      const eSecs = ejacElapsedSecs % 60;
-
-      document.getElementById('ejacDays').textContent = eDays;
-      document.getElementById('ejacHours').textContent = String(eHours).padStart(2, '0');
-      document.getElementById('ejacMins').textContent = String(eMins).padStart(2, '0');
-      document.getElementById('ejacSecs').textContent = String(eSecs).padStart(2, '0');
-
-      // Tracker 2: M-Only Tracker
-      const mElapsedSecs = Math.max(0, Math.floor((now - state.mOnlyResetTime) / 1000));
-      const mDays = Math.floor(mElapsedSecs / 86400);
-      const mHours = Math.floor((mElapsedSecs % 86400) / 3600);
-      const mMins = Math.floor((mElapsedSecs % 3600) / 60);
-      const mSecs = mElapsedSecs % 60;
-      document.getElementById('mOnlyTimeDisplay').textContent = `${mDays}d ${mHours}h ${mMins}m ${mSecs}s Clean`;
-
-      // Feature 8: Next Milestone Progression
-      updateMilestoneProgress(ejacElapsedSecs);
-
-      // Feature 29: 72-Hour Chaser Alert
-      updateChaserAlert(now, state.ejacResetTime);
-
-      // Snapshot display sync
-      document.getElementById('snapshotDaysDisplay').textContent = `${eDays} DAYS`;
-    }
-
-    function updateMilestoneProgress(elapsedSeconds) {
-      const elapsedHours = elapsedSeconds / 3600;
-      let nextM = null;
-      let prevHours = 0;
-
-      for (let m of MILESTONE_STEPS) {
-        if (elapsedHours < m.hours) {
-          nextM = m;
-          break;
-        }
-        prevHours = m.hours;
-      }
-
-      if (!nextM) {
-        document.getElementById('nextMilestoneLabel').textContent = 'All Milestones Mastered!';
-        document.getElementById('nextMilestoneRemaining').textContent = 'Transcendent';
-        document.getElementById('milestoneProgressBar').style.width = '100%';
-        return;
-      }
-
-      document.getElementById('nextMilestoneLabel').textContent = nextM.label;
-      const hoursLeft = Math.max(0, nextM.hours - elapsedHours);
-      const daysLeft = Math.floor(hoursLeft / 24);
-      const remHours = Math.floor(hoursLeft % 24);
-      const remMins = Math.floor((hoursLeft * 60) % 60);
-
-      document.getElementById('nextMilestoneRemaining').textContent = 
-        daysLeft > 0 ? `${daysLeft}d ${remHours}h left` : `${remHours}h ${remMins}m left`;
-
-      const span = nextM.hours - prevHours;
-      const progressInSpan = elapsedHours - prevHours;
-      const pct = Math.min(100, Math.max(0, (progressInSpan / span) * 100));
-      document.getElementById('milestoneProgressBar').style.width = `${pct.toFixed(1)}%`;
-    }
-
-    function updateChaserAlert(now, lastResetTime) {
-      const hoursSinceReset = (now - lastResetTime) / 3600000;
-      const box = document.getElementById('chaserAlertBox');
-      if (hoursSinceReset < 72) {
-        box.classList.remove('hidden');
-        const remaining = Math.ceil(72 - hoursSinceReset);
-        document.getElementById('chaserHoursLeft').textContent = `${remaining}h remaining`;
-      } else {
-        box.classList.add('hidden');
-      }
-    }
-
-    /* =========================================================================
-       FEATURE 4: MILESTONE BADGES & BRAIN REWIRING STAGES
-       ========================================================================= */
-    function renderMilestoneBadges() {
-      const state = AppState.get();
-      const currentHours = (Date.now() - state.ejacResetTime) / 3600000;
-      const container = document.getElementById('milestoneBadgesGrid');
-      container.innerHTML = '';
-
-      let unlockedCount = 0;
-      let highestBadge = '🌱 Novice';
-
-      MILESTONE_STEPS.forEach(m => {
-        const isUnlocked = currentHours >= m.hours;
-        if (isUnlocked) {
-          unlockedCount++;
-          highestBadge = m.badge;
-        }
-
-        const card = document.createElement('div');
-        card.className = `p-2.5 rounded-xl border transition-all ${
-          isUnlocked 
-            ? 'bg-emerald-950/20 border-emerald-500/40 text-slate-200' 
-            : 'bg-slate-900/40 border-borderDark text-slate-500 opacity-60'
-        }`;
-
-        card.innerHTML = `
-          <div class="flex items-center justify-between mb-1">
-            <span class="font-bold text-[11px] ${isUnlocked ? 'text-accentEmerald' : 'text-slate-500'}">${m.label}</span>
-            <span class="text-xs">${isUnlocked ? '🔓' : '🔒'}</span>
-          </div>
-          <div class="font-semibold text-xs truncate">${m.badge}</div>
-          <p class="text-[9px] text-slate-400 mt-1 line-clamp-2 leading-tight">${m.desc}</p>
-        `;
-        container.appendChild(card);
-      });
-
-      document.getElementById('milestonesUnlockedCount').textContent = `${unlockedCount} / 12 Unlocked`;
-      document.getElementById('snapshotBadgeDisplay').textContent = highestBadge;
-
-      // Update Brain Rewiring Stage (Feature 9)
-      const days = currentHours / 24;
-      const stageTitle = document.getElementById('brainStageTitle');
-      const stageDays = document.getElementById('brainStageDays');
-      const stageDesc = document.getElementById('brainStageDesc');
-
-      if (days < 7) {
-        stageTitle.textContent = 'Stage 1: Acute Dopamine Withdrawal & Receptor Shock';
-        stageDays.textContent = 'Days 0–7';
-        stageDesc.textContent = 'Nervous system recalibrating. Urges are frequent due to neurochemical delta. Guard your eyes and phone vigorously.';
-      } else if (days < 21) {
-        stageTitle.textContent = 'Stage 2: Dopamine Receptor Upregulation';
-        stageDays.textContent = 'Days 7–21';
-        stageDesc.textContent = 'D2 receptor density is multiplying. Everyday tasks, books, and nature begin feeling naturally rewarding again.';
-      } else if (days < 60) {
-        stageTitle.textContent = 'Stage 3: Prefrontal Cortex Re-Myelination';
-        stageDays.textContent = 'Days 21–60';
-        stageDesc.textContent = 'Executive control is dramatically strengthened. Impulse latency increases. Physical energy transmutes easily.';
-      } else {
-        stageTitle.textContent = 'Stage 4: Autonomous Neurochemical Sovereignty';
-        stageDays.textContent = 'Days 60+';
-        stageDesc.textContent = 'High resilience, rock-solid dopamine equilibrium, deep voice resonance, and natural social ease.';
-      }
-    }
-
-    /* =========================================================================
-       CALCULATE ROLLING SUCCESS & HEALTH GRADE (Features 5 & 7)
-       ========================================================================= */
-    function calculateRollingMetrics() {
-      const state = AppState.get();
-      const entries = state.calendarEntries || {};
-      const now = new Date();
-
-      let cleanPast30 = 0;
-      let totalPast30 = 0;
-      let cleanPast90 = 0;
-      let totalPast90 = 0;
-
-      for (let i = 0; i < 90; i++) {
-        const d = new Date(now.getTime() - i * 86400000);
-        const k = d.toISOString().split('T')[0];
-        const status = entries[k] || 'clean';
-
-        if (i < 30) {
-          totalPast30++;
-          if (status === 'clean') cleanPast30++;
-        }
-        totalPast90++;
-        if (status === 'clean') cleanPast90++;
-      }
-
-      const rate30 = ((cleanPast30 / totalPast30) * 100).toFixed(1);
-      const rate90 = ((cleanPast90 / totalPast90) * 100).toFixed(1);
-
-      document.getElementById('cleanRate30').textContent = `${rate30}%`;
-      document.getElementById('cleanRate90').textContent = `${rate90}%`;
-      document.getElementById('snapshotRateDisplay').textContent = `${rate30}%`;
-
-      // Health Performance Grade (Feature 7)
-      const badge = document.getElementById('healthGradeBadge');
-      if (rate30 >= 90) {
-        badge.textContent = 'HEALTHY';
-        badge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30';
-      } else if (rate30 >= 75) {
-        badge.textContent = 'CAUTION';
-        badge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30';
-      } else {
-        badge.textContent = 'CRITICAL';
-        badge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/30';
-      }
-    }
-
-    /* =========================================================================
-       CHARTS ENGINE: COGNITIVE GRAPH & TRIGGER BAR (Features 10 & 26)
-       ========================================================================= */
-    let cognitiveChartInstance = null;
-    let triggerChartInstance = null;
-
-    function renderCognitiveChart() {
-      const ctx = document.getElementById('cognitiveChart').getContext('2d');
-      const state = AppState.get();
-      const labels = [];
-      const ojasData = [];
-      const focusData = [];
-
-      const now = new Date();
-      for (let i = 13; i >= 0; i--) {
-        const d = new Date(now.getTime() - i * 86400000);
-        const k = d.toISOString().split('T')[0];
-        labels.push(d.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' }));
-        const log = state.dailyLogs[k] || { ojas: 7, focus: 7 };
-        ojasData.push(log.ojas);
-        focusData.push(log.focus);
-      }
-
-      if (cognitiveChartInstance) cognitiveChartInstance.destroy();
-
-      cognitiveChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [
-            {
-              label: 'Physical Ojas (1-10)',
-              data: ojasData,
-              borderColor: '#10b981',
-              backgroundColor: 'rgba(16, 185, 129, 0.1)',
-              tension: 0.35,
-              fill: true,
-              borderWidth: 2,
-              pointRadius: 2
-            },
-            {
-              label: 'Mental Focus (1-10)',
-              data: focusData,
-              borderColor: '#6366f1',
-              backgroundColor: 'transparent',
-              tension: 0.35,
-              borderWidth: 2,
-              borderDash: [4, 4],
-              pointRadius: 2
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              labels: { color: '#94a3b8', font: { size: 10 } }
-            }
-          },
-          scales: {
-            y: {
-              min: 1,
-              max: 10,
-              grid: { color: '#1e293b' },
-              ticks: { color: '#64748b', font: { size: 9 } }
-            },
-            x: {
-              grid: { display: false },
-              ticks: { color: '#64748b', font: { size: 9 } }
-            }
-          }
-        }
-      });
-    }
-
-    function renderTriggerChart() {
-      const ctx = document.getElementById('triggerBarChart').getContext('2d');
-      const state = AppState.get();
-      const labels = state.triggers.map(t => t.name);
-      const data = state.triggers.map(t => t.count);
-
-      if (triggerChartInstance) triggerChartInstance.destroy();
-
-      triggerChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Incidents Logged',
-            data: data,
-            backgroundColor: '#f43f5e',
-            borderRadius: 6
-          }]
-        },
-        options: {
-          indexAxis: 'y',
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false }
-          },
-          scales: {
-            x: {
-              grid: { color: '#1e293b' },
-              ticks: { color: '#64748b', font: { size: 9 }, stepSize: 2 }
-            },
-            y: {
-              grid: { display: false },
-              ticks: { color: '#94a3b8', font: { size: 9 } }
-            }
-          }
-        }
-      });
-    }
-
-    /* =========================================================================
-       DYNAMIC TRIGGER ENGINE & TAG MANAGEMENT (Feature 25)
-       ========================================================================= */
-    function renderTriggerTags() {
-      const state = AppState.get();
-      const container = document.getElementById('triggerTagsContainer');
-      container.innerHTML = '';
-
-      state.triggers.forEach(t => {
-        const btn = document.createElement('button');
-        btn.className = 'px-2.5 py-1 rounded-lg border border-borderDark bg-slate-900 text-slate-300 text-xs hover:border-accentRose transition flex items-center gap-1.5';
-        btn.innerHTML = `<span>${t.name}</span> <span class="text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-rose-400 font-mono">${t.count}</span>`;
-        btn.onclick = () => recordUrgeForTrigger(t.name);
-        container.appendChild(btn);
-      });
-    }
-
-    function recordUrgeForTrigger(name) {
-      const state = AppState.get();
-      const item = state.triggers.find(t => t.name === name);
-      if (item) {
-        item.count++;
-        AppState.set(state);
-        renderTriggerTags();
-        renderTriggerChart();
-      }
-    }
-
-    function addNewCustomTrigger() {
-      const input = document.getElementById('newTriggerInput');
-      const val = input.value.trim();
-      if (!val) return;
-
-      const state = AppState.get();
-      if (!state.triggers.some(t => t.name.toLowerCase() === val.toLowerCase())) {
-        state.triggers.push({ name: val, count: 1, color: 'indigo' });
-        AppState.set(state);
-        renderTriggerTags();
-        renderTriggerChart();
-      }
-      input.value = '';
-    }
-
-    /* =========================================================================
-       CALENDAR HEATMAP (Features 41 & 42)
-       ========================================================================= */
-    let currentHeatmapDate = new Date();
-
-    function renderCalendarHeatmap() {
-      const grid = document.getElementById('calendarGrid');
-      grid.innerHTML = '';
-      const state = AppState.get();
-      const year = currentHeatmapDate.getFullYear();
-      const month = currentHeatmapDate.getMonth();
-
-      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-      document.getElementById('calendarMonthLabel').textContent = `${monthNames[month]} ${year}`;
-
-      const firstDay = new Date(year, month, 1).getDay();
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-      // Leading blanks
-      for (let i = 0; i < firstDay; i++) {
-        const blank = document.createElement('div');
-        blank.className = 'h-8 sm:h-9 rounded bg-transparent';
-        grid.appendChild(blank);
-      }
-
-      let cleanCount = 0;
-
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dObj = new Date(year, month, day);
-        const key = dObj.toISOString().split('T')[0];
-        const status = state.calendarEntries[key] || 'clean';
-
-        if (status === 'clean') cleanCount++;
-
-        let colorCls = 'bg-emerald-950/40 border-emerald-600/40 text-emerald-400';
-        let symbol = '✓';
-        if (status === 'm_only') {
-          colorCls = 'bg-amber-950/40 border-amber-600/50 text-amber-400';
-          symbol = '⚡';
-        } else if (status === 'ejaculation') {
-          colorCls = 'bg-rose-950/40 border-rose-600/50 text-rose-400';
-          symbol = '✕';
-        }
-
-        const cell = document.createElement('div');
-        cell.className = `h-8 sm:h-9 rounded-lg border ${colorCls} flex flex-col items-center justify-center font-mono text-[10px] cursor-pointer hover:scale-105 transition`;
-        cell.title = `${key}: ${status.toUpperCase()}`;
-        cell.innerHTML = `<span>${day}</span><span class="text-[8px] font-bold">${symbol}</span>`;
-        cell.onclick = () => toggleCalendarDayStatus(key);
-        grid.appendChild(cell);
-      }
-
-      document.getElementById('thisMonthCleanCount').textContent = cleanCount;
-    }
-
-    function toggleCalendarDayStatus(dateKey) {
-      const state = AppState.get();
-      const current = state.calendarEntries[dateKey] || 'clean';
-      let next = 'clean';
-      if (current === 'clean') next = 'm_only';
-      else if (current === 'm_only') next = 'ejaculation';
-      else next = 'clean';
-
-      state.calendarEntries[dateKey] = next;
-      AppState.set(state);
-      renderCalendarHeatmap();
-      calculateRollingMetrics();
-    }
-
-    function changeHeatmapMonth(delta) {
-      currentHeatmapDate.setMonth(currentHeatmapDate.getMonth() + delta);
-      renderCalendarHeatmap();
-    }
-
-    /* =========================================================================
-       DAILY VITALS & LOGIC DRAFT (Features 11, 17, 20, 23)
-       ========================================================================= */
-    function updateDailyLogDraft() {
-      const ojas = document.getElementById('ojasSlider').value;
-      const focus = document.getElementById('focusSlider').value;
-      document.getElementById('ojasValDisplay').textContent = `${ojas} / 10`;
-      document.getElementById('focusValDisplay').textContent = `${focus} / 10`;
-    }
-
-    function modWater(delta) {
-      const el = document.getElementById('waterCount');
-      let val = Math.max(0, parseInt(el.textContent) + delta);
-      el.textContent = val;
-    }
-
-    function toggleDailyTag(btn, tag) {
-      btn.classList.toggle('bg-accentEmerald');
-      btn.classList.toggle('text-black');
-      btn.classList.toggle('font-bold');
-    }
-
-    function saveDailyCheckin() {
-      const state = AppState.get();
-      const today = new Date().toISOString().split('T')[0];
-      const ojas = parseInt(document.getElementById('ojasSlider').value);
-      const focus = parseInt(document.getElementById('focusSlider').value);
-      const sleep = parseInt(document.getElementById('sleepRatingSelect').value);
-      const water = parseInt(document.getElementById('waterCount').value);
-
-      state.dailyLogs[today] = { ojas, focus, sleep, water };
-      AppState.set(state);
-      renderCognitiveChart();
-      alert('✓ Daily vital logs saved! Graphs updated.');
-    }
-
-    /* =========================================================================
-       RESET & COMPASSIONATE AUTOPSY LOGIC (Features 2, 6, 18, 28)
-       ========================================================================= */
-    let selectedResetType = 'm_only';
-
-    function openResetModal(type) {
-      selectedResetType = type;
-      setResetType(type);
-      populateAutopsyTriggers();
-      populateAutopsySymptoms();
-      openModal('resetModal');
-    }
-
-    function setResetType(type) {
-      selectedResetType = type;
-      const mBtn = document.getElementById('typeMOnlyBtn');
-      const eBtn = document.getElementById('typeEjacBtn');
-      if (type === 'm_only') {
-        mBtn.className = 'p-2.5 rounded-lg border border-accentAmber/40 bg-accentAmber/10 text-accentAmber text-center font-medium';
-        eBtn.className = 'p-2.5 rounded-lg border border-borderDark bg-slate-800 text-slate-300 text-center font-medium';
-      } else {
-        eBtn.className = 'p-2.5 rounded-lg border border-accentRose/40 bg-accentRose/10 text-accentRose text-center font-medium';
-        mBtn.className = 'p-2.5 rounded-lg border border-borderDark bg-slate-800 text-slate-300 text-center font-medium';
-      }
-    }
-
-    function populateAutopsyTriggers() {
-      const state = AppState.get();
-      const container = document.getElementById('modalTriggerChips');
-      container.innerHTML = '';
-      state.triggers.forEach(t => {
-        const chip = document.createElement('button');
-        chip.type = 'button';
-        chip.className = 'px-2 py-1 rounded bg-slate-900 border border-borderDark text-slate-300 text-[11px]';
-        chip.textContent = t.name;
-        chip.onclick = () => {
-          container.querySelectorAll('button').forEach(b => b.classList.remove('bg-rose-500/20', 'border-rose-500', 'text-white'));
-          chip.classList.add('bg-rose-500/20', 'border-rose-500', 'text-white');
-          chip.dataset.selected = 'true';
-        };
-        container.appendChild(chip);
-      });
-    }
-
-    function populateAutopsySymptoms() {
-      const symptoms = ['Lower Back Ache', 'Heavy Eye Fatigue', 'Brain Fog', 'Post-slip Lethargy', 'Restless Insomnia', 'Indigestion / Heat'];
-      const container = document.getElementById('modalSymptomChips');
-      container.innerHTML = '';
-      symptoms.forEach(s => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'p-2 rounded bg-slate-900 border border-borderDark text-slate-300 text-[10px] text-left';
-        btn.textContent = s;
-        btn.onclick = () => btn.classList.toggle('border-rose-500');
-        container.appendChild(btn);
-      });
-    }
-
-    function confirmReset() {
-      const state = AppState.get();
-      const now = Date.now();
-      const todayKey = new Date().toISOString().split('T')[0];
-
-      if (selectedResetType === 'ejaculation') {
-        state.ejacResetTime = now;
-        state.mOnlyResetTime = now;
-        state.calendarEntries[todayKey] = 'ejaculation';
-      } else {
-        state.mOnlyResetTime = now;
-        state.calendarEntries[todayKey] = 'm_only';
-      }
-
-      state.lastSlipType = selectedResetType;
-      AppState.set(state);
-
-      closeModal('resetModal');
-      startLiveCounters();
-      renderMilestoneBadges();
-      renderCalendarHeatmap();
-      calculateRollingMetrics();
-      alert('Reset logged without guilt. The path to sovereignty begins in this very second.');
-    }
-
-    // Involuntary Wet Dream Logging (Feature 6)
-    function logWetDream() {
-      alert('💧 Involuntary emission recorded in personal notes. No streak reset occurred. Natural biological release is NOT a slip.');
-    }
-
-    /* =========================================================================
-       EMERGENCY SOS HUB & URGE SURFING (Features 33–40)
-       ========================================================================= */
-    let surfTimeRemaining = 900; // 15 mins
-    let surfInterval = null;
-    let coldShowerRemaining = 120; // 2 mins
-    let coldShowerInterval = null;
-
-    function triggerEmergencySOS() {
-      document.getElementById('sosOverlay').classList.remove('hidden');
-    }
-
-    function closeSOS() {
-      document.getElementById('sosOverlay').classList.add('hidden');
-      if (surfInterval) clearInterval(surfInterval);
-      if (coldShowerInterval) clearInterval(coldShowerInterval);
-    }
-
-    function toggleSurfTimer() {
-      const btn = document.getElementById('surfTimerToggleBtn');
-      if (surfInterval) {
-        clearInterval(surfInterval);
-        surfInterval = null;
-        btn.textContent = 'Resume Surfing';
-      } else {
-        btn.textContent = 'Pause Surfing';
-        surfInterval = setInterval(() => {
-          if (surfTimeRemaining > 0) {
-            surfTimeRemaining--;
-            const m = Math.floor(surfTimeRemaining / 60);
-            const s = surfTimeRemaining % 60;
-            document.getElementById('surfTimerDisplay').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-          } else {
-            clearInterval(surfInterval);
-            incrementUrgesResisted();
-            alert('🎉 15 minutes completed! The acute urge wave has officially subsided.');
-          }
-        }, 1000);
-      }
-    }
-
-    function resetSurfTimer() {
-      if (surfInterval) clearInterval(surfInterval);
-      surfInterval = null;
-      surfTimeRemaining = 900;
-      document.getElementById('surfTimerDisplay').textContent = '15:00';
-      document.getElementById('surfTimerToggleBtn').textContent = 'Start Surfing';
-    }
-
-    function incrementUrgesResisted() {
-      const state = AppState.get();
-      state.urgesResistedCount = (state.urgesResistedCount || 0) + 1;
-      AppState.set(state);
-      document.getElementById('totalUrgesResisted').textContent = state.urgesResistedCount;
-      closeSOS();
-      alert('⚔️ Urge successfully neutralized and recorded! Your willpower muscle just thickened.');
-    }
-
-    function toggleColdShowerTimer() {
-      const btn = document.getElementById('coldShowerBtn');
-      if (coldShowerInterval) {
-        clearInterval(coldShowerInterval);
-        coldShowerInterval = null;
-        btn.textContent = 'Resume Cold Sprint';
-      } else {
-        btn.textContent = 'Pause Sprint';
-        coldShowerInterval = setInterval(() => {
-          if (coldShowerRemaining > 0) {
-            coldShowerRemaining--;
-            const m = Math.floor(coldShowerRemaining / 60);
-            const s = coldShowerRemaining % 60;
-            document.getElementById('coldShowerTime').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-          } else {
-            clearInterval(coldShowerInterval);
-            alert('❄️ Cold shower complete! Dopamine baseline reset achieved.');
-          }
-        }, 1000);
-      }
-    }
-
-    function generateRandomSwap() {
-      const tasks = [
-        "Drop and do 20 deep push-ups right now.",
-        "Splash ice-cold water onto your eyes and neck 5 times.",
-        "Take a brisk 100-step walk away from all screens.",
-        "Hold a 60-second plank and practice deep diaphragmatic breath.",
-        "Drink a tall cold glass of water and read your Identity statement out loud."
-      ];
-      const pick = tasks[Math.floor(Math.random() * tasks.length)];
-      document.getElementById('dopamineSwapAction').textContent = pick;
-    }
-
-    function completeDopamineSwap() {
-      alert('✓ Interruption completed. Sensory pathways diverted from compulsion.');
-    }
-
-    function editWhyVault() {
-      const state = AppState.get();
-      const newText = prompt('Update your core "Why" and letter to future self:', state.whyVaultText);
-      if (newText !== null && newText.trim() !== '') {
-        state.whyVaultText = newText.trim();
-        AppState.set(state);
-        document.getElementById('whyVaultDisplay').textContent = `"${state.whyVaultText}"`;
-      }
-    }
-
-    function promptEditIfThen() {
-      const state = AppState.get();
-      const rule = prompt('Edit your IF-THEN Implementation Rule:', state.ifThenRule);
-      if (rule !== null && rule.trim() !== '') {
-        state.ifThenRule = rule.trim();
-        AppState.set(state);
-        document.getElementById('ifThenDisplay').textContent = `"${state.ifThenRule}"`;
-      }
-    }
-
-    /* =========================================================================
-       CAMOUFLAGE DISGUISE MODE & SECURITY (Features 43 & 44)
-       ========================================================================= */
-    function toggleCamouflage() {
-      const screen = document.getElementById('camouflageScreen');
-      screen.classList.toggle('hidden');
-    }
-
-    document.getElementById('exitCamouflageBtn').onclick = toggleCamouflage;
-
-    // Double-tap header area to enter stealth disguise
-    let lastTap = 0;
-    document.getElementById('headerTitleArea').addEventListener('touchend', function(e) {
-      const currentTime = new Date().getTime();
-      const tapLength = currentTime - lastTap;
-      if (tapLength < 400 && tapLength > 0) {
-        toggleCamouflage();
-        e.preventDefault();
-      }
-      lastTap = currentTime;
-    });
-
-    // PIN Handlers
-    let currentPinEntered = '';
-
-    function checkPinRequiredOnLoad() {
-      const state = AppState.get();
-      if (state.pin && state.pin.length === 4) {
-        document.getElementById('pinLockModal').classList.remove('hidden');
-      }
-    }
-
-    function handlePinInput(digit) {
-      if (currentPinEntered.length < 4) {
-        currentPinEntered += digit;
-        updatePinDots();
-        if (currentPinEntered.length === 4) {
-          validateEnteredPin();
-        }
-      }
-    }
-
-    function popPinInput() {
-      currentPinEntered = currentPinEntered.slice(0, -1);
-      updatePinDots();
-    }
-
-    function clearPinInput() {
-      currentPinEntered = '';
-      updatePinDots();
-    }
-
-    function updatePinDots() {
-      const dots = document.querySelectorAll('.pin-dot');
-      dots.forEach((dot, index) => {
-        if (index < currentPinEntered.length) {
-          dot.classList.add('bg-accentEmerald', 'border-accentEmerald');
-        } else {
-          dot.classList.remove('bg-accentEmerald', 'border-accentEmerald');
-        }
-      });
-    }
-
-    function validateEnteredPin() {
-      const state = AppState.get();
-      if (currentPinEntered === state.pin) {
-        document.getElementById('pinLockModal').classList.add('hidden');
-        currentPinEntered = '';
-        updatePinDots();
-      } else {
-        document.getElementById('pinErrorMsg').textContent = 'Incorrect PIN. Try again.';
-        currentPinEntered = '';
-        updatePinDots();
-      }
-    }
-
-    function saveNewPin() {
-      const input = document.getElementById('pinSettingInput').value.trim();
-      const state = AppState.get();
-      if (input === '' || /^\d{4}$/.test(input)) {
-        state.pin = input;
-        AppState.set(state);
-        alert(input === '' ? 'PIN security disabled.' : '4-digit PIN saved successfully!');
-      } else {
-        alert('Please enter a valid 4-digit numeric PIN.');
-      }
-    }
-
-    function saveEmergencyPhone() {
-      const input = document.getElementById('emergencyPhoneInput').value.trim();
-      const state = AppState.get();
-      state.emergencyPhone = input;
-      AppState.set(state);
-      document.getElementById('groundingCallLink').href = `tel:${input}`;
-    }
-
-    /* =========================================================================
-       DATA BACKUP & RESTORE (Features 46 & 47)
-       ========================================================================= */
-    function exportAppDataJSON() {
-      const state = AppState.get();
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `sovereign_mind_backup_${new Date().toISOString().split('T')[0]}.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-    }
-
-    function importAppDataJSON(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const parsed = JSON.parse(e.target.result);
-          if (parsed.ejacResetTime) {
-            AppState.set(parsed);
-            alert('✓ Ledger successfully restored!');
-            location.reload();
-          } else {
-            alert('Invalid backup file schema.');
-          }
-        } catch (err) {
-          alert('Failed to parse JSON file.');
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    function factoryReset() {
-      if (confirm('Are you absolutely certain? This erases all streaks, diaries, and custom tags completely.')) {
-        localStorage.removeItem(STORAGE_KEY);
-        location.reload();
-      }
-    }
-
-    /* =========================================================================
-       ACTIVE INTERVAL TIMERS (Features 15 & 16)
-       ========================================================================= */
-    let intervalTimerRef = null;
-    let intervalRemaining = 0;
-
-    function startIntervalMeditation(minutes) {
-      if (intervalTimerRef) clearInterval(intervalTimerRef);
-      intervalRemaining = minutes * 60;
-      
-      const bar = document.getElementById('activeTimerContainer');
-      bar.classList.remove('hidden');
-      document.getElementById('activeTimerName').textContent = `${minutes}-Minute Cooldown In Progress`;
-
-      intervalTimerRef = setInterval(() => {
-        if (intervalRemaining > 0) {
-          intervalRemaining--;
-          const m = Math.floor(intervalRemaining / 60);
-          const s = intervalRemaining % 60;
-          document.getElementById('activeTimerCountdown').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-        } else {
-          clearInterval(intervalTimerRef);
-          bar.classList.add('hidden');
-          alert('🧘 Neuroplastic session complete. Prefrontal executive control restored.');
-        }
-      }, 1000);
-    }
-
-    function cancelActiveTimer() {
-      if (intervalTimerRef) clearInterval(intervalTimerRef);
-      document.getElementById('activeTimerContainer').classList.add('hidden');
-    }
-
-    /* =========================================================================
-       MODAL UTILITIES
-       ========================================================================= */
-    function openModal(id) {
-      document.getElementById(id).classList.remove('hidden');
-    }
-
-    function closeModal(id) {
-      document.getElementById(id).classList.add('hidden');
-    }
-
-    /* =========================================================================
-       SERVICE WORKER REGISTRATION (Feature 48 - Offline PWA Ready)
-       ========================================================================= */
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        const swBlob = new Blob([`
-          const CACHE_NAME = 'sovereign-cache-v1';
-          self.addEventListener('install', e => self.skipWaiting());
-          self.addEventListener('activate', e => clients.claim());
-          self.addEventListener('fetch', e => {
-            e.respondWith(
-              caches.match(e.request).then(res => res || fetch(e.request).catch(() => caches.match(e.request)))
-            );
-          });
-        `], { type: 'application/javascript' });
-
-        navigator.serviceWorker.register(URL.createObjectURL(swBlob))
-          .catch(err => console.log('SW registration bypass'));
-      });
-    }
-
-    /* =========================================================================
-       APPLICATION BOOTSTRAPPER
-       ========================================================================= */
-    window.addEventListener('DOMContentLoaded', () => {
-      // Lucide icons init
-      lucide.createIcons();
-
-      // Check PIN
-      checkPinRequiredOnLoad();
-
-      // Sync settings UI with state
-      const state = AppState.get();
-      if (state.pin) document.getElementById('pinSettingInput').value = state.pin;
-      if (state.emergencyPhone) {
-        document.getElementById('emergencyPhoneInput').value = state.emergencyPhone;
-        document.getElementById('groundingCallLink').href = `tel:${state.emergencyPhone}`;
-      }
-      if (state.whyVaultText) document.getElementById('whyVaultDisplay').textContent = `"${state.whyVaultText}"`;
-      if (state.ifThenRule) document.getElementById('ifThenDisplay').textContent = `"${state.ifThenRule}"`;
-      document.getElementById('totalUrgesResisted').textContent = state.urgesResistedCount || 0;
-
-      // Start modules
-      startLiveCounters();
-      renderMilestoneBadges();
-      calculateRollingMetrics();
-      renderCognitiveChart();
-      renderTriggerTags();
-      renderTriggerChart();
-      renderCalendarHeatmap();
-    });
-  </script>
+</div>
+
+<!-- ================= RESET MODAL ================= -->
+<div id="resetModal" class="fixed inset-0 z-[70] hidden items-end">
+  <div class="absolute inset-0 modal-bg modal-close"></div>
+  <div class="absolute inset-x-0 bottom-0 max-w-md mx-auto bg-panel border-t border-line rounded-t-3xl p-5 pb-8 pop">
+    <div class="w-12 h-1.5 rounded-full bg-zinc-700 mx-auto mb-4"></div>
+    <p class="text-base font-extrabold text-white mb-1" id="resetTitle">Log a slip</p>
+    <p class="text-[12px] text-zinc-500 mb-4" id="resetSub">No shame — data beats willpower. This opens a compassionate autopsy after logging.</p>
+    <div class="space-y-2.5">
+      <button id="resetM" class="btn-h w-full rounded-xl bg-amber-500/10 border border-amber-500/40 text-amber-300 font-bold text-sm active:scale-95 text-left px-4 py-3">
+        M-Only (edging / masturbation) — resets No-Edging streak
+      </button>
+      <button id="resetEJ" class="btn-h w-full rounded-xl bg-rose-500/10 border border-rose-500/40 text-rose-300 font-bold text-sm active:scale-95 text-left px-4 py-3">
+        Full Ejaculation — resets both streaks
+      </button>
+      <button class="btn-h w-full rounded-xl bg-panel2 border border-line text-zinc-400 text-sm font-bold modal-close active:scale-95">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= AUTOPSY MODAL ================= -->
+<div id="autopsyModal" class="fixed inset-0 z-[70] hidden items-end">
+  <div class="absolute inset-0 modal-bg modal-close"></div>
+  <div class="absolute inset-x-0 bottom-0 top-16 max-w-md mx-auto bg-panel border-t border-rose-500/30 rounded-t-3xl overflow-y-auto no-scrollbar p-5 pb-8 pop">
+    <p class="text-base font-extrabold text-white">Relapse Autopsy — zero judgment</p>
+    <p class="text-[12px] text-zinc-500 mb-4">Slips are telemetry, not verdicts. Let's extract the lesson.</p>
+    <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">What triggered it?</p>
+    <div class="flex flex-wrap gap-2 mb-4" id="autopsyTriggers"></div>
+    <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Where? (location context)</p>
+    <div class="flex flex-wrap gap-2 mb-4" id="autopsyLocs"></div>
+    <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">What boundary failed?</p>
+    <input id="autopsyBoundary" type="text" placeholder="e.g. Phone in bed after 11 PM" class="w-full bg-panel2 border border-line rounded-xl px-3.5 py-3 text-sm text-zinc-200 mb-4 placeholder-zinc-600">
+    <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">Countermeasure for next 72h</p>
+    <input id="autopsyCounter" type="text" placeholder="e.g. Phone charges in kitchen at 10 PM" class="w-full bg-panel2 border border-line rounded-xl px-3.5 py-3 text-sm text-zinc-200 mb-4 placeholder-zinc-600">
+    <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">Body symptoms after (multi-select)</p>
+    <div class="flex flex-wrap gap-2 mb-5" id="autopsySymptoms"></div>
+    <button id="autopsySave" class="btn-h w-full rounded-xl bg-emerald-500 text-ink font-bold text-sm active:scale-95">Close Autopsy & Commit to 72h Plan</button>
+  </div>
+</div>
+
+<!-- ================= DELAY PROTOCOL MODAL ================= -->
+<div id="delayModal" class="fixed inset-0 z-[70] hidden items-center justify-center px-6">
+  <div class="absolute inset-0 modal-bg modal-close"></div>
+  <div class="relative w-full max-w-sm card p-6 text-center pop">
+    <p class="text-[10px] font-bold uppercase tracking-widest text-emerald-400">Decision Delay Protocol</p>
+    <p class="text-5xl font-extrabold text-white my-4 tabular-nums" id="delayClock">05:00</p>
+    <p class="text-[12px] text-zinc-400 mb-4" id="delayMsg">An urge is a weather system, not a command. 5 minutes of distance changes every decision.</p>
+    <button id="delayStart" class="btn-h w-full rounded-xl bg-emerald-500 text-ink font-bold text-sm active:scale-95">Start 5:00</button>
+    <button class="btn-h w-full mt-2 rounded-xl bg-panel2 border border-line text-zinc-400 text-sm font-bold modal-close active:scale-95">Close</button>
+  </div>
+</div>
+
+<!-- ================= PRANAYAMA MODAL ================= -->
+<div id="pranayamaModal" class="fixed inset-0 z-[70] hidden items-end">
+  <div class="absolute inset-0 modal-bg modal-close"></div>
+  <div class="absolute inset-x-0 bottom-0 top-14 max-w-md mx-auto bg-panel border-t border-sky-500/30 rounded-t-3xl overflow-y-auto no-scrollbar p-5 pb-8 pop">
+    <div class="flex gap-2 mb-4">
+      <button id="pranaTab1" class="btn-h flex-1 rounded-xl bg-sky-500/15 border border-sky-500/40 text-sky-300 font-bold text-[12px]">Anulom Vilom</button>
+      <button id="pranaTab2" class="btn-h flex-1 rounded-xl bg-panel2 border border-line text-zinc-400 font-bold text-[12px]">Kapalabhati</button>
+    </div>
+    <div id="pranaSteps" class="space-y-3"></div>
+    <button id="pranaNext" class="btn-h w-full mt-4 rounded-xl bg-sky-500 text-ink font-bold text-sm active:scale-95">Next step →</button>
+  </div>
+</div>
+
+<!-- ================= MILESTONE DETAIL MODAL ================= -->
+<div id="milestoneModal" class="fixed inset-0 z-[70] hidden items-center justify-center px-6">
+  <div class="absolute inset-0 modal-bg modal-close"></div>
+  <div class="relative w-full max-w-sm card !border-emerald-500/30 p-6 text-center pop" id="milestoneModalBody"></div>
+</div>
+
+<!-- ================= SNAPSHOT PREVIEW MODAL ================= -->
+<div id="snapModal" class="fixed inset-0 z-[70] hidden items-center justify-center px-6">
+  <div class="absolute inset-0 modal-bg modal-close"></div>
+  <div class="relative w-full max-w-sm pop">
+    <img id="snapImg" class="w-full rounded-2xl border border-line" alt="Milestone snapshot">
+    <div class="flex gap-2 mt-3">
+      <a id="snapDownload" download="vitalis-snapshot.png" class="btn-h flex-1 rounded-xl bg-emerald-500 text-ink font-bold text-sm flex items-center justify-center active:scale-95">Download PNG</a>
+      <button class="btn-h flex-1 rounded-xl bg-panel2 border border-line text-zinc-300 font-bold text-sm modal-close active:scale-95">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= PIN SET MODAL ================= -->
+<div id="pinModal" class="fixed inset-0 z-[70] hidden items-center justify-center px-6">
+  <div class="absolute inset-0 modal-bg modal-close"></div>
+  <div class="relative w-full max-w-sm card p-6 pop">
+    <p class="text-base font-extrabold text-white mb-1">Set 4-Digit PIN</p>
+    <p class="text-[12px] text-zinc-500 mb-4">You will enter it each time the app opens.</p>
+    <input id="pinNew" type="password" inputmode="numeric" maxlength="4" placeholder="••••" class="w-full bg-panel2 border border-line rounded-xl px-4 py-3.5 text-center text-2xl tracking-[0.6em] text-white mb-3">
+    <input id="pinConfirm" type="password" inputmode="numeric" maxlength="4" placeholder="••••" class="w-full bg-panel2 border border-line rounded-xl px-4 py-3.5 text-center text-2xl tracking-[0.6em] text-white mb-4">
+    <button id="pinSave" class="btn-h w-full rounded-xl bg-emerald-500 text-ink font-bold text-sm active:scale-95">Save PIN</button>
+    <button id="pinRemove" class="btn-h w-full mt-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-sm font-bold active:scale-95 hidden">Remove PIN</button>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* =====================================================================
+   VITALIS REWIRE OS — offline-first single-file PWA
+   All state persists in localStorage. Zero backend calls.
+===================================================================== */
+const LS_KEY = 'vitalis.v1';
+const DAY = 86400000;
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2,'0');
+const keyOf = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const todayKey = () => keyOf(new Date());
+const icons = () => { try{ lucide.createIcons(); }catch(e){} };
+function toast(msg){ $('toastInner').textContent = msg; $('toast').classList.remove('hidden'); clearTimeout(toast._t); toast._t = setTimeout(()=>$('toast').classList.add('hidden'), 2400); }
+
+/* ---------------- CONSTANTS ---------------- */
+const MILESTONES = [
+  {h:12,  name:'First Reset',            icon:'zap',            desc:'Blood dopamine begins stabilizing. The urge wave is your brain recalibrating — not a command.'},
+  {h:24,  name:'24 Hours Clean',         icon:'sunrise',        desc:'DeltaFosB turnover starts. Cravings feel strongest right before they weaken.'},
+  {h:72,  name:'3 Days — The Hump',      icon:'mountain',       desc:'Peak withdrawal window. Testosterone begins its natural daily rhythm again.'},
+  {h:168, name:'7 Days — Receptor Reset',icon:'refresh-ccw',    desc:'Dopamine receptor density measurably upregulating. Motivation for real-life goals returns.'},
+  {h:336, name:'14 Days — Flatline Ends',icon:'waves',          desc:'Androgen receptors upregulate. The flatline lifts; natural energy and confidence resurface.'},
+  {h:504, name:'21 Days — Habit Loop',   icon:'repeat',         desc:'The old neural pathway is starved. A new default loop forms. 21 days = proto-habit.'},
+  {h:720, name:'30 Days — Full Cycle',   icon:'moon',           desc:'One complete hormonal cycle. Sperm quality peaks. Discipline starts feeling like identity.'},
+  {h:1080,name:'45 Days — Magnetic',     icon:'magnet',         desc:'Ojas accumulates in Ayurvedic terms: vitality, voice depth, eye brightness return.'},
+  {h:1440,name:'60 Days — Rewired',      icon:'cpu',            desc:'Prefrontal cortex control strengthened. Dopamine baseline normalized; boredom no longer hurts.'},
+  {h:2160,name:'90 Days — Reboot',       icon:'trophy',         desc:'Full reboot standard. Neuroplasticity consolidated. This is a new operating system.'},
+  {h:4320,name:'180 Days — Mastery',     icon:'crown',          desc:'Six months. The old self is a stranger. Attraction and focus compound daily.'},
+  {h:8760,name:'365 Days — Legend',      icon:'sparkles',       desc:'One year. You are the proof. Transmuted energy built this life.'}
+];
+const STAGES = [
+  {max:7,  n:1, txt:'Stage 1 — Desensitization: receptors are flooded and numb. White-knuckle phase. Survive, don\'t strive.'},
+  {max:21, n:2, txt:'Stage 2 — Rebalancing: receptor density is climbing. Flatline possible — it is healing in disguise.'},
+  {max:60, n:3, txt:'Stage 3 — Rewiring: motivation returns in bursts. Channel it — gym, work, creation. This is the forge.'},
+  {max:1e9,n:4, txt:'Stage 4 — Mastery: your baseline is rebuilt. Protection mode: guard sleep, guard boredom, guard the late night.'}
+];
+const CHEAT_CARDS = [
+  {d:'Days 1–3', t:'Withdrawal storm', x:'Acute cravings, irritability, insomnia. Plan: cold showers, 4-7-8 breathing, no phone in bedroom. This is the hardest 72h — it gets easier every hour.'},
+  {d:'Day 7',    t:'First confidence spike', x:'Energy returns unevenly. Watch overconfidence ("I\'m cured") — this is the classic relapse setup. Stay process-focused.'},
+  {d:'Day 14',   t:'Flatline or calm', x:'Either dead libido (flatline — normal, ride it) or genuine calm. Both mean receptors are healing. Keep transmuting energy.'},
+  {d:'Day 21',   t:'The chaser memory fades', x:'The habit loop is brittle now. One slip rewires weeks. Double down on IF-THEN rules and trigger hygiene.'}
+];
+const DETOX_ITEMS = ['No doomscrolling','No ultra-processed junk','Sattvic diet'];
+const TRANSMUTES = ['Heavy gym','Breathwork / Pranayama','Cold shower'];
+const SYMPTOMS = ['Lower back ache','Eye fatigue','Brain fog','Lethargy','Insomnia'];
+const LOCATIONS = ['Bed','Bathroom','Desk'];
+const SWAPS = ['20 pushups, right now','Cold water splash on face & eyes','10 slow deep breaths + 10 squats','Walk outside for 5 minutes, no phone','Sprint up stairs once','Text your accountability buddy','Drink a full glass of water, slowly','Do 10 jumping jacks + name 5 things you see'];
+const DEFAULT_TRIGGERS = ['Reels','Late Night Bed','Boredom','Stress'];
+
+/* ---------------- STATE ---------------- */
+function blankLog(){ return {type:'clean', clarity:null, ojas:null, sleep:0, hydration:0, triggers:[], triggerHours:{}, transmutations:[], symptoms:[], detox:{}, voice:null}; }
+function seed(){
+  const now = Date.now();
+  const S = {
+    v:1, seededAt:now,
+    retentionStart: now - 14*DAY - 7*36e5,   // ~14.3 days retention
+    edgingStart:    now - 5*DAY  - 2*36e5,   // ~5.2 days no-edging
+    lastEjacAt:     now - 14*DAY - 7*36e5,
+    lastMAt:        now - 9*DAY,
+    days:{}, slips:[], wetDreams:[],
+    customTriggers:[], triggerCounts:{}, neutralized:14,
+    ifThenRules:['IF I open Reels in bed, THEN I put the phone in the kitchen and do 20 pushups.','IF I feel boredom at night, THEN I take a cold shower.'],
+    whyVault:'I am reclaiming my energy, my focus and my self-respect. Every day clean compounds into the man I decided to become.',
+    identityVault:'I am a disciplined man who transmutes energy into greatness.',
+    letterVault:'Dear future me — the urge is a liar. It promises relief and delivers fog, back-ache and regret. You have felt this wave before and it ALWAYS passes. Drink water, breathe 4-7-8, and text your brother. You are 15 minutes away from being proud of yourself.',
+    trustedPhone:'', pin:null,
+    stealthTasks:['Reply to manager about sprint scope','Prepare slides for Thursday review','Read 10 pages of documentation'],
+    viewedHeat:null
+  };
+  const ejDays=[21,47,74], mDays=[5,11,17,26,33,40,55,62,68,77,83];
+  const trigPool=DEFAULT_TRIGGERS;
+  for(let i=89;i>=0;i--){
+    const d=new Date(now-i*DAY), k=keyOf(d);
+    const log=blankLog();
+    if(ejDays.includes(i)){ log.type='ej'; const h=[23,0,1][Math.floor(Math.random()*3)];
+      S.slips.push({date:k,hour:h,type:'ej',triggers:[trigPool[Math.floor(Math.random()*4)]],location:LOCATIONS[Math.floor(Math.random()*3)],boundary:'Phone stayed in bedroom after 11 PM',counter:'Phone charges in kitchen from 10 PM',symptoms:[SYMPTOMS[0],SYMPTOMS[2],SYMPTOMS[3]]}); }
+    else if(mDays.includes(i)){ log.type='m'; S.lastMAt = d.getTime(); }
+    log.clarity = Math.max(2,Math.min(10, Math.round(4 + (89-i)/89*5 + (Math.random()*2-1))));
+    log.ojas    = Math.max(2,Math.min(10, Math.round(3 + (89-i)/89*6 + (Math.random()*2-1))));
+    log.sleep   = Math.random()<0.2?2:Math.random()<0.5?4:5;
+    log.hydration = 4+Math.floor(Math.random()*5);
+    if(Math.random()<0.5){ const t=trigPool[Math.floor(Math.random()*4)]; log.triggers=[t]; log.triggerHours[t]=[22,23,0,1][Math.floor(Math.random()*4)]; S.triggerCounts[t]=(S.triggerCounts[t]||0)+1; }
+    if(Math.random()<0.45) log.transmutations=[TRANSMUTES[Math.floor(Math.random()*3)]];
+    log.detox = {'No doomscrolling':Math.random()<0.6,'No ultra-processed junk':Math.random()<0.7,'Sattvic diet':Math.random()<0.55};
+    log.voice = Math.random()<0.7 ? 3+Math.floor(Math.random()*3) : 2;
+    S.days[k]=log;
+  }
+  const ejSorted=[...ejDays].sort((a,b)=>a-b);
+  S.lastEjacAt = now - ejSorted[0]*DAY;
+  S.wetDreams=[{date:keyOf(new Date(now-4*DAY)),note:'Woke during release — no reset needed'}];
+  return S;
+}
+let S;
+function load(){
+  try{ const raw=localStorage.getItem(LS_KEY); if(raw){ S=JSON.parse(raw); if(S.v!==1) throw 0; return; } }catch(e){}
+  S = seed(); save();
+}
+function save(){ localStorage.setItem(LS_KEY, JSON.stringify(S)); }
+
+/* ---------------- DERIVED METRICS ---------------- */
+function log(k){ if(!S.days[k]) S.days[k]=blankLog(); return S.days[k]; }
+const retDaysF = () => (Date.now()-S.retentionStart)/DAY;
+const edgeDaysF = () => (Date.now()-S.edgingStart)/DAY;
+function retStreakDays(){ let n=0; const d=new Date(); if(log(keyOf(d)).type==='ej'){ d.setDate(d.getDate()-1);} while(log(keyOf(d)).type!=='ej' && (Date.now()-d.getTime())/DAY < 4000){ n++; d.setDate(d.getDate()-1);} return n; }
+function cleanRatio(days){
+  let clean=0,total=0; const d=new Date();
+  for(let i=0;i<days;i++){ const t=log(keyOf(d)).type; total++; if(t==='clean')clean++; d.setDate(d.getDate()-1); }
+  return total?Math.round(clean/total*100):100;
+}
+function fmtDur(ms){
+  const s=Math.floor(ms/1000), d=Math.floor(s/86400), h=Math.floor(s%86400/3600), m=Math.floor(s%3600/60), ss=s%60;
+  return d+'d '+pad(h)+':'+pad(m)+':'+pad(ss);
+}
+function fmtETA(ms){
+  const h=ms/36e5;
+  if(h>=48) return Math.floor(h/24)+'d '+Math.round(h%24)+'h remaining';
+  if(h>=1) return Math.floor(h)+'h '+Math.round(h%1*60)+'m remaining';
+  return Math.max(1,Math.round(h*60))+'m remaining';
+}
+function healthTag(){
+  const r=cleanRatio(30);
+  if(r>=85) return {t:'Healthy',c:'text-emerald-400'};
+  if(r>=70) return {t:'Caution',c:'text-amber-400'};
+  return {t:'Critical',c:'text-rose-400'};
+}
+function vulnWindow(){
+  const hist=new Array(24).fill(0);
+  Object.values(S.days).forEach(l=>{ (l.triggers||[]).forEach(t=>{ const h=l.triggerHours&&l.triggerHours[t]; if(h!==undefined) hist[h]++; }); });
+  S.slips.forEach(s=>{ hist[s.hour]=(hist[s.hour]||0)+2; });
+  let best=0,bestScore=-1;
+  for(let s=0;s<24;s++){ let sc=0; for(let j=0;j<3;j++) sc+=hist[(s+j)%24]; if(sc>bestScore){bestScore=sc;best=s;} }
+  const end=(best+3)%24;
+  const f=h=>{ const ap=h>=12?'PM':'AM'; const hh=((h+11)%12)+1; return hh+':00 '+ap; };
+  const top3=[...hist].map((v,i)=>[v,i]).filter(x=>x[0]>0).sort((a,b)=>b[0]-a[0]).slice(0,3);
+  return {start:best,end,f,score:bestScore,top:top3,empty:bestScore<=0};
+}
+function stage(){ const d=retStreakDays(); return STAGES.find(s=>d<=s.max)||STAGES[3]; }
+
+/* ---------------- TOAST + MODALS ---------------- */
+function openModal(id){ const m=$(id); m.classList.remove('hidden'); m.classList.add('flex'); }
+function closeModal(id){ const m=$(id); m.classList.add('hidden'); m.classList.remove('flex'); }
+document.querySelectorAll('.modal-close').forEach(el=>el.addEventListener('click',e=>{ const m=e.target.closest('.fixed'); if(m) closeModal(m.id); }));
+
+/* ---------------- RENDER: HEADER / TRACKER ---------------- */
+function renderHeader(){
+  const d=new Date();
+  $('hdrDate').textContent=d.toLocaleDateString('en-US',{weekday:'long', month:'long', day:'numeric', year:'numeric'});
+  if((Date.now()-S.lastEjacAt)<72*36e5){
+    $('chaserBanner').classList.remove('hidden');
+    $('chaserText').textContent='Chaser-effect window closes in '+fmtETA(72*36e5-(Date.now()-S.lastEjacAt))+'. One decision now protects everything you\'ve rebuilt.';
+  } else $('chaserBanner').classList.add('hidden');
+}
+function renderTracker(){
+  const rF=retDaysF(), eF=edgeDaysF();
+  $('retTimer').textContent=fmtDur(rF*DAY);
+  $('edgeTimer').textContent=fmtDur(eF*DAY);
+  $('retSub').textContent=rF>=1?Math.floor(rF)+' days retained':'under 24h';
+  $('edgeSub').textContent=eF>=1?Math.floor(eF)+' days clean':'under 24h';
+  const h=healthTag(); const tag=$('healthTag'); tag.textContent=h.t; tag.className='text-[12px] font-bold mt-1 '+h.c;
+  $('clean30').textContent=cleanRatio(30)+'%';
+  $('clean90').textContent=cleanRatio(90)+'%';
+  $('wdCount').textContent=S.wetDreams.length;
+  const elapsedH=rF*24;
+  const next=MILESTONES.find(m=>m.h>elapsedH);
+  if(next){
+    const pct=Math.min(100,Math.round(elapsedH/next.h*100));
+    $('mileName').textContent=next.name+' — '+next.h+'h gate';
+    $('mileDesc').textContent=next.desc;
+    $('milePct').textContent=pct+'%';
+    $('mileBar').style.width=pct+'%';
+    $('mileEta').textContent=fmtETA((next.h-elapsedH)*36e5);
+  } else {
+    $('mileName').textContent='Legend Status — 365 days';
+    $('mileDesc').textContent='You have completed every gate. Mentor mode.';
+    $('milePct').textContent='100%'; $('mileBar').style.width='100%'; $('mileEta').textContent='Journey complete.';
+  }
+  const rDays=Math.floor(rF);
+  const alerts=[
+    {min:0, txt:'Hour one. The decision is made — now just obey it.'},
+    {min:72, txt:'Inside the 72h chaser window. Extra vigilance until '+new Date(S.lastEjacAt+72*36e5).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})+'.'},
+    {min:168, txt:'Past the storm. Receptors are upregulating — expect motivation to flicker back.'},
+    {min:720, txt:'30-day cycle in motion. Ojas accumulating — protect sleep like gold.'},
+    {min:2160,txt:'Deep rewire territory. You are statistically unrecognizable from day 1.'},
+    {min:8760,txt:'Legend mode. Your only enemy is complacency.'}
+  ];
+  const a=[...alerts].reverse().find(x=>rDays>=x.min)||alerts[0];
+  $('alertText').textContent=a.txt;
+  $('alertDot').className='w-2 h-2 rounded-full shrink-0 '+(rDays<3?'bg-amber-400 animate-pulse':rDays<7?'bg-gold':'bg-emerald-400');
+  const unlocked=MILESTONES.filter(m=>elapsedH>=m.h);
+  $('badgeStrip').innerHTML=unlocked.slice(-5).map(m=>
+    `<button class="shrink-0 w-16 card !border-emerald-500/30 p-2 flex flex-col items-center gap-1 active:scale-95" onclick="showMilestone(${m.h})">
+      <i data-lucide="${m.icon}" class="w-5 h-5 text-emerald-400"></i>
+      <span class="text-[8px] font-bold text-zinc-400 text-center leading-tight">${m.name}</span>
+    </button>`).join('') || '<p class="text-[11px] text-zinc-600">No badges yet — first one at 12 hours.</p>';
+  icons();
+}
+function showMilestone(h){
+  const m=MILESTONES.find(x=>x.h===h);
+  const unlocked=retDaysF()*24>=m.h;
+  $('milestoneModalBody').innerHTML=`
+    <div class="w-16 h-16 mx-auto rounded-2xl ${unlocked?'bg-emerald-500/15 border border-emerald-500/40':'bg-zinc-800 border border-zinc-700'} flex items-center justify-center mb-3">
+      <i data-lucide="${m.icon}" class="w-8 h-8 ${unlocked?'text-emerald-400':'text-zinc-600'}"></i>
+    </div>
+    <p class="text-lg font-extrabold text-white">${m.name}</p>
+    <p class="text-[11px] font-bold text-zinc-500 uppercase tracking-widest mt-0.5">${m.h>=24?Math.round(m.h/24)+' day'+(m.h>24?'s':''):m.h+' hour'} gate</p>
+    <p class="text-[13px] text-zinc-400 mt-3 leading-relaxed">${m.desc}</p>
+    <p class="mt-4 text-[11px] font-bold ${unlocked?'text-emerald-400':'text-zinc-600'}">${unlocked?'✓ UNLOCKED':'Still locked — keep going.'}</p>
+    <button class="btn-h w-full mt-4 rounded-xl bg-panel2 border border-line text-zinc-300 text-sm font-bold modal-close active:scale-95">Close</button>`;
+  openModal('milestoneModal'); icons();
+}
+window.showMilestone=showMilestone;
+
+/* ---------------- RENDER: REWIRE ---------------- */
+let focusChart=null;
+function renderRewire(){
+  const t=log(todayKey());
+  $('claritySlider').value=t.clarity||5; $('clarityVal').textContent=(t.clarity||5)+'/10';
+  $('ojasSlider').value=t.ojas||5; $('ojasVal').textContent=(t.ojas||5)+'/10';
+  renderStars('sleepStars',t.sleep||0,5,v=>{ t.sleep=v; save(); renderStars('sleepStars',v,5); });
+  renderHydro(t.hydration||0);
+  $('transmuteChips').innerHTML=TRANSMUTES.map(x=>
+    `<button class="chip ${(t.transmutations||[]).includes(x)?'on':''}" data-t="${x}">${x}</button>`).join('');
+  $('transmuteChips').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    const i=t.transmutations.indexOf(b.dataset.t);
+    if(i>=0)t.transmutations.splice(i,1); else t.transmutations.push(b.dataset.t);
+    save(); renderRewire();
+  });
+  $('detoxList').innerHTML=DETOX_ITEMS.map(x=>
+    `<label class="check-row flex items-center gap-3 bg-panel2 border border-line rounded-xl px-3.5 py-2.5">
+      <input type="checkbox" data-d="${x}" ${t.detox&&t.detox[x]?'checked':''}>
+      <span class="text-[12px] text-zinc-300">${x}</span>
+    </label>`).join('');
+  $('detoxList').querySelectorAll('input').forEach(c=>c.onchange=()=>{ t.detox[c.dataset.d]=c.checked; save(); });
+  const lastSlip=[...S.slips].sort((a,b)=>a.date<b.date?1:-1)[0];
+  if(lastSlip){
+    const hrs=24+lastSlip.symptoms.length*6+(10-(t.ojas||6))*2;
+    $('recoveryText').textContent=`Last release ${lastSlip.date} with ${lastSlip.symptoms.length} symptom tag(s). Estimated vitality restoration: ~${hrs}h of disciplined sleep, hydration and transmutation to return to baseline energy.`;
+  } else $('recoveryText').textContent='No slips logged. Baseline energy intact.';
+  $('cheatCards').innerHTML=CHEAT_CARDS.map(c=>
+    `<div class="bg-panel2 border border-line rounded-xl p-3.5">
+      <p class="text-[11px] font-extrabold text-emerald-400">${c.d} <span class="text-zinc-400 font-semibold">— ${c.t}</span></p>
+      <p class="text-[11px] text-zinc-500 mt-1 leading-relaxed">${c.x}</p>
+    </div>`).join('');
+  const st=stage();
+  document.querySelectorAll('#stageRow [data-stage]').forEach(row=>{
+    const n=+row.dataset.stage, dot=row.querySelector('.stage-dot'), lbl=row.querySelector('.stage-lbl');
+    const done=n<st.n, cur=n===st.n;
+    dot.className='w-8 h-8 mx-auto rounded-full border-2 flex items-center justify-center text-[11px] font-bold stage-dot '+
+      (done?'bg-emerald-500 border-emerald-500 text-ink':cur?'border-emerald-400 text-emerald-300 bg-emerald-500/15':'border-zinc-700 text-zinc-600');
+    lbl.className='text-[9px] mt-1.5 stage-lbl '+(done||cur?'text-emerald-400':'text-zinc-600');
+  });
+  $('stageText').textContent=st.txt;
+  renderStars('voiceStars',t.voice||0,5,v=>{ t.voice=v; save();
+    $('voiceLabel').textContent='Rated '+v+'/5 — '+(v>=4?'commanding resonance.':v>=3?'steady, grounded tone.':'rebuilding. Breathwork helps.');
+    renderStars('voiceStars',v,5); });
+  if(t.voice) $('voiceLabel').textContent='Rated '+t.voice+'/5 — '+(t.voice>=4?'commanding resonance.':t.voice>=3?'steady, grounded tone.':'rebuilding. Breathwork helps.');
+  const vw=vulnWindow();
+  $('peakHours').textContent=vw.empty?'Not enough data yet — log triggers and slips to train the forecast.':
+    `Highest-risk window: ${vw.f(vw.start)} – ${vw.f(vw.end)}. Peak hour${vw.top.length>1?'s':''}: ${vw.top.map(x=>vw.f(x[1])).join(', ')}. Schedule transmutation before the window opens.`;
+  renderFocusChart(); icons();
+}
+function renderStars(id,val,max,cb){
+  const c=$(id); c.innerHTML='';
+  for(let i=1;i<=max;i++){
+    const s=document.createElement('span');
+    s.className='star text-2xl '+(i<=val?'text-gold':'text-zinc-700');
+    s.textContent='★'; s.dataset.v=i;
+    if(cb) s.onclick=()=>cb(i); c.appendChild(s);
+  }
+}
+function renderHydro(n){
+  $('hydroLabel').textContent='— '+n+'/8 glasses';
+  $('hydroGlasses').innerHTML=Array.from({length:8},(_,i)=>
+    `<span class="w-4 h-6 rounded-b-md border ${i<n?'bg-sky-500/60 border-sky-400':'border-zinc-700'}"></span>`).join('');
+}
+function renderFocusChart(){
+  const labels=[],streakData=[],focusData=[];
+  const d=new Date();
+  for(let i=13;i>=0;i--){ const dd=new Date(d.getTime()-i*DAY); const k=keyOf(dd); const l=log(k);
+    labels.push(dd.toLocaleDateString('en-US',{month:'short',day:'numeric'}));
+    focusData.push(l.clarity||null);
+    streakData.push(Math.min(365,Math.floor((Date.now()-S.retentionStart)/DAY)-i));
+  }
+  if(focusChart){ focusChart.data.labels=labels; focusChart.data.datasets[0].data=streakData; focusChart.data.datasets[1].data=focusData; focusChart.update(); return; }
+  Chart.defaults.color='#71717a'; Chart.defaults.font.size=9; Chart.defaults.borderColor='rgba(255,255,255,0.05)';
+  focusChart=new Chart($('focusChart'),{type:'line',
+    data:{labels,datasets:[
+      {label:'Streak (days)',data:streakData,borderColor:'#10b981',borderWidth:2,pointRadius:0,tension:.35,yAxisID:'y'},
+      {label:'Focus (1-10)',data:focusData,borderColor:'#f59e0b',borderWidth:2,pointRadius:2,pointBackgroundColor:'#f59e0b',tension:.35,spanGaps:true,yAxisID:'y1'}]},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{labels:{boxWidth:8}}},
+      scales:{y:{beginAtZero:true,position:'left'},y1:{position:'right',min:0,max:10,grid:{display:false}}}}});
+}
+</script>
+
+<script>
+'use strict';
+/* ---------------- RENDER: TRIGGERS ---------------- */
+let triggerChart=null;
+function allTriggers(){ return [...DEFAULT_TRIGGERS, ...S.customTriggers]; }
+function triggerTotals(){
+  const totals={};
+  Object.values(S.days).forEach(l=>(l.triggers||[]).forEach(t=>totals[t]=(totals[t]||0)+1));
+  return totals;
+}
+function renderTriggers(){
+  const totals=triggerTotals();
+  $('triggerChips').innerHTML=allTriggers().map(t=>
+    `<button class="chip flex items-center gap-1.5" data-t="${t}">
+      <i data-lucide="tag" class="w-3 h-3"></i>${t}<span class="text-[9px] text-zinc-500">${totals[t]||''}</span>
+    </button>`).join('');
+  $('triggerChips').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    const t=log(todayKey());
+    if(!t.triggers.includes(b.dataset.t)){ t.triggers.push(b.dataset.t); t.triggerHours[b.dataset.t]=new Date().getHours(); S.triggerCounts[b.dataset.t]=(S.triggerCounts[b.dataset.t]||0)+1; save(); toast('Trigger logged: '+b.dataset.t); }
+    else toast('Already logged today');
+    renderTriggers();
+  });
+  const entries=Object.entries(totals).sort((a,b)=>b[1]-a[1]);
+  if(triggerChart){ triggerChart.data.labels=entries.map(e=>e[0]); triggerChart.data.datasets[0].data=entries.map(e=>e[1]); triggerChart.update(); }
+  else triggerChart=new Chart($('triggerChart'),{type:'bar',
+    data:{labels:entries.map(e=>e[0]),datasets:[{data:entries.map(e=>e[1]),backgroundColor:'#10b98199',borderColor:'#10b981',borderWidth:1,borderRadius:6}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{x:{beginAtZero:true,ticks:{stepSize:1}}}}});
+  const vw=vulnWindow();
+  $('vulnWindow').textContent=vw.empty?'Collecting data…':vw.f(vw.start)+' – '+vw.f(vw.end);
+  $('vulnHint').textContent=vw.empty?'Log triggers with timestamps and slips to activate the detector.':
+    'Highest incident density in a 3-hour rolling window across your full history. Pre-commit a transmutation before this window.';
+  $('neutralCount').textContent=S.neutralized;
+  $('slipCount').textContent=S.slips.length;
+  $('triggerToday').textContent=log(todayKey()).triggers.length;
+  $('ifThenList').innerHTML=S.ifThenRules.map((r,i)=>
+    `<div class="flex items-start gap-2 bg-panel2 border border-line rounded-xl px-3 py-2.5">
+      <p class="text-[12px] text-zinc-300 flex-1 leading-relaxed">${r}</p>
+      <button class="text-zinc-600 font-bold ifdel" data-i="${i}">✕</button>
+    </div>`).join('')||'<p class="text-[11px] text-zinc-600">No rules yet. Write your first IF→THEN.</p>';
+  $('ifThenList').querySelectorAll('.ifdel').forEach(b=>b.onclick=()=>{ S.ifThenRules.splice(+b.dataset.i,1); save(); renderTriggers(); });
+  $('autopsyTriggers').innerHTML=allTriggers().map(t=>`<button class="chip achip" data-v="${t}">${t}</button>`).join('');
+  $('autopsyLocs').innerHTML=LOCATIONS.map(l=>`<button class="chip achip" data-v="${l}">${l}</button>`).join('');
+  $('autopsySymptoms').innerHTML=SYMPTOMS.map(s=>`<button class="chip achip" data-v="${s}">${s}</button>`).join('');
+  document.querySelectorAll('.achip').forEach(c=>c.onclick=()=>c.classList.toggle('on-amber'));
+  icons();
+}
+
+/* ---------------- RENDER: HEATMAP ---------------- */
+function renderHeat(){
+  const base=S.viewedHeat?new Date(S.viewedHeat):new Date();
+  const y=base.getFullYear(), m=base.getMonth();
+  $('heatMonth').textContent=base.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  const first=new Date(y,m,1), daysIn=new Date(y,m+1,0).getDate();
+  let html='';
+  for(let i=0;i<first.getDay();i++) html+='<span></span>';
+  for(let d=1;d<=daysIn;d++){
+    const k=y+'-'+pad(m+1)+'-'+pad(d);
+    const t=(S.days[k]&&S.days[k].type)||'none';
+    const cls=t==='ej'?'bg-rose-500/70 text-rose-100':t==='m'?'bg-amber-500/70 text-amber-100':t==='clean'?'bg-emerald-500/50 text-emerald-100':'bg-zinc-900 text-zinc-700';
+    html+=`<span class="heat-cell ${cls} ${k===todayKey()?'ring-1 ring-white/70':''}">${d}</span>`;
+  }
+  $('heatGrid').innerHTML=html;
+  const countClean=(yy,mm)=>{ let c=0; for(let d=1;d<=31;d++){ const k=yy+'-'+pad(mm+1)+'-'+pad(d); const l=S.days[k]; if(!l) continue; if(l.type==='clean')c++; } return c; };
+  const thisM=countClean(y,m), lastM=countClean(m===0?y-1:y, m===0?11:m-1);
+  $('momThis').textContent=thisM; $('momLast').textContent=lastM;
+  $('momDelta').textContent=lastM>0?(thisM>=lastM?'▲ +':'▼ ')+(thisM-lastM)+' vs last month':'(first month tracked)';
+  const slips=[...S.slips].sort((a,b)=>a.date<b.date?1:-1);
+  $('slipLogList').innerHTML=slips.map(s=>
+    `<div class="bg-panel2 border border-line rounded-xl px-3 py-2.5">
+      <div class="flex items-center justify-between">
+        <p class="text-[12px] font-bold ${s.type==='ej'?'text-rose-400':'text-amber-400'}">${s.type==='ej'?'Ejaculation':'M-Only'} · ${s.date}</p>
+        <span class="text-[10px] text-zinc-600">${s.hour}:00</span>
+      </div>
+      ${s.triggers.length?`<p class="text-[11px] text-zinc-500 mt-1">Trigger: ${s.triggers.join(', ')} · ${s.location}</p>`:''}
+      ${s.boundary?`<p class="text-[11px] text-zinc-500">Boundary failed: ${s.boundary}</p>`:''}
+      ${s.counter?`<p class="text-[11px] text-emerald-500/80">72h countermeasure: ${s.counter}</p>`:''}
+      ${s.symptoms&&s.symptoms.length?`<p class="text-[11px] text-zinc-600">Symptoms: ${s.symptoms.join(', ')}</p>`:''}
+    </div>`).join('')||'<p class="text-[11px] text-zinc-600">No slips logged. Clean sheet.</p>';
+}
+
+/* ---------------- RENDER: VAULT ---------------- */
+function renderVault(){
+  const elapsedH=retDaysF()*24;
+  $('badgeGrid').innerHTML=MILESTONES.map(m=>{
+    const un=elapsedH>=m.h;
+    return `<button class="card p-2.5 flex flex-col items-center gap-1 active:scale-95 ${un?'!border-emerald-500/40':'opacity-50'}" onclick="showMilestone(${m.h})">
+      <i data-lucide="${m.icon}" class="w-5 h-5 ${un?'text-emerald-400':'text-zinc-700'}"></i>
+      <span class="text-[8px] font-bold ${un?'text-zinc-300':'text-zinc-600'} text-center leading-tight">${m.name}</span>
+    </button>`;
+  }).join('');
+  $('whyVault').value=S.whyVault; $('identityVault').value=S.identityVault; $('letterVault').value=S.letterVault;
+  $('pinStatus').textContent=S.pin?'PIN active':'Not set';
+  $('trustedPhone').value=S.trustedPhone||'';
+  $('pinToggle').textContent=S.pin?'Change':'Set PIN';
+  $('pinRemove').classList.toggle('hidden',!S.pin);
+  icons();
+}
+
+/* ---------------- RESET FLOWS ---------------- */
+function doReset(type){
+  closeModal('resetModal');
+  const now=Date.now(), k=todayKey();
+  if(type==='m'){ S.edgingStart=now; S.lastMAt=now; }
+  else { S.retentionStart=now; S.edgingStart=now; S.lastEjacAt=now; }
+  log(k).type=type; save();
+  $('resetSub').dataset.type=type;
+  openModal('autopsyModal');
+  renderTracker(); renderHeat(); renderHeader(); renderRewire(); renderTriggers();
+  toast(type==='m'?'Logged. No-Edging streak reset.':'Logged. Both streaks reset. Autopsy time.');
+}
+$('logM').onclick=()=>{ $('resetTitle').textContent='Log M-Only slip'; openModal('resetModal'); };
+$('logEJ').onclick=()=>{ $('resetTitle').textContent='Log full reset'; openModal('resetModal'); };
+$('resetM').onclick=()=>doReset('m');
+$('resetEJ').onclick=()=>doReset('ej');
+$('logWD').onclick=()=>{
+  S.wetDreams.push({date:todayKey(),note:'Biological release — streaks intact'});
+  save(); renderTracker(); toast('Wet dream logged. Streaks intact — this is biology, not a reset.');
+};
+$('autopsySave').onclick=()=>{
+  const type=$('resetSub').dataset.type==='ej'?'ej':'m';
+  const g=sel=>[...document.querySelectorAll(sel+' .on-amber')].map(c=>c.dataset.v);
+  const entry={date:todayKey(),hour:new Date().getHours(),type,
+    triggers:g('#autopsyTriggers'),location:(g('#autopsyLocs')[0]||'Unspecified'),
+    boundary:$('autopsyBoundary').value.trim()||'Unspecified',
+    counter:$('autopsyCounter').value.trim()||'Not defined yet',
+    symptoms:g('#autopsySymptoms')};
+  if(!S.slips.find(s=>s.date===todayKey())) S.slips.push(entry);
+  const t=log(todayKey()); t.symptoms=entry.symptoms; if(entry.symptoms.length)t.type=type;
+  save(); closeModal('autopsyModal');
+  $('autopsyBoundary').value=''; $('autopsyCounter').value='';
+  document.querySelectorAll('.achip.on-amber').forEach(c=>c.classList.remove('on-amber'));
+  renderHeat(); renderTriggers(); renderRewire(); renderHeader();
+  toast('Autopsy saved. 72-hour chaser plan activated.');
+};
+$('openAutopsy').onclick=()=>openModal('autopsyModal');
+
+/* ---------------- NAVIGATION ---------------- */
+function go(tab){
+  document.querySelectorAll('.tab-view').forEach(v=>v.classList.add('hidden'));
+  $('tab-'+tab).classList.remove('hidden');
+  document.querySelectorAll('.nav-btn[data-tab]').forEach(b=>{
+    const on=b.dataset.tab===tab;
+    b.classList.toggle('tabbar-active',on); b.classList.toggle('text-zinc-500',!on);
+  });
+  ({tracker:renderTracker,rewire:renderRewire,triggers:renderTriggers,heat:renderHeat,vault:renderVault})[tab]();
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.nav-btn[data-tab]').forEach(b=>b.onclick=()=>go(b.dataset.tab));
+
+/* ---------------- LIVE TICK LOOP ---------------- */
+const SURF_TOTAL=15*60, COLD_TOTAL=120, DELAY_TOTAL=300;
+let surfLeft=SURF_TOTAL, surfRun=false, coldLeft=COLD_TOTAL, coldRun=false, delayLeft=DELAY_TOTAL, delayRun=false;
+let medTotal=0, medLeft=0, medRun=false;
+const mmss=s=>pad(Math.floor(s/60))+':'+pad(s%60);
+function tick(){
+  renderHeader();
+  if(!$('tab-tracker').classList.contains('hidden')) renderTracker();
+  if(!$('tab-triggers').classList.contains('hidden')){ $('neutralCount').textContent=S.neutralized; $('triggerToday').textContent=log(todayKey()).triggers.length; }
+  $('surfClock').textContent=mmss(surfLeft);
+  $('surfBar').style.width=(surfLeft/SURF_TOTAL*100)+'%';
+  if(surfRun&&surfLeft>0){ surfLeft--; $('surfGuide').textContent=surfLeft>600?'Wave rising. Breathe. You only have to not drown for 15 minutes.':surfLeft>180?'Past the peak. Every minute weakens the wave.':'Almost through. The shore is in sight.'; if(surfLeft===0){surfRun=false;$('surfToggle').textContent='Start Surfing';toast('Wave ridden. The urge is gone. You remain.');} }
+  $('coldClock').textContent=mmss(coldLeft);
+  if(coldRun&&coldLeft>0){ coldLeft--; if(coldLeft===0){coldRun=false;$('coldToggle').textContent='Start 2:00';S.neutralized++;save();renderTriggers();toast('Cold shower complete. Dopamine swapped.');} }
+  if(delayRun&&delayLeft>0){ delayLeft--; $('delayClock').textContent=mmss(delayLeft);
+    if(delayLeft===0){delayRun=false;$('delayStart').textContent='Start 5:00';$('delayMsg').textContent='Decision window closed. Notice: the urge lost most of its power in 5 minutes.';} }
+  if(medRun&&medLeft>0){ medLeft--;
+    $('medClock').textContent=mmss(medLeft);
+    $('medRing').style.strokeDashoffset=213.6*(1-medLeft/medTotal);
+    if(medLeft===0){ medRun=false; $('medStatus').textContent='Session complete. Neuroplasticity session logged.'; $('medStop').classList.add('hidden');
+      const t=log(todayKey()); if(!t.transmutations.includes('Breathwork / Pranayama'))t.transmutations.push('Breathwork / Pranayama'); save(); toast('Meditation complete.'); } }
+}
+setInterval(tick,1000);
+
+/* ---------------- SOS ---------------- */
+$('sosFab').onclick=()=>{ $('sosWhy').textContent='“'+S.whyVault+'”'; $('sosLetter').textContent=S.letterVault; openModal('sosModal'); icons(); };
+$('sosTopBtn').onclick=()=>$('sosFab').click();
+$('sosClose').onclick=()=>closeModal('sosModal');
+$('sosBg').onclick=()=>closeModal('sosModal');
+$('surfToggle').onclick=()=>{ surfRun=!surfRun; $('surfToggle').textContent=surfRun?'Pause':'Resume'; };
+$('surfReset').onclick=()=>{ surfRun=false; surfLeft=SURF_TOTAL; $('surfToggle').textContent='Start Surfing'; };
+$('survivedBtn').onclick=()=>{ S.neutralized++; save(); renderTriggers(); toast('Urge neutralized. Total: '+S.neutralized); };
+$('coldToggle').onclick=()=>{ if(coldLeft===0)coldLeft=COLD_TOTAL; coldRun=!coldRun; $('coldToggle').textContent=coldRun?'Pause':'Resume'; };
+$('swapBtn').onclick=()=>{ $('swapTask').textContent=SWAPS[Math.floor(Math.random()*SWAPS.length)]; };
+let breathRun=false, breathPhase='idle', cycles=0;
+function breathCycle(){
+  if(!breathRun) return;
+  const sp=$('sphere');
+  breathPhase='inhale'; $('breathPhase').textContent='Inhale · 4s';
+  sp.className='sphere'; sp.style.transform='scale(1.55)';
+  setTimeout(()=>{ if(!breathRun)return; breathPhase='hold'; $('breathPhase').textContent='Hold · 7s';
+    sp.className='sphere hold';
+    setTimeout(()=>{ if(!breathRun)return; breathPhase='exhale'; $('breathPhase').textContent='Exhale · 8s';
+      sp.className='sphere exhale'; sp.style.transform='scale(1)';
+      setTimeout(()=>{ if(!breathRun)return; cycles++; $('breathCount').textContent='Cycles completed: '+cycles; breathCycle(); },8000);
+    },7000);
+  },4000);
+}
+$('breathToggle').onclick=()=>{
+  breathRun=!breathRun;
+  $('breathToggle').textContent=breathRun?'Stop Breathing':'Begin Breathing';
+  if(breathRun){ const sp=$('sphere'); sp.className='sphere'; sp.style.transform='scale(1)'; breathCycle(); }
+  else { $('sphere').style.transform='scale(1)'; $('breathPhase').textContent='Paused'; }
+};
+
+/* ---------------- DELAY PROTOCOL ---------------- */
+$('openDelay').onclick=()=>openModal('delayModal');
+$('delayStart').onclick=()=>{ if(delayLeft===0)delayLeft=DELAY_TOTAL; delayRun=true; $('delayStart').textContent='Running…'; $('delayMsg').textContent='An urge is a weather system, not a command. 5 minutes of distance changes every decision.'; };
+
+/* ---------------- PRANAYAMA ---------------- */
+const PRANA={
+  anulom:[
+    ['Sit tall','Sit in a comfortable upright position, spine straight, shoulders relaxed. Close your eyes.'],
+    ['Vishnu mudra','Fold index and middle fingers of the right hand toward the palm. Thumb and ring finger remain extended.'],
+    ['Close right nostril','Gently close the right nostril with the right thumb.'],
+    ['Inhale left','Inhale slowly and deeply through the left nostril for a count of 4.'],
+    ['Close both · hold','Close both nostrils (ring finger on left) and hold for a count of 4.'],
+    ['Exhale right','Release the thumb and exhale fully through the right nostril for a count of 6.'],
+    ['Inhale right','Inhale through the right nostril for a count of 4.'],
+    ['Close · hold · swap','Close both, hold for 4, then exhale through the left for 6. That is one round.'],
+    ['Repeat','Complete 9–12 rounds. End always by exhaling through the LEFT nostril to balance energy.']],
+  kapal:[
+    ['Sit tall','Upright spine, hands on knees, abdomen relaxed. Take one full deep breath.'],
+    ['Passive inhale','Let the belly expand naturally — inhalation is automatic, no effort.'],
+    ['Active exhale ×1','Contract the lower belly sharply inward through both nostrils. The navel snaps toward the spine.'],
+    ['Rhythm','Continue: 1 passive inhale, 1 forceful exhale — about 60 strokes per minute.'],
+    ['Round of 30–50','Perform 30–50 pumps, then relax completely for 30–60 seconds.'],
+    ['Observe','Notice heat in the body and clarity behind the eyes. That is prana moving.'],
+    ['Complete 3 rounds','Three rounds maximum for beginners. Finish with 3 long deep breaths and stillness.']]
+};
+let pranaSet='anulom', pranaStep=0;
+function renderPrana(){
+  const steps=PRANA[pranaSet];
+  $('pranaSteps').innerHTML=steps.map((s,i)=>
+    `<div class="flex gap-3 bg-panel2 border rounded-xl p-3.5 ${i===pranaStep?'border-sky-500/50':'border-line opacity-60'}">
+      <span class="w-7 h-7 shrink-0 rounded-full ${i===pranaStep?'bg-sky-500 text-ink':'bg-zinc-800 text-zinc-500'} text-[12px] font-extrabold flex items-center justify-center">${i+1}</span>
+      <div><p class="text-[13px] font-bold text-white">${s[0]}</p><p class="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">${s[1]}</p></div>
+    </div>`).join('');
+  $('pranaNext').textContent=pranaStep>=steps.length-1?'Restart Guide':'Next step →';
+}
+$('openPranayama').onclick=()=>{ pranaStep=0; renderPrana(); openModal('pranayamaModal'); };
+$('pranaNext').onclick=()=>{ const n=PRANA[pranaSet].length; pranaStep=pranaStep>=n-1?0:pranaStep+1; renderPrana(); };
+$('pranaTab1').onclick=()=>{ pranaSet='anulom'; pranaStep=0; pranaTabUI(); renderPrana(); };
+$('pranaTab2').onclick=()=>{ pranaSet='kapal'; pranaStep=0; pranaTabUI(); renderPrana(); };
+function pranaTabUI(){
+  const on='btn-h flex-1 rounded-xl bg-sky-500/15 border border-sky-500/40 text-sky-300 font-bold text-[12px]';
+  const off='btn-h flex-1 rounded-xl bg-panel2 border border-line text-zinc-400 font-bold text-[12px]';
+  $('pranaTab1').className=pranaSet==='anulom'?on:off;
+  $('pranaTab2').className=pranaSet==='kapal'?on:off;
+}
+
+/* ---------------- CHECK-IN / TRANSMUTATION / HYDRATION ---------------- */
+$('claritySlider').oninput=e=>{ $('clarityVal').textContent=e.target.value+'/10'; };
+$('ojasSlider').oninput=e=>{ $('ojasVal').textContent=e.target.value+'/10'; };
+$('hydroMinus').onclick=()=>{ const t=log(todayKey()); t.hydration=Math.max(0,(t.hydration||0)-1); save(); renderHydro(t.hydration); };
+$('hydroPlus').onclick=()=>{ const t=log(todayKey()); t.hydration=Math.min(8,(t.hydration||0)+1); save(); renderHydro(t.hydration); };
+$('saveCheckin').onclick=()=>{
+  const t=log(todayKey());
+  t.clarity=+$('claritySlider').value; t.ojas=+$('ojasSlider').value;
+  save(); renderRewire(); toast('Check-in saved for today.');
+};
+document.querySelectorAll('.med-btn').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.med-btn').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+  medTotal=medLeft=+b.dataset.min*60; medRun=true;
+  $('medClock').textContent=mmss(medLeft); $('medStatus').textContent='Session running — '+b.dataset.min+' min cooldown. Stay still.';
+  $('medStop').classList.remove('hidden'); $('medRing').style.strokeDashoffset=0;
+});
+$('medStop').onclick=()=>{ medRun=false; $('medClock').textContent='--:--'; $('medStatus').textContent='Session ended early.'; $('medStop').classList.add('hidden'); $('medRing').style.strokeDashoffset=213.6; };
+
+/* ---------------- TRIGGERS TAB EVENTS ---------------- */
+$('addTrigger').onclick=()=>{
+  const v=$('newTrigger').value.trim(); if(!v)return;
+  if(!S.customTriggers.includes(v)){ S.customTriggers.push(v); save(); renderTriggers(); toast('Trigger added: '+v); }
+  $('newTrigger').value='';
+};
+$('ifThenAdd').onclick=()=>{
+  const v=$('ifThenInput').value.trim(); if(!v)return;
+  S.ifThenRules.push(v); save(); $('ifThenInput').value=''; renderTriggers(); toast('Rule committed.');
+};
+
+/* ---------------- HEAT NAV ---------------- */
+$('prevMonth').onclick=()=>{ const d=S.viewedHeat?new Date(S.viewedHeat):new Date(); d.setMonth(d.getMonth()-1); S.viewedHeat=d.getTime(); save(); renderHeat(); };
+$('nextMonth').onclick=()=>{ const d=S.viewedHeat?new Date(S.viewedHeat):new Date(); d.setMonth(d.getMonth()+1); S.viewedHeat=d.getTime(); save(); renderHeat(); };
+
+/* ---------------- VAULT EVENTS ---------------- */
+$('saveVault').onclick=()=>{ S.whyVault=$('whyVault').value.trim()||S.whyVault; S.identityVault=$('identityVault').value.trim(); S.letterVault=$('letterVault').value.trim(); save(); toast('Vault saved. It will surface in every crisis.'); };
+$('phoneSave').onclick=()=>{ S.trustedPhone=$('trustedPhone').value.trim(); save(); $('callLink').href='tel:'+S.trustedPhone; toast(S.trustedPhone?'Grounding contact saved.':'Contact cleared.'); };
+$('exportBtn').onclick=()=>{
+  const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); const d=new Date();
+  a.href=URL.createObjectURL(blob);
+  a.download='vitalis-backup-'+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'-'+pad(d.getHours())+pad(d.getMinutes())+'.json';
+  a.click(); URL.revokeObjectURL(a.href); toast('Backup downloaded.');
+};
+$('importFile').onchange=e=>{
+  const f=e.target.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{ try{ const data=JSON.parse(r.result); if(!data.v||!data.days) throw 0; S=data; save(); toast('Backup restored. Reloading…'); setTimeout(()=>location.reload(),800); }
+    catch(err){ toast('Invalid backup file.'); } };
+  r.readAsText(f); e.target.value='';
+};
+$('wipeBtn').onclick=()=>{ if(confirm('Erase ALL local data? This cannot be undone.')){ localStorage.removeItem(LS_KEY); location.reload(); } };
+
+/* ---------------- PIN ---------------- */
+let pinBuf='';
+function buildPinPad(){
+  const keys=['1','2','3','4','5','6','7','8','9','','0','⌫'];
+  $('pinPad').innerHTML=keys.map(k=>k===''?'<span></span>':`<button class="kbd" data-k="${k}">${k}</button>`).join('');
+  $('pinPad').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    if(b.dataset.k==='⌫'){ pinBuf=pinBuf.slice(0,-1); }
+    else if(pinBuf.length<4) pinBuf+=b.dataset.k;
+    paintDots();
+    if(pinBuf.length===4){ setTimeout(()=>{ if(pinBuf===S.pin){ unlock(); } else { pinBuf=''; paintDots(); $('lockScreen').classList.add('shake'); setTimeout(()=>$('lockScreen').classList.remove('shake'),500); } },150); }
+  });
+}
+function paintDots(){ [...$('pinDots').children].forEach((d,i)=>{ d.className='w-4 h-4 rounded-full border '+(i<pinBuf.length?'bg-emerald-400 border-emerald-400':'bg-zinc-800 border-zinc-700'); }); }
+function unlock(){ $('lockScreen').classList.add('hidden'); $('lockScreen').classList.remove('flex'); sessionStorage.setItem('vitalis-unlocked','1'); pinBuf=''; paintDots(); }
+$('pinToggle').onclick=()=>openModal('pinModal');
+$('pinSave').onclick=()=>{
+  const a=$('pinNew').value,b=$('pinConfirm').value;
+  if(!/^\d{4}$/.test(a)){ toast('PIN must be 4 digits.'); return; }
+  if(a!==b){ toast('PINs do not match.'); return; }
+  S.pin=a; save(); closeModal('pinModal'); $('pinNew').value=''; $('pinConfirm').value='';
+  $('pinStatus').textContent='PIN active'; renderVault(); toast('PIN saved.');
+};
+$('pinRemove').onclick=()=>{ S.pin=null; save(); closeModal('pinModal'); renderVault(); toast('PIN removed.'); };
+$('pinForgot').onclick=()=>{ if(confirm('Erase all data to regain access?')){ localStorage.removeItem(LS_KEY); location.reload(); } };
+
+/* ---------------- STEALTH MODE ---------------- */
+function stealth(on){
+  $('stealthScreen').classList.toggle('hidden',!on);
+  $('app').classList.toggle('hidden',on);
+  document.body.classList.toggle('stealth-body',on);
+  if(on){ $('stealthDate').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+    renderStealthTasks(); icons(); }
+}
+function renderStealthTasks(){
+  $('stealthTasks').innerHTML=S.stealthTasks.map((t,i)=>
+    `<li class="flex items-center gap-3 bg-white border border-zinc-200 rounded-xl px-3.5 py-2.5">
+      <input type="checkbox" class="w-4 h-4 accent-amber-500 stask">
+      <span class="text-sm text-zinc-700 flex-1">${t}</span>
+      <button class="text-zinc-300 font-bold stdel" data-i="${i}">✕</button>
+    </li>`).join('');
+  $('stealthTasks').querySelectorAll('.stdel').forEach(b=>b.onclick=()=>{ S.stealthTasks.splice(+b.dataset.i,1); save(); renderStealthTasks(); });
+}
+$('stealthBtn').onclick=()=>stealth(true);
+$('stealthAdd').onclick=()=>{ const v=$('stealthInput').value.trim(); if(!v)return; S.stealthTasks.push(v); save(); $('stealthInput').value=''; renderStealthTasks(); };
+let lastTap=0;
+$('appHeader').addEventListener('click',()=>{ const n=Date.now(); if(n-lastTap<350) stealth(true); lastTap=n; });
+$('stealthHeader').addEventListener('click',()=>{ const n=Date.now(); if(n-lastTap<350) stealth(false); lastTap=n; });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ document.querySelectorAll('.fixed:not(.hidden)').forEach(m=>{ if(['sosModal','resetModal','autopsyModal','delayModal','pranayamaModal','milestoneModal','snapModal','pinModal'].includes(m.id)) closeModal(m.id); }); } });
+
+/* ---------------- SNAPSHOT CARD ---------------- */
+$('snapBtn').onclick=()=>{
+  const c=document.createElement('canvas'); c.width=1080; c.height=1350; const x=c.getContext('2d');
+  const days=Math.floor(retDaysF()), pct=cleanRatio(30);
+  const next=MILESTONES.find(m=>m.h>retDaysF()*24);
+  const grad=x.createLinearGradient(0,0,1080,1350);
+  grad.addColorStop(0,'#07110c'); grad.addColorStop(1,'#050505');
+  x.fillStyle=grad; x.fillRect(0,0,1080,1350);
+  x.strokeStyle='rgba(16,185,129,.35)'; x.lineWidth=3; roundRect(x,40,40,1000,1270,48); x.stroke();
+  x.textAlign='center';
+  x.fillStyle='#34d399'; x.font='bold 40px Inter, sans-serif';
+  x.fillText('P E R S O N A L   M I L E S T O N E',540,180);
+  x.fillStyle='#ffffff'; x.font='900 320px Inter, sans-serif';
+  x.fillText(days,540,560);
+  x.fillStyle='#a1a1aa'; x.font='bold 52px Inter, sans-serif';
+  x.fillText('D A Y S   C L E A N',540,650);
+  x.fillStyle='#e4e4e7'; x.font='500 46px Inter, sans-serif';
+  x.fillText('30-day clean rate: '+pct+'%',540,790);
+  x.fillText(next?('Next gate: '+next.name):'All gates cleared',540,870);
+  x.fillStyle='#52525b'; x.font='38px Inter, sans-serif';
+  x.fillText(new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}),540,1180);
+  x.fillText('— private progress snapshot —',540,1240);
+  const url=c.toDataURL('image/png');
+  $('snapImg').src=url; $('snapDownload').href=url; openModal('snapModal');
+};
+function roundRect(x,a,b,w,h,r){ x.beginPath(); x.moveTo(a+r,b); x.arcTo(a+w,b,a+w,b+h,r); x.arcTo(a+w,b+h,a,b+h,r); x.arcTo(a,b+h,a,b,r); x.arcTo(a,b,a+w,b,r); x.closePath(); }
+
+/* ---------------- PWA: MANIFEST + SERVICE WORKER ---------------- */
+(function pwa(){
+  const icon=document.createElement('canvas'); icon.width=icon.height=512; const g=icon.getContext('2d');
+  g.fillStyle='#050505'; g.fillRect(0,0,512,512);
+  g.strokeStyle='#10b981'; g.lineWidth=18; g.beginPath(); g.arc(256,256,200,0,Math.PI*2); g.stroke();
+  g.fillStyle='#10b981'; g.font='900 260px Inter, sans-serif'; g.textAlign='center'; g.textBaseline='middle'; g.fillText('V',256,276);
+  const png=icon.toDataURL('image/png');
+  const manifest={name:'Vitalis — Rewire OS',short_name:'Vitalis',start_url:'.',scope:'.',display:'standalone',
+    orientation:'portrait',background_color:'#050505',theme_color:'#050505',
+    icons:[{src:png,sizes:'512x512',type:'image/png'},{src:png,sizes:'192x192',type:'image/png'}]};
+  $('manifestLink').href='data:application/manifest+json,'+encodeURIComponent(JSON.stringify(manifest));
+  if('serviceWorker' in navigator){
+    const sw="const C='vitalis-v1';self.addEventListener('install',e=>{self.skipWaiting()});self.addEventListener('activate',e=>self.clients.claim());self.addEventListener('fetch',e=>{e.respondWith(caches.open(C).then(c=>c.match(e.request).then(m=>{const f=fetch(e.request).then(r=>{try{c.put(e.request,r.clone())}catch(_){ }return r}).catch(()=>m||Response.error());return m||f})))});";
+    try{ navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'text/javascript'}))).catch(()=>{ /* single-file: blob SW unsupported in some browsers — app remains fully offline via localStorage */ }); }
+    catch(e){ /* graceful fallback */ }
+  }
+})();
+
+/* ---------------- INIT ---------------- */
+load();
+buildPinPad();
+if(S.pin && sessionStorage.getItem('vitalis-unlocked')!=='1'){ $('lockScreen').classList.remove('hidden'); $('lockScreen').classList.add('flex'); }
+$('callLink').href='tel:'+(S.trustedPhone||'');
+if(!S.trustedPhone){ $('callLink').addEventListener('click',e=>{ e.preventDefault(); toast('Set a trusted contact number in Vault (trustedPhone).'); }); }
+renderHeader(); renderTracker(); renderRewire(); renderTriggers(); renderHeat(); renderVault();
+pranaTabUI(); icons();
+</script>
 </body>
 </html>
